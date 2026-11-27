@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lojas - MerKdito</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="assets/js/config.js"></script><script src="assets/js/auth.js"></script><script src="assets/js/ui.js"></script>
+<link rel="stylesheet" href="assets/css/responsive.css"><script src="assets/js/navigation.js" defer></script>
+<style>
+.page-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin-top:20px}
+.panel{background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(20,40,60,.05);padding:22px}
+.panel h2{font-size:1.1rem;margin:0 0 8px;color:var(--text-dark)}
+.muted{color:var(--text-muted);font-size:.9rem;line-height:1.5}
+.message{display:none;padding:12px 14px;border-radius:10px;margin:14px 0;white-space:pre-line}
+.message.visible{display:block}.message.error{background:#fff0f0;color:#8e2424;border:1px solid #f0caca}.message.success{background:#effaf2;color:#176b3a;border:1px solid #c8ead2}.message.info{background:#eef7fc;color:#245878;border:1px solid #cbe5f4}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.form-group{display:flex;flex-direction:column;gap:6px;min-width:0}.form-group.full{grid-column:1/-1}
+.form-group label{font-weight:600;font-size:.9rem}.form-control{width:100%;min-width:0}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.central-callout{display:flex;align-items:flex-start;gap:16px;background:#edf8ef;border:1px solid #bfe2c4;border-radius:12px;padding:18px}
+.central-callout .icon{width:46px;height:46px;flex:0 0 46px;border-radius:12px;background:#d5efd8;color:#237a37;display:grid;place-items:center;font-size:1.25rem}
+.store-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:16px}
+.store-card{border:1px solid #e1e8ed;border-radius:12px;padding:18px;background:#fff;display:flex;flex-direction:column;gap:12px;min-width:0}
+.store-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.store-name{font-weight:750;font-size:1.05rem;overflow-wrap:anywhere}
+.pill{display:inline-flex;align-items:center;border-radius:30px;padding:4px 9px;font-size:.78rem;font-weight:700;background:#edf8ef;color:#237a37;white-space:nowrap}.pill.inactive{background:#f0f1f3;color:#646e78}.pill.central{background:#d5efd8;color:#1f6d32}
+.store-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}.store-meta div{padding:10px;border-radius:9px;background:#f6f8fa}.store-meta strong{display:block;font-size:1.05rem}.store-meta span{font-size:.8rem;color:var(--text-muted)}
+.table-wrap{overflow:auto;width:100%;margin-top:14px}table{width:100%;border-collapse:collapse;min-width:720px}th,td{padding:12px 10px;border-bottom:1px solid #e8edf1;text-align:left;vertical-align:middle}th{background:#f6f8fa;font-size:.82rem;white-space:nowrap}td{font-size:.9rem}td input{max-width:125px;min-width:80px}.row-actions{display:flex;gap:6px;flex-wrap:wrap}
+.empty{padding:28px;text-align:center;color:var(--text-muted);border:1px dashed #cfd8de;border-radius:10px}
+@media(max-width:720px){.form-grid{grid-template-columns:1fr}.form-group.full{grid-column:auto}.panel{padding:16px}.top-header{height:auto;min-height:72px;gap:10px;flex-wrap:wrap;padding-bottom:16px}}
+</style>
+</head>
+<body data-require-client="true">
+<div class="bg-blob blob-1"></div><div class="bg-blob blob-2"></div><div class="app-container">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo">
+                <span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px;">MerKdito</span>
+            </a>
+
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+
+            <div class="logout-container">
+                <a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </div>
+        </aside>
+
+<main class="main-content">
+<header class="top-header"><div><h1 class="page-title">Lojas</h1><p class="page-subtitle" style="margin-bottom:0">Administre as unidades de venda e o estoque central da empresa.</p></div><div class="header-actions"><button id="btnReload" class="btn btn-outline" type="button"><i class="fa-solid fa-rotate"></i> Atualizar</button></div></header>
+<div id="msg" class="message" role="status" aria-live="polite"></div>
+<section class="page-grid">
+<div class="central-callout"><div class="icon"><i class="fa-solid fa-warehouse"></i></div><div><h2 style="margin:0 0 6px">Estoque central / depósito</h2><p class="muted" style="margin:0">Os produtos comprados ou importados entram primeiro aqui. Para vender em uma loja, vincule o produto e transfira a quantidade desejada do estoque central. O estoque central é criado para a conta e não pode ser desativado nesta tela.</p><div id="centralInfo" class="muted" style="margin-top:10px">Carregando estoque central...</div></div></div>
+<div class="panel"><h2>Cadastrar nova loja</h2><p class="muted">Cadastre uma unidade de venda. Depois, escolha quais produtos ela terá, transfira quantidades do depósito e defina os preços específicos da loja.</p>
+<form id="formLoja"><div class="form-grid">
+<div class="form-group"><label for="nomeFantasia">Nome da loja *</label><input id="nomeFantasia" class="form-control" maxlength="150" required placeholder="Ex.: Loja Centro"></div>
+<div class="form-group"><label for="cnpj">CNPJ (opcional)</label><input id="cnpj" class="form-control" maxlength="18" placeholder="CNPJ da unidade"></div>
+<div class="form-group full"><label for="endereco">Endereço</label><input id="endereco" class="form-control" maxlength="250" placeholder="Rua, número, bairro, cidade"></div>
+<div class="form-group"><label for="telefone">Telefone</label><input id="telefone" class="form-control" maxlength="30" placeholder="Telefone da unidade"></div>
+</div><div class="form-actions"><button id="btnCriar" class="btn btn-primary" type="submit"><i class="fa-solid fa-plus"></i> Cadastrar loja</button></div></form></div>
+<div class="panel"><h2>Lojas cadastradas</h2><p class="muted">Cada loja possui seu próprio saldo e preço de venda. A transferência reduz o estoque central e aumenta o saldo da loja destino.</p><div id="listaLojas" class="store-grid"><div class="empty">Carregando lojas...</div></div></div>
+</section>
+<div id="modalEditar" class="modal-backdrop" style="display:none;position:fixed;inset:0;background:rgba(10,20,30,.45);z-index:999;align-items:center;justify-content:center;padding:18px"><div class="panel" style="width:min(100%,620px);max-height:90vh;overflow:auto"><div class="store-card-head"><div><h2>Editar loja</h2><p class="muted">A loja central não pode ser editada por este formulário.</p></div><button id="btnFecharModal" class="btn btn-outline" type="button" aria-label="Fechar">×</button></div><form id="formEditar"><input type="hidden" id="editId"><div class="form-grid"><div class="form-group"><label for="editNome">Nome *</label><input id="editNome" class="form-control" maxlength="150" required></div><div class="form-group"><label for="editCnpj">CNPJ</label><input id="editCnpj" class="form-control" maxlength="18"></div><div class="form-group full"><label for="editEndereco">Endereço</label><input id="editEndereco" class="form-control" maxlength="250"></div><div class="form-group"><label for="editTelefone">Telefone</label><input id="editTelefone" class="form-control" maxlength="30"></div><div class="form-group"><label for="editAtivo">Situação</label><select id="editAtivo" class="form-control"><option value="true">Ativa</option><option value="false">Inativa</option></select></div></div><div id="msgEdit" class="message" role="status" aria-live="polite"></div><div class="form-actions"><button type="button" id="btnCancelarEdit" class="btn btn-outline">Cancelar</button><button id="btnSalvarEdit" type="submit" class="btn btn-primary">Salvar alterações</button></div></form></div></div>
+</main></div>
+<script>
+(function(){const api=window.MerkditoAuth;const $=id=>document.getElementById(id);let lojas=[];
+function msg(id,text,type){const el=$(id);if(!el)return;el.textContent=text||'';el.className='message'+(text?' visible '+(type||'info'):'');}
+async function json(res){const t=await res.text();let d=null;try{d=t?JSON.parse(t):null}catch{}if(!res.ok)throw new Error(d&&(d.mensagem||d.message||d.title)||('Falha HTTP '+res.status));return d;}
+function esc(x){return String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+async function request(path,opts){return json(await api.apiFetch(path,opts));}
+async function carregar(){msg('msg','','');$('listaLojas').innerHTML='<div class="empty">Carregando lojas...</div>';try{const d=await request('Lojas');lojas=Array.isArray(d)?d:(d.lojas||[]);const central=lojas.find(x=>x.ehEstoqueCentral??x.EhEstoqueCentral);$('centralInfo').textContent=central?`${central.nomeFantasia||central.NomeFantasia} · ${(central.ativo ?? central.Ativo) ? 'Ativo' : 'Inativo'} · ${Number(central.unidadesEstoque??central.UnidadesEstoque??0)} unidades no estoque`: 'Nenhum estoque central encontrado. Contate o administrador.';const ret=lojas.filter(x=>!(x.ehEstoqueCentral??x.EhEstoqueCentral));if(!ret.length){$('listaLojas').innerHTML='<div class="empty">Ainda não há lojas de venda. Cadastre a primeira acima.</div>';return;}$('listaLojas').innerHTML=ret.map(l=>{const id=l.id??l.Id,nome=l.nomeFantasia??l.NomeFantasia,ativo=Boolean(l.ativo??l.Ativo);return `<article class="store-card"><div class="store-card-head"><div><div class="store-name">${esc(nome)}</div><div class="muted">${esc((l.endereco ?? l.Endereco) || 'Endereço não informado')}</div></div><span class="pill ${ativo?'':'inactive'}">${ativo?'Ativa':'Inativa'}</span></div><div class="store-meta"><div><strong>${Number(l.quantidadeProdutos??l.QuantidadeProdutos??0)}</strong><span>Produtos vinculados</span></div><div><strong>${Number(l.unidadesEstoque??l.UnidadesEstoque??0)}</strong><span>Unidades em estoque</span></div></div><div class="muted">CNPJ: ${esc((l.cnpj ?? l.Cnpj) || 'Não informado')}<br>Telefone: ${esc((l.telefone ?? l.Telefone) || 'Não informado')}</div><div class="form-actions" style="justify-content:flex-start"><a class="btn btn-primary" href="estoque_loja.html?estabelecimentoId=${encodeURIComponent(id)}"><i class="fa-solid fa-boxes-stacked"></i> Gerenciar produtos</a><button class="btn btn-outline btn-editar" type="button" data-id="${id}"><i class="fa-solid fa-pen"></i> Editar</button></div></article>`;}).join('');document.querySelectorAll('.btn-editar').forEach(b=>b.addEventListener('click',()=>editar(Number(b.dataset.id))));}
+catch(e){msg('msg',e.message,'error');$('listaLojas').innerHTML='<div class="empty">Não foi possível carregar as lojas.</div>';}}
+$('formLoja').addEventListener('submit',async e=>{e.preventDefault();const btn=$('btnCriar');btn.disabled=true;try{await request('Lojas',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nomeFantasia:$('nomeFantasia').value.trim(),cnpj:$('cnpj').value.trim()||null,endereco:$('endereco').value.trim()||null,telefone:$('telefone').value.trim()||null,ativo:true})});$('formLoja').reset();msg('msg','Loja cadastrada com sucesso. Agora vincule os produtos e transfira o saldo desejado do estoque central.','success');await carregar();}catch(e){msg('msg',e.message,'error');}finally{btn.disabled=false;}});
+function editar(id){const l=lojas.find(x=>(x.id??x.Id)===id);if(!l)return;$('editId').value=id;$('editNome').value=l.nomeFantasia??l.NomeFantasia??'';$('editCnpj').value=l.cnpj??l.Cnpj??'';$('editEndereco').value=l.endereco??l.Endereco??'';$('editTelefone').value=l.telefone??l.Telefone??'';$('editAtivo').value=String(Boolean(l.ativo??l.Ativo));$('modalEditar').style.display='flex';msg('msgEdit','','');}
+function fechar(){ $('modalEditar').style.display='none'; }
+$('btnFecharModal').addEventListener('click',fechar);$('btnCancelarEdit').addEventListener('click',fechar);
+$('formEditar').addEventListener('submit',async e=>{e.preventDefault();const id=Number($('editId').value),btn=$('btnSalvarEdit');btn.disabled=true;msg('msgEdit','','');try{await request(`Lojas/${id}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({nomeFantasia:$('editNome').value.trim(),cnpj:$('editCnpj').value.trim()||null,endereco:$('editEndereco').value.trim()||null,telefone:$('editTelefone').value.trim()||null,ativo:$('editAtivo').value==='true'})});fechar();msg('msg','Dados da loja atualizados.','success');await carregar();}catch(e){msg('msgEdit',e.message,'error');}finally{btn.disabled=false;}});
+$('btnReload').addEventListener('click',carregar);carregar();})();
+</script></body></html>

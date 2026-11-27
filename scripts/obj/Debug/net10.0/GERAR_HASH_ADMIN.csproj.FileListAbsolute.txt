@@ -1,0 +1,14 @@
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\bin\Debug\net10.0\GERAR_HASH_ADMIN.exe
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\bin\Debug\net10.0\GERAR_HASH_ADMIN.deps.json
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\bin\Debug\net10.0\GERAR_HASH_ADMIN.runtimeconfig.json
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\bin\Debug\net10.0\GERAR_HASH_ADMIN.dll
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\bin\Debug\net10.0\GERAR_HASH_ADMIN.pdb
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\obj\Debug\net10.0\GERAR_HASH_ADMIN.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\obj\Debug\net10.0\GERAR_HASH_ADMIN.AssemblyInfoInputs.cache
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\obj\Debug\net10.0\GERAR_HASH_ADMIN.AssemblyInfo.cs
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\obj\Debug\net10.0\GERAR_HASH_ADMIN.csproj.CoreCompileInputs.cache
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\obj\Debug\net10.0\GERAR_HASH_ADMIN.dll
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\obj\Debug\net10.0\refint\GERAR_HASH_ADMIN.dll
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\obj\Debug\net10.0\GERAR_HASH_ADMIN.pdb
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\obj\Debug\net10.0\GERAR_HASH_ADMIN.genruntimeconfig.cache
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\scripts\obj\Debug\net10.0\ref\GERAR_HASH_ADMIN.dll

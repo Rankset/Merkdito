@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "Qt/cpVuyqpI=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\DOUG1\\OneDrive\\Área de Trabalho\\MerkditoIntegrado\\Merkdito.Web\\Merkdito.Web.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\DOUG1\\.nuget\\packages\\microsoft.aspnetcore.app.internal.assets\\10.0.12\\microsoft.aspnetcore.app.internal.assets.10.0.12.nupkg.sha512"
+  ],
+  "logs": []
+}

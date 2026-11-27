@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualizar Estoque - MerKdito</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <style>
+        .stock-layout { display:grid; gap:20px; }
+        .stock-panel { padding:24px; }
+        .stock-help { color:var(--text-muted); font-size:.91rem; line-height:1.6; }
+        .stock-counters { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:18px 0; }
+        .stock-counter { border-radius:12px; background:rgba(255,255,255,.62); padding:14px; border:1px solid rgba(30,50,50,.08); }
+        .stock-counter span { color:var(--text-muted); font-size:.84rem; display:block; }
+        .stock-counter strong { display:block; font-size:1.5rem; margin-top:5px; }
+        .stock-status { padding:12px 14px; border-radius:8px; margin:14px 0; display:none; white-space:pre-line; }
+        .stock-status.info { display:block; color:#174f6e; background:rgba(13,110,253,.10); }
+        .stock-status.success { display:block; color:#28652a; background:rgba(93,165,74,.15); }
+        .stock-status.error { display:block; color:#a51f2d; background:rgba(220,53,69,.12); }
+        .stock-drop { display:block; border:2px dashed var(--color-teal); border-radius:var(--radius-md); padding:25px 18px; text-align:center; background:rgba(255,255,255,.45); cursor:pointer; }
+        .stock-drop:hover { background:rgba(42,176,163,.08); }
+        .stock-drop i { font-size:2rem; color:var(--color-teal); margin-bottom:10px; }
+        .stock-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+        .stock-table-wrap { overflow:auto; max-height:540px; }
+        .stock-table { width:100%; border-collapse:collapse; min-width:1050px; }
+        .stock-table th,.stock-table td { padding:10px 12px; border-bottom:1px solid rgba(30,50,50,.09); text-align:left; vertical-align:top; font-size:.88rem; }
+        .stock-table th { position:sticky; top:0; background:#f5f8f6; z-index:1; }
+        .stock-pill { display:inline-block; border-radius:999px; padding:4px 9px; font-size:.78rem; font-weight:700; white-space:nowrap; }
+        .pill-valid { background:rgba(93,165,74,.14); color:#28652a; }
+        .pill-invalid { background:rgba(220,53,69,.12); color:#a51f2d; }
+        .pill-pending { background:rgba(13,110,253,.10); color:#174f6e; }
+        .pill-neutral { background:rgba(80,90,90,.12); color:#495252; }
+        .stock-note { padding:13px 15px; background:rgba(255,193,7,.13); border-left:4px solid #d4a000; border-radius:8px; line-height:1.55; }
+        code { background:rgba(40,60,50,.08); padding:2px 5px; border-radius:4px; }
+        @media(max-width:900px) { .stock-counters { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media(max-width:620px) { .stock-counters { grid-template-columns:1fr; } .stock-panel { padding:16px; } .stock-actions .btn { width:100%; } }
+    </style>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="assets/js/navigation.js" defer></script>
+</head>
+<body data-require-client="true">
+    <div class="bg-blob blob-2"></div>
+    <div class="app-container">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo"><span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px;">MerKdito</span></a>
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+            <div class="logout-container"><a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a></div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div>
+                    <h1 class="page-title">Atualizar estoque em lote</h1>
+                    <p class="page-subtitle" style="margin-bottom:0;">Atualize o saldo de produtos existentes sem criar duplicatas.</p>
+                </div>
+                <div class="header-actions">
+                    <a href="produtos.html" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Voltar aos produtos</a>
+                </div>
+            </header>
+
+            <div class="stock-layout animate-fade-in delay-1">
+                <section class="glass-panel stock-panel">
+                    <h2 style="margin-top:0;">Como funciona</h2>
+                    <p class="stock-help">Envie um CSV com o código de barras ou o ID de um produto já existente e a nova quantidade em estoque. A tela consulta o catálogo atual e mostra a quantidade atual e a nova quantidade antes de gravar qualquer alteração.</p>
+                    <div class="stock-note"><strong><i class="fa-solid fa-circle-exclamation"></i> Atenção:</strong> a quantidade informada será o <strong>novo saldo total</strong>, não um acréscimo. Exemplo: se o estoque atual é 7 e a planilha contém 12, o saldo passará a 12 (não a 19). Esta função atualiza o saldo diretamente e <strong>não gera histórico persistente de movimentações</strong>.</div>
+                    <div class="stock-actions" style="margin-top:16px;">
+                        <a href="modelo_atualizacao_estoque.csv" download class="btn btn-outline"><i class="fa-solid fa-download"></i> Baixar modelo CSV</a>
+                        <a href="produtos.html" class="btn btn-outline"><i class="fa-solid fa-magnifying-glass"></i> Consultar catálogo</a>
+                    </div>
+                </section>
+
+                <section class="glass-panel stock-panel">
+                    <h2 style="margin-top:0;">1. Selecione a planilha</h2>
+                    <p class="stock-help">Arquivo CSV com separador <code>;</code>, codificação UTF-8, tamanho máximo de 5 MB e até 500 linhas. Use <code>produtoId</code>, <code>codigoBarras</code> ou ambos. Quando os dois são fornecidos, ambos precisam identificar o mesmo produto.</p>
+                    <label for="arquivoCsv" class="stock-drop">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <strong id="nomeArquivo">Clique para selecionar o CSV</strong>
+                        <div class="stock-help" style="margin-top:7px;">Colunas: produtoId; codigoBarras; quantidadeEstoque; observacao</div>
+                        <input id="arquivoCsv" type="file" accept=".csv,text/csv" hidden>
+                    </label>
+                    <div id="statusAtualizacao" class="stock-status" role="status" aria-live="polite"></div>
+                    <div class="stock-counters" aria-live="polite">
+                        <div class="stock-counter"><span>Linhas lidas</span><strong id="totalLinhas">0</strong></div>
+                        <div class="stock-counter"><span>Atualizações pendentes</span><strong id="totalPendentes">0</strong></div>
+                        <div class="stock-counter"><span>Sem alteração</span><strong id="totalIguais">0</strong></div>
+                        <div class="stock-counter"><span>Com erro</span><strong id="totalErros">0</strong></div>
+                    </div>
+                    <div class="stock-actions">
+                        <button id="btnAtualizarEstoque" type="button" class="btn btn-primary" disabled><i class="fa-solid fa-floppy-disk"></i> Aplicar atualizações</button>
+                        <button id="btnRelatorio" type="button" class="btn btn-outline" disabled><i class="fa-solid fa-file-csv"></i> Baixar resultado CSV</button>
+                        <button id="btnLimpar" type="button" class="btn btn-outline">Limpar</button>
+                    </div>
+                </section>
+
+                <section class="glass-panel stock-panel">
+                    <h2 style="margin-top:0;">2. Confira antes de aplicar</h2>
+                    <p class="stock-help">Linhas não encontradas, IDs/códigos duplicados, quantidades inválidas ou dois identificadores que apontem para produtos diferentes não serão enviadas. A API valida todo o lote e grava as alterações em uma transação; se uma linha for rejeitada, nenhuma alteração será aplicada.</p>
+                    <div class="stock-table-wrap">
+                        <table class="stock-table">
+                            <thead><tr><th>Linha</th><th>Produto encontrado</th><th>ID</th><th>Código de barras</th><th>Saldo atual</th><th>Novo saldo</th><th>Variação</th><th>Observação</th><th>Validação / resultado</th><th>Situação</th></tr></thead>
+                            <tbody id="linhasPrevia"><tr><td colspan="10" style="text-align:center;padding:22px;color:var(--text-muted);">Selecione um CSV para visualizar as atualizações propostas.</td></tr></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+    (function () {
+        "use strict";
+        const API_URL = MerkditoAuth.apiBaseUrl;
+        const MAX_BYTES = 5 * 1024 * 1024;
+        const MAX_ROWS = 500;
+        const arquivoCsv = document.getElementById("arquivoCsv");
+        const btnAtualizar = document.getElementById("btnAtualizarEstoque");
+        const btnRelatorio = document.getElementById("btnRelatorio");
+        const btnLimpar = document.getElementById("btnLimpar");
+        const linhasPrevia = document.getElementById("linhasPrevia");
+        const statusBox = document.getElementById("statusAtualizacao");
+        let catalogo = [];
+        let catalogoCarregado = false;
+        let linhas = [];
+        let emAndamento = false;
+
+        function escaparHtml(valor) {
+            return String(valor ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" })[c]);
+        }
+        function normalizar(valor) {
+            return String(valor ?? "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, "");
+        }
+        function mostrarStatus(texto, tipo) { MerkditoUI.inlineStatus(statusBox, texto, tipo || "info"); }
+        function limparStatus() { MerkditoUI.clearInline(statusBox); }
+        async function lerErro(response) {
+            return window.MerkditoUI
+                ? await MerkditoUI.responseMessage(response, "Não foi possível concluir a operação.")
+                : `A API recusou a operação (HTTP ${response.status}).`;
+        }
+        async function lerErroLote(response) {
+            const text = await response.text();
+            let data = null;
+            try { data = text ? JSON.parse(text) : null; } catch { /* resposta não-JSON */ }
+            return {
+                mensagem: data?.mensagem || data?.message || data?.title || data?.detail || text.slice(0, 500) || `HTTP ${response.status}`,
+                erros: Array.isArray(data?.erros) ? data.erros : []
+            };
+        }
+        async function carregarCatalogo() {
+            const response = await MerkditoAuth.apiFetch(`${API_URL}/Produtos`);
+            if (!response.ok) throw new Error(`Não foi possível consultar os produtos (HTTP ${response.status}): ${await lerErro(response)}`);
+            const data = await response.json();
+            if (!Array.isArray(data)) throw new Error("A API retornou um formato inesperado para a lista de produtos.");
+            catalogo = data;
+            catalogoCarregado = true;
+        }
+        function parseCsv(text) {
+            text = String(text || "").replace(/^\uFEFF/, "");
+            const rows = []; let row = []; let cell = ""; let quoted = false;
+            for (let i = 0; i < text.length; i++) {
+                const ch = text[i];
+                if (quoted) {
+                    if (ch === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+                    else if (ch === '"') quoted = false;
+                    else cell += ch;
+                } else if (ch === '"' && cell.length === 0) quoted = true;
+                else if (ch === ';') { row.push(cell.trim()); cell = ""; }
+                else if (ch === '\n' || ch === '\r') {
+                    if (ch === '\r' && text[i + 1] === '\n') i++;
+                    row.push(cell.trim());
+                    if (row.some(v => String(v).trim() !== "")) rows.push(row);
+                    row = []; cell = "";
+                } else cell += ch;
+            }
+            row.push(cell.trim());
+            if (row.some(v => String(v).trim() !== "")) rows.push(row);
+            if (quoted) throw new Error("Há uma aspa aberta sem fechamento no arquivo CSV.");
+            if (!rows.length) throw new Error("O arquivo CSV está vazio.");
+            return rows;
+        }
+        function indexarProdutos() {
+            const porId = new Map();
+            const porCodigo = new Map();
+            for (const p of catalogo) {
+                const id = String(p.id ?? p.Id ?? "").trim();
+                if (id) porId.set(id, [...(porId.get(id) || []), p]);
+                const code = String(p.codigoBarras ?? p.CodigoBarras ?? "").trim().toLowerCase();
+                if (code) porCodigo.set(code, [...(porCodigo.get(code) || []), p]);
+            }
+            return { porId, porCodigo };
+        }
+        function valorInteiro(valor, label) {
+            const s = String(valor ?? "").trim();
+            if (!/^\d+$/.test(s)) throw new Error(`${label} deve ser um número inteiro igual ou maior que zero.`);
+            const n = Number(s);
+            if (!Number.isSafeInteger(n) || n < 0) throw new Error(`${label} está fora do intervalo permitido.`);
+            return n;
+        }
+        function validarCsv(text) {
+            const rows = parseCsv(text);
+            const header = rows[0].map(normalizar);
+            const aliases = {
+                produtoid: ["produtoid", "idproduto", "id"],
+                codigobarras: ["codigobarras", "codigo", "sku", "ean"],
+                quantidadeestoque: ["quantidadeestoque", "novosaldo", "estoquenovo", "estoque", "quantidade"],
+                observacao: ["observacao", "motivo", "nota", "comentario"]
+            };
+            const idx = {};
+            for (const [key, names] of Object.entries(aliases)) idx[key] = header.findIndex(h => names.includes(h));
+            if (idx.quantidadeestoque < 0) throw new Error("O CSV precisa ter uma coluna quantidadeEstoque.");
+            if (idx.produtoid < 0 && idx.codigobarras < 0) throw new Error("O CSV precisa ter produtoId, codigoBarras ou ambos para identificar os produtos existentes.");
+            if (rows.length - 1 > MAX_ROWS) throw new Error(`O arquivo contém ${rows.length - 1} linhas; o limite é ${MAX_ROWS}. Divida-o em partes menores.`);
+            const { porId, porCodigo } = indexarProdutos();
+            const idsVistos = new Set();
+            const result = [];
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i];
+                const get = key => idx[key] >= 0
+                    ? String(cells[idx[key]] ?? "").trim().replace(/^'(?=\s*[=+@-])/, "")
+                    : "";
+                const produtoId = get("produtoid");
+                const codigoBarras = get("codigobarras");
+                const qtyText = get("quantidadeestoque");
+                const linha = { numero: i + 1, produtoId, codigoBarras, observacao: get("observacao"), quantidadeNova: null, quantidadeAtualOriginal: null, produto: null, erros: [], detalhe: "", status: "Pendente" };
+                try {
+                    if (!produtoId && !codigoBarras) throw new Error("Informe o ID do produto ou o código de barras.");
+                    let porIdItem = null, porCodigoItem = null;
+                    if (produtoId) {
+                        if (!/^\d+$/.test(produtoId) || Number(produtoId) <= 0) throw new Error("produtoId precisa ser um inteiro positivo.");
+                        const matches = porId.get(produtoId) || [];
+                        if (matches.length > 1) throw new Error(`O ID ${produtoId} aparece mais de uma vez no catálogo; confira os dados na API.`);
+                        if (matches.length === 0) throw new Error(`Não foi encontrado produto com ID ${produtoId}.`);
+                        porIdItem = matches[0];
+                    }
+                    if (codigoBarras) {
+                        const matches = porCodigo.get(codigoBarras.toLowerCase()) || [];
+                        if (matches.length > 1) throw new Error(`O código de barras ${codigoBarras} está associado a mais de um produto; não é seguro atualizar automaticamente.`);
+                        if (matches.length === 0) throw new Error(`Não foi encontrado produto com código de barras ${codigoBarras}.`);
+                        porCodigoItem = matches[0];
+                    }
+                    if (porIdItem && porCodigoItem && String(porIdItem.id) !== String(porCodigoItem.id)) {
+                        throw new Error("produtoId e codigoBarras apontam para produtos diferentes.");
+                    }
+                    linha.produto = porIdItem || porCodigoItem;
+                    if (!linha.produto) throw new Error("Não foi possível identificar o produto.");
+                    const resolvedId = String(linha.produto.id);
+                    if (idsVistos.has(resolvedId)) throw new Error("Este produto aparece mais de uma vez na planilha; mantenha apenas uma linha por produto.");
+                    idsVistos.add(resolvedId);
+                    linha.quantidadeNova = valorInteiro(qtyText, "quantidadeEstoque");
+                    const atual = Number(linha.produto.quantidadeEstoque ?? 0);
+                    linha.quantidadeAtualOriginal = atual;
+                    linha.status = linha.quantidadeNova === atual ? "Sem alteração" : "Pendente";
+                    linha.detalhe = linha.status === "Sem alteração" ? "O saldo informado é igual ao saldo atual." : "Pronto para atualizar.";
+                } catch (e) {
+                    linha.erros.push(e.message || "Linha inválida.");
+                    linha.status = "Erro de validação";
+                    linha.detalhe = linha.erros[0];
+                }
+                result.push(linha);
+            }
+            return result;
+        }
+        function csvEscape(value) {
+            let text = String(value ?? "");
+            // Protege relatórios CSV contra execução de fórmulas ao abrir em planilhas.
+            if (/^[\s\u0000-\u001f]*[=+@\-]/.test(text)) text = "'" + text;
+            return '"' + text.replace(/"/g, '""') + '"';
+        }
+        function baixarCsv(nome, rows) {
+            const body = "\uFEFF" + rows.map(row => row.map(csvEscape).join(";")).join("\r\n");
+            const blob = new Blob([body], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a"); a.href = url; a.download = nome; a.click();
+            URL.revokeObjectURL(url);
+        }
+        function montarRelatorio() {
+            return [["linhaCSV", "produtoId", "codigoBarras", "produto", "saldoAtual", "novoSaldo", "variacao", "observacao", "situacao", "detalhe"],
+                ...linhas.map(l => {
+                    const p = l.produto;
+                    const atual = p ? Number(l.quantidadeAtualOriginal ?? p.quantidadeEstoque ?? 0) : "";
+                    const nova = l.quantidadeNova ?? "";
+                    const variacao = p && nova !== "" ? Number(nova) - Number(atual) : "";
+                    return [l.numero, p?.id ?? l.produtoId, p?.codigoBarras ?? l.codigoBarras, p?.nome ?? "", atual, nova, variacao, l.observacao, l.status, [...l.erros, l.detalhe].filter(Boolean).join("; ")];
+                })];
+        }
+        function renderizar() {
+            const pendentes = linhas.filter(l => l.produto && !l.erros.length && l.status === "Pendente");
+            const iguais = linhas.filter(l => l.produto && !l.erros.length && l.status === "Sem alteração");
+            const erros = linhas.filter(l => l.erros.length || ["Falhou", "Não processado", "Lote não aplicado", "Rejeitado pela API", "Resultado incerto"].includes(l.status));
+            document.getElementById("totalLinhas").textContent = linhas.length;
+            document.getElementById("totalPendentes").textContent = pendentes.length;
+            document.getElementById("totalIguais").textContent = iguais.length;
+            document.getElementById("totalErros").textContent = erros.length;
+            btnAtualizar.disabled = emAndamento || !catalogoCarregado || pendentes.length === 0;
+            btnRelatorio.disabled = linhas.length === 0 || emAndamento;
+            if (!linhas.length) {
+                linhasPrevia.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:22px;color:var(--text-muted);">Selecione um CSV para visualizar as atualizações propostas.</td></tr>';
+                return;
+            }
+            linhasPrevia.innerHTML = linhas.map(l => {
+                const p = l.produto;
+                const atual = p ? Number(l.quantidadeAtualOriginal ?? p.quantidadeEstoque ?? 0) : null;
+                const nova = l.quantidadeNova;
+                const variation = atual !== null && nova !== null ? nova - atual : null;
+                const className = l.erros.length || ["Falhou", "Não processado", "Lote não aplicado", "Rejeitado pela API", "Resultado incerto"].includes(l.status) ? "pill-invalid" : l.status === "Atualizado" ? "pill-valid" : l.status === "Sem alteração" ? "pill-neutral" : "pill-pending";
+                const detalhe = [...l.erros, l.detalhe].filter(Boolean).join("; ") || "Aguardando confirmação.";
+                return `<tr><td>${l.numero}</td><td>${escaparHtml(p?.nome || "Produto não encontrado")}</td><td>${escaparHtml(p?.id ?? (l.produtoId || "—"))}</td><td>${escaparHtml(p?.codigoBarras || l.codigoBarras || "—")}</td><td>${atual === null ? "—" : atual}</td><td>${nova === null ? "—" : nova}</td><td>${variation === null ? "—" : (variation > 0 ? "+" : "") + variation}</td><td>${escaparHtml(l.observacao || "—")}</td><td>${escaparHtml(detalhe)}</td><td><span class="stock-pill ${className}">${escaparHtml(l.status)}</span></td></tr>`;
+            }).join("");
+        }
+        async function selecionarArquivo(file) {
+            linhas = []; renderizar(); limparStatus();
+            if (!file) return;
+            document.getElementById("nomeArquivo").textContent = file.name;
+            if (file.size > MAX_BYTES) { mostrarStatus("O arquivo excede o limite de 5 MB.", "error"); return; }
+            if (!file.name.toLowerCase().endsWith(".csv") && file.type && !file.type.toLowerCase().includes("csv")) { mostrarStatus("Selecione um arquivo CSV.", "error"); return; }
+            try {
+                mostrarStatus("Consultando o catálogo atual da empresa...", "info");
+                if (!catalogoCarregado) await carregarCatalogo();
+                linhas = validarCsv(await file.text());
+                renderizar();
+                const pendentes = linhas.filter(l => l.produto && !l.erros.length && l.status === "Pendente").length;
+                const errors = linhas.filter(l => l.erros.length).length;
+                mostrarStatus(`Prévia pronta: ${pendentes} atualização(ões) pendente(s), ${linhas.filter(l => l.status === "Sem alteração").length} sem mudança e ${errors} linha(s) com erro. Nada foi alterado ainda.`, errors ? "info" : "success");
+            } catch (e) {
+                linhas = []; renderizar(); mostrarStatus(e.message || "Não foi possível ler o CSV.", "error");
+            }
+        }
+        async function aplicarAtualizacoes() {
+            if (emAndamento) return;
+            const pendentes = linhas.filter(l => l.produto && !l.erros.length && l.status === "Pendente");
+            if (!pendentes.length) return;
+            const ok = window.confirm(`Você está prestes a substituir o saldo de ${pendentes.length} produto(s) pela quantidade final indicada no CSV.\n\nA API validará o lote inteiro e salvará todas as alterações em uma transação. Se uma linha for rejeitada, nenhum saldo será alterado.\n\nA operação não gera histórico persistente de movimentações. Deseja continuar?`);
+            if (!ok) return;
+
+            emAndamento = true;
+            const restaurarBotao = window.MerkditoUI
+                ? MerkditoUI.setBusy(btnAtualizar, "Aplicando saldos...")
+                : function () {};
+            renderizar();
+            btnRelatorio.disabled = true;
+            for (const line of pendentes) {
+                line.status = "Enviando lote";
+                line.detalhe = "Aguardando confirmação da transação.";
+            }
+            mostrarStatus(`Enviando ${pendentes.length} atualização(ões) em uma única transação...`, "info");
+            renderizar();
+
+            try {
+                const response = await MerkditoAuth.apiFetch(`${API_URL}/ProdutosLote/atualizar-estoque`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ itens: pendentes.map(line => ({
+                        linhaArquivo: line.numero,
+                        produtoId: Number(line.produto.id ?? line.produto.Id),
+                        quantidadeEstoque: Number(line.quantidadeNova)
+                    })) })
+                });
+
+                if (response.ok) {
+                    const payload = await response.json().catch(() => null);
+                    for (const line of pendentes) {
+                        line.produto.quantidadeEstoque = Number(line.quantidadeNova);
+                        line.produto.QuantidadeEstoque = Number(line.quantidadeNova);
+                        line.status = "Atualizado";
+                        line.detalhe = "Saldo atualizado na mesma transação do lote.";
+                    }
+                    mostrarStatus(`Lote concluído: ${payload?.totalAtualizado ?? pendentes.length} saldo(s) atualizado(s) atomicamente.`, "success");
+                } else {
+                    const failure = await lerErroLote(response);
+                    const byLine = new Map();
+                    for (const error of failure.erros) {
+                        const key = Number(error.linhaArquivo);
+                        if (!byLine.has(key)) byLine.set(key, []);
+                        byLine.get(key).push(String(error.mensagem || "A API rejeitou esta linha."));
+                    }
+                    const uncertain = response.status === 408 || response.status >= 500;
+                    for (const line of pendentes) {
+                        const details = byLine.get(Number(line.numero)) || [];
+                        if (uncertain) {
+                            line.status = "Resultado incerto";
+                            line.detalhe = "A resposta não confirma o resultado; consulte o catálogo antes de repetir.";
+                        } else if (details.length) {
+                            line.status = "Rejeitado pela API";
+                            line.detalhe = details.join("; ");
+                        } else {
+                            line.status = "Lote não aplicado";
+                            line.detalhe = "A transação inteira foi rejeitada; este saldo não foi alterado.";
+                        }
+                    }
+                    mostrarStatus(`A API não confirmou a atualização: ${failure.mensagem}${uncertain ? " Consulte os saldos antes de repetir." : " A operação em lote foi rejeitada sem alterações parciais."}`, "error");
+                }
+            } catch (e) {
+                for (const line of pendentes) {
+                    line.status = "Resultado incerto";
+                    line.detalhe = "Falha de comunicação; confira o saldo na lista de produtos antes de reenviar.";
+                }
+                mostrarStatus(`${e.message || "Falha de comunicação."} Consulte os saldos antes de repetir o lote.`, "error");
+            } finally {
+                emAndamento = false;
+                btnRelatorio.disabled = false;
+                renderizar();
+                restaurarBotao();
+            }
+        }
+        function limpar() {
+            if (emAndamento) return;
+            linhas = []; arquivoCsv.value = ""; document.getElementById("nomeArquivo").textContent = "Clique para selecionar o CSV"; limparStatus(); renderizar();
+        }
+        arquivoCsv.addEventListener("change", e => selecionarArquivo(e.target.files?.[0]));
+        btnAtualizar.addEventListener("click", aplicarAtualizacoes);
+        btnRelatorio.addEventListener("click", () => { if (linhas.length) baixarCsv("resultado_atualizacao_estoque.csv", montarRelatorio()); });
+        btnLimpar.addEventListener("click", limpar);
+    })();
+    </script>
+</body>
+</html>

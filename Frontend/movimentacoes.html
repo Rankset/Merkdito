@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movimentações de Estoque - MerKdito</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+  <style>
+    .mv-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:18px 0 20px}
+    .mv-stat{padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+    .mv-label{font-size:.85rem;color:var(--text-muted);margin-bottom:6px}.mv-value{font-size:1.55rem;font-weight:750;overflow-wrap:anywhere}
+    .mv-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:rgba(42,176,163,.14);color:var(--color-teal);font-size:1.1rem;flex-shrink:0}
+    .mv-grid{display:grid;grid-template-columns:minmax(270px,.8fr) minmax(0,1.5fr);gap:18px;align-items:start}
+    .mv-panel{padding:21px}.mv-form{display:grid;gap:14px}.mv-field{display:flex;flex-direction:column;gap:6px}.mv-field label{font-size:.88rem;font-weight:650}.mv-help{font-size:.82rem;color:var(--text-muted);line-height:1.4}
+    .mv-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.mv-toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:end;margin-bottom:14px}.mv-filter{display:flex;flex-direction:column;gap:6px;min-width:130px;flex:1}.mv-filter label{font-size:.82rem;font-weight:600}
+    .mv-message{display:none;padding:12px 14px;border-radius:9px;margin-bottom:14px;white-space:pre-line;line-height:1.4}.mv-message.visible{display:block}.mv-message.error{background:#fff0f0;color:#8e2424;border:1px solid #f0caca}.mv-message.success{background:#effaf2;color:#176b3a;border:1px solid #c8ead2}.mv-message.info{background:#eef7fc;color:#245878;border:1px solid #cbe5f4}
+    .mv-table-wrap{overflow:auto}.mv-table{width:100%;border-collapse:collapse;min-width:860px}.mv-table th,.mv-table td{padding:11px 12px;text-align:left;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:middle}.mv-table th{color:var(--text-muted);font-size:.75rem;white-space:nowrap}.mv-table td{font-size:.88rem}.mv-table .num{text-align:right;white-space:nowrap}.mv-type{display:inline-flex;border-radius:99px;padding:5px 9px;font-size:.76rem;font-weight:700;white-space:nowrap}.mv-type.entrada{color:#176b3a;background:#effaf2}.mv-type.saida{color:#9b1c28;background:#fff0f0}.mv-type.ajuste{color:#775b00;background:#fff8d9}.mv-empty{text-align:center!important;padding:34px!important;color:var(--text-muted)}.mv-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.mv-meta{font-size:.85rem;color:var(--text-muted);margin:12px 0}.mv-title{display:flex;align-items:center;gap:9px;margin:0 0 15px}.mv-title i{color:var(--color-teal)}
+    @media(max-width:1000px){.mv-grid{grid-template-columns:1fr}.mv-summary{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:620px){.mv-summary{grid-template-columns:1fr}.mv-row{grid-template-columns:1fr}.mv-toolbar{align-items:stretch}.mv-filter{min-width:100%}.mv-actions .btn{width:100%;justify-content:center}.top-header{height:auto;flex-wrap:wrap;gap:12px;padding-bottom:15px}}
+    @media print{.bg-blob,.sidebar,.top-header .header-actions,.mv-form-section,.mv-toolbar,.mv-actions,.mv-message,.no-print{display:none!important}.app-container{display:block!important}.main-content{margin:0!important;padding:0!important}.glass-panel{box-shadow:none!important;background:#fff!important;border:1px solid #ddd!important}.mv-table{min-width:0}.mv-table th,.mv-table td{padding:6px;font-size:8pt}}
+  </style>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="assets/js/navigation.js" defer></script>
+</head>
+<body data-require-client="true">
+  <div class="bg-blob blob-1"></div><div class="bg-blob blob-3"></div>
+  <div class="app-container">
+    <aside class="sidebar">
+      <a href="dashboard.html" class="logo" style="text-decoration:none"><span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px">MerKdito</span></a>
+      <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+      <div class="logout-container"><a href="index.html" class="nav-item" onclick="MerkditoAuth.logout();return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a></div>
+    </aside>
+    <main class="main-content">
+      <header class="top-header">
+        <div><h1 class="page-title">Movimentações de estoque</h1><p class="page-subtitle" style="margin-bottom:0">Registre entradas, saídas e ajustes e consulte o histórico do saldo.</p></div>
+        <div class="header-actions"><button id="btnAtualizar" class="btn btn-outline" type="button"><i class="fa-solid fa-rotate"></i> Atualizar</button><button id="btnImprimir" class="btn btn-outline" type="button"><i class="fa-solid fa-print"></i> Imprimir</button></div>
+      </header>
+      <div class="animate-fade-in delay-1">
+        <div id="mensagem" class="mv-message" role="status" aria-live="polite"></div>
+        <section class="mv-summary" aria-label="Resumo de movimentações">
+          <div class="glass-panel mv-stat"><div><div class="mv-label">Registros exibidos</div><div class="mv-value" id="resumoTotal">—</div></div><div class="mv-icon"><i class="fa-solid fa-list-check"></i></div></div>
+          <div class="glass-panel mv-stat"><div><div class="mv-label">Entradas no filtro</div><div class="mv-value" id="resumoEntradas">—</div></div><div class="mv-icon"><i class="fa-solid fa-arrow-down"></i></div></div>
+          <div class="glass-panel mv-stat"><div><div class="mv-label">Saídas no filtro</div><div class="mv-value" id="resumoSaidas">—</div></div><div class="mv-icon"><i class="fa-solid fa-arrow-up"></i></div></div>
+        </section>
+        <div class="mv-grid">
+          <section class="glass-panel mv-panel mv-form-section">
+            <h2 class="card-title mv-title"><i class="fa-solid fa-circle-plus"></i> Registrar movimentação</h2>
+            <form id="formMovimentacao" class="mv-form">
+              <div class="mv-field"><label for="estabelecimentoMovimento">Loja / estoque *</label><select id="estabelecimentoMovimento" class="form-control" required><option value="">Carregando lojas...</option></select><small class="mv-help">Entrada de mercadorias deve ser lançada no estoque central. Para abastecer uma loja, use Produtos por loja e transfira.</small></div>
+              <div class="mv-field"><label for="produtoId">Produto *</label><select id="produtoId" class="form-control" required><option value="">Carregando produtos...</option></select></div>
+              <div class="mv-field"><label for="tipo">Tipo *</label><select id="tipo" class="form-control" required><option value="ENTRADA">Entrada — acrescentar ao estoque</option><option value="SAIDA">Saída — retirar do estoque</option><option value="AJUSTE">Ajuste — informar saldo final</option></select></div>
+              <div class="mv-field"><label id="labelQuantidade" for="quantidade">Quantidade *</label><input id="quantidade" class="form-control" type="number" min="1" step="1" required><small id="ajudaQuantidade" class="mv-help">Informe quantas unidades serão adicionadas.</small></div>
+              <div class="mv-field"><label for="observacao">Motivo / observação</label><textarea id="observacao" class="form-control" rows="3" maxlength="300" placeholder="Ex.: recebimento de fornecedor, avaria ou contagem física"></textarea><small class="mv-help">Até 300 caracteres. Evite incluir dados pessoais desnecessários.</small></div>
+              <button id="btnRegistrar" type="submit" class="btn btn-primary"><i class="fa-solid fa-check"></i> Registrar movimentação</button>
+              <p class="mv-help">O sistema salva o saldo anterior e posterior. Saídas acima do saldo disponível são recusadas. Ajuste significa definir a quantidade final do produto.</p>
+            </form>
+          </section>
+          <section class="glass-panel mv-panel">
+            <h2 class="card-title mv-title"><i class="fa-solid fa-clock-rotate-left"></i> Histórico</h2>
+            <div class="mv-toolbar no-print">
+              <div class="mv-filter"><label for="filtroEstabelecimento">Loja / estoque</label><select id="filtroEstabelecimento" class="form-control"><option value="">Todas as lojas</option></select></div>
+              <div class="mv-filter"><label for="filtroProduto">Produto</label><select id="filtroProduto" class="form-control"><option value="">Todos</option></select></div>
+              <div class="mv-filter"><label for="filtroTipo">Tipo</label><select id="filtroTipo" class="form-control"><option value="">Todos</option><option value="ENTRADA">Entrada</option><option value="SAIDA">Saída</option><option value="AJUSTE">Ajuste</option></select></div>
+              <div class="mv-filter"><label for="filtroDe">De</label><input id="filtroDe" class="form-control" type="date"></div>
+              <div class="mv-filter"><label for="filtroAte">Até</label><input id="filtroAte" class="form-control" type="date"></div>
+            </div>
+            <div class="mv-actions no-print"><button id="btnFiltrar" class="btn btn-primary" type="button"><i class="fa-solid fa-filter"></i> Aplicar filtros</button><button id="btnLimpar" class="btn btn-outline" type="button">Limpar</button><button id="btnCsv" class="btn btn-outline" type="button"><i class="fa-solid fa-file-csv"></i> Exportar CSV</button></div>
+            <p id="metaHistorico" class="mv-meta">Carregando histórico...</p>
+            <div class="mv-table-wrap"><table class="mv-table"><thead><tr><th>Data e hora</th><th>Loja / estoque</th><th>Produto</th><th>Tipo</th><th class="num">Quantidade</th><th class="num">Saldo anterior</th><th class="num">Saldo posterior</th><th>Observação</th></tr></thead><tbody id="corpoHistorico"><tr><td colspan="8" class="mv-empty"><i class="fa-solid fa-spinner fa-spin"></i> Carregando...</td></tr></tbody></table></div>
+            <p class="mv-help" style="margin-top:12px">A listagem consulta até 500 registros mais recentes por requisição. As entradas e saídas resumidas acima somam apenas os registros atualmente exibidos, respeitando os filtros aplicados.</p>
+          </section>
+        </div>
+      </div>
+    </main>
+  </div>
+<script>
+"use strict";
+const API_URL = MerkditoAuth.apiBaseUrl;
+const $ = id => document.getElementById(id);
+let produtos = [];
+let lojas = [];
+let movimentacoes = [];
+let carregando = false;
+const num = v => { const n = Number(v ?? 0); return Number.isFinite(n) ? n : 0; };
+const inteiroBR = v => num(v).toLocaleString("pt-BR", { maximumFractionDigits: 0 });
+const escapeHtml = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const tipoNome = t => ({ENTRADA:"Entrada",SAIDA:"Saída",AJUSTE:"Ajuste"})[String(t || "").toUpperCase()] || String(t || "—");
+function csvCell(value) {
+    let text = String(value ?? "");
+    // Evita que nome, código ou observação sejam interpretados como fórmulas no Excel.
+    if (/^[\s\u0000-\u001f]*[=+@\-]/.test(text)) text = "'" + text;
+    return '"' + text.replace(/"/g, '""') + '"';
+}
+function mensagem(texto, tipo="info") { MerkditoUI.showInline("mensagem", texto, tipo); }
+function limparMensagem(){ MerkditoUI.clearInline("mensagem"); }
+async function jsonOrError(res, fallback){ const raw=await res.text(); let data=null; if(raw){try{data=JSON.parse(raw)}catch{data={mensagem:raw}}} if(!res.ok) throw new Error((data&&(data.mensagem||data.message||data.title))||`${fallback} (HTTP ${res.status})`); return data; }
+function aplicarTipo(){const centralSelecionada=lojas.find(l=>String(l.id??l.Id)===$("estabelecimentoMovimento").value);const central=Boolean(centralSelecionada&&(centralSelecionada.ehEstoqueCentral??centralSelecionada.EhEstoqueCentral));const entrada=$("tipo").value==="ENTRADA";$("tipo").querySelector('option[value="ENTRADA"]').disabled=!central; if(entrada&&!central){$("tipo").value="SAIDA";}const ajuste=$("tipo").value==="AJUSTE";$("labelQuantidade").textContent=ajuste?"Quantidade final pretendida *":"Quantidade de unidades *";$("quantidade").min=ajuste?"0":"1";$("ajudaQuantidade").textContent=ajuste?"Informe o saldo final que deverá ficar registrado para o produto.":($("tipo").value==="SAIDA"?"Informe quantas unidades serão retiradas. A API bloqueará saldo insuficiente.":"Informe quantas unidades serão adicionadas.");}
+function preencherProdutos(){const sorted=[...produtos].sort((a,b)=>String(a.nome||"").localeCompare(String(b.nome||""),"pt-BR"));const current=$("produtoId").value;$("produtoId").innerHTML='<option value="">Selecione um produto</option>'+sorted.map(p=>`<option value="${num(p.id)}">${escapeHtml(p.nome)}${p.ativo===false?" (inativo)":""} — saldo: ${inteiroBR(p.quantidadeEstoque)}</option>`).join("");if(sorted.some(p=>String(p.id)===current))$("produtoId").value=current;$("filtroProduto").innerHTML='<option value="">Todos os produtos</option>'+sorted.map(p=>`<option value="${num(p.id)}">${escapeHtml(p.nome)}</option>`).join("");}
+function atualizarResumo(){ $("resumoTotal").textContent=inteiroBR(movimentacoes.length);$("resumoEntradas").textContent=inteiroBR(movimentacoes.filter(m=>String(m.tipo).toUpperCase()==="ENTRADA").reduce((s,m)=>s+num(m.quantidade),0));$("resumoSaidas").textContent=inteiroBR(movimentacoes.filter(m=>String(m.tipo).toUpperCase()==="SAIDA").reduce((s,m)=>s+num(m.quantidade),0)); }
+function renderizarHistorico(){ atualizarResumo(); if(!movimentacoes.length){$("corpoHistorico").innerHTML='<tr><td colspan="8" class="mv-empty">Nenhuma movimentação encontrada para os filtros selecionados.</td></tr>';}else{$("corpoHistorico").innerHTML=movimentacoes.map(m=>{const tipo=String(m.tipo||"").toUpperCase();let data="—";if(m.criadoEmUtc){const d=new Date(m.criadoEmUtc);if(!Number.isNaN(d.getTime()))data=d.toLocaleString("pt-BR");}const tag=tipo.toLowerCase();return `<tr><td>${escapeHtml(data)}</td><td>${escapeHtml(m.estabelecimento||"Loja")}${m.ehEstoqueCentral?" · Central":""}</td><td><strong>${escapeHtml(m.produtoNome||"Produto")}</strong><br><small>${escapeHtml(m.codigoBarras||"")}</small></td><td><span class="mv-type ${tag}">${escapeHtml(tipoNome(tipo))}</span></td><td class="num">${inteiroBR(m.quantidade)}</td><td class="num">${inteiroBR(m.quantidadeAnterior)}</td><td class="num">${inteiroBR(m.quantidadePosterior)}</td><td>${escapeHtml(m.observacao||"—")}</td></tr>`;}).join("");}$("metaHistorico").textContent=`${movimentacoes.length.toLocaleString("pt-BR")} movimentação(ões) retornada(s).`+(movimentacoes.length>=500?" Limite da consulta alcançado; aplique filtros de data/produto para refinar.":"");}
+async function carregarLojas(){const r=await MerkditoAuth.apiFetch(`${API_URL}/Lojas`);const data=await jsonOrError(r,"Não foi possível carregar lojas");lojas=Array.isArray(data)?data:(data.lojas||[]);const atuais=[...lojas].sort((a,b)=>Number(Boolean(b.ehEstoqueCentral??b.EhEstoqueCentral))-Number(Boolean(a.ehEstoqueCentral??a.EhEstoqueCentral)));const prev=$("estabelecimentoMovimento").value;const opts=atuais.filter(l=>l.ativo??l.Ativo).map(l=>{const id=l.id??l.Id;const nome=l.nomeFantasia??l.NomeFantasia;const central=Boolean(l.ehEstoqueCentral??l.EhEstoqueCentral);return `<option value="${id}">${central?'Estoque central':'Loja'} — ${escapeHtml(nome)}</option>`;}).join("");$("estabelecimentoMovimento").innerHTML=opts;if(atuais.some(l=>String(l.id??l.Id)===prev))$("estabelecimentoMovimento").value=prev;else {const central=atuais.find(l=>Boolean(l.ehEstoqueCentral??l.EhEstoqueCentral));if(central)$("estabelecimentoMovimento").value=String(central.id??central.Id);}$("filtroEstabelecimento").innerHTML='<option value="">Todas as lojas</option>'+atuais.map(l=>{const id=l.id??l.Id;const nome=l.nomeFantasia??l.NomeFantasia;const central=Boolean(l.ehEstoqueCentral??l.EhEstoqueCentral);return `<option value="${id}">${central?'Estoque central':'Loja'} — ${escapeHtml(nome)}</option>`;}).join("");}
+async function carregarProdutos(){const storeId=Number($("estabelecimentoMovimento").value);const loja=lojas.find(l=>Number(l.id??l.Id)===storeId);let data;if(loja&&(loja.ehEstoqueCentral??loja.EhEstoqueCentral)){const r=await MerkditoAuth.apiFetch(`${API_URL}/Produtos`);data=await jsonOrError(r,"Não foi possível carregar produtos do estoque central");}else if(storeId){const r=await MerkditoAuth.apiFetch(`${API_URL}/ProdutosEstabelecimentos?estabelecimentoId=${storeId}`);const payload=await jsonOrError(r,"Não foi possível carregar produtos da loja");data=(payload.itens||payload.Itens||[]).map(p=>({id:p.produtoId??p.ProdutoId,nome:p.nome??p.Nome,codigoBarras:p.codigoBarras??p.CodigoBarras,quantidadeEstoque:p.quantidadeEstoque??p.QuantidadeEstoque,ativo:p.ativoNaLoja??p.AtivoNaLoja,preco:p.precoVenda??p.PrecoVenda}));}else{data=[];}if(!Array.isArray(data))throw new Error("A API retornou um formato inesperado para produtos.");produtos=data;preencherProdutos();}
+async function carregarHistorico(){if(carregando)return;carregando=true;$("btnAtualizar").disabled=true;$("metaHistorico").textContent="Consultando histórico...";try{const q=new URLSearchParams();if($("filtroEstabelecimento").value)q.set("estabelecimentoId",$("filtroEstabelecimento").value);if($("filtroProduto").value)q.set("produtoId",$("filtroProduto").value);if($("filtroTipo").value)q.set("tipo",$("filtroTipo").value);if($("filtroDe").value)q.set("de",$("filtroDe").value);if($("filtroAte").value)q.set("ate",$("filtroAte").value);q.set("limite","500");const r=await MerkditoAuth.apiFetch(`${API_URL}/MovimentacoesEstoque?${q.toString()}`);const data=await jsonOrError(r,"Não foi possível consultar movimentações");if(!Array.isArray(data))throw new Error("A API retornou um formato inesperado para o histórico.");movimentacoes=data;renderizarHistorico();}catch(e){console.error(e);movimentacoes=[];renderizarHistorico();mensagem(e.message||"Falha ao consultar o histórico. Confirme se o endpoint e a tabela estão configurados.","error");}finally{carregando=false;$("btnAtualizar").disabled=false;}}
+async function inicializar(){try{await carregarLojas();await carregarProdutos();aplicarTipo();await carregarHistorico();}catch(e){console.error(e);mensagem(e.message||"Não foi possível carregar a tela.","error");$("corpoHistorico").innerHTML='<tr><td colspan="8" class="mv-empty">Não foi possível carregar. Confira autenticação, API e configuração do backend.</td></tr>';}}
+$("tipo").addEventListener("change",aplicarTipo);$("estabelecimentoMovimento").addEventListener("change",async()=>{try{await carregarProdutos();aplicarTipo();}catch(e){mensagem(e.message,"error");}});$("filtroEstabelecimento").addEventListener("change",carregarHistorico);
+$("btnAtualizar").addEventListener("click",async()=>{limparMensagem();try{await carregarProdutos();await carregarHistorico();}catch(e){mensagem(e.message,"error");}});
+$("btnFiltrar").addEventListener("click",()=>{limparMensagem();if($("filtroDe").value&&$("filtroAte").value&&$("filtroDe").value>$("filtroAte").value){mensagem("A data inicial não pode ser posterior à data final.","error");return;}carregarHistorico();});
+$("btnLimpar").addEventListener("click",()=>{$("filtroEstabelecimento").value="";$("filtroProduto").value="";$("filtroTipo").value="";$("filtroDe").value="";$("filtroAte").value="";limparMensagem();carregarHistorico();});
+$("btnImprimir").addEventListener("click",()=>window.print());
+$("btnCsv").addEventListener("click",()=>{if(!movimentacoes.length){mensagem("Não há movimentações para exportar.","info");return;}const rows=[["Data e hora","Loja / estoque","Produto","Código","Tipo","Quantidade movimentada","Saldo anterior","Saldo posterior","Observação"],...movimentacoes.map(m=>{const d=m.criadoEmUtc?new Date(m.criadoEmUtc):null;return[d&&!Number.isNaN(d.getTime())?d.toLocaleString("pt-BR"):"",m.estabelecimento||"",m.produtoNome||"",m.codigoBarras||"",tipoNome(m.tipo),m.quantidade,m.quantidadeAnterior,m.quantidadePosterior,m.observacao||""];})];const csv="\uFEFF"+rows.map(row=>row.map(csvCell).join(";")).join("\r\n");const blob=new Blob([csv],{type:"text/csv;charset=utf-8;"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`merkdito-movimentacoes-${new Date().toISOString().slice(0,10)}.csv`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);});
+$("formMovimentacao").addEventListener("submit",async ev=>{ev.preventDefault();limparMensagem();const produtoId=Number($("produtoId").value);const tipo=$("tipo").value;const quantidade=Number($("quantidade").value);const observacao=$("observacao").value.trim();if(!produtoId){mensagem("Selecione um produto.","error");return;}if(!Number.isInteger(quantidade)||quantidade<(tipo==="AJUSTE"?0:1)){mensagem(tipo==="AJUSTE"?"Informe um saldo final inteiro não negativo.":"Informe uma quantidade inteira maior que zero.","error");return;}const estabelecimentoId=Number($("estabelecimentoMovimento").value);const loja=lojas.find(l=>Number(l.id??l.Id)===estabelecimentoId);if(!estabelecimentoId||!loja){mensagem("Selecione uma loja válida.","error");return;}if(tipo==="ENTRADA"&&!(loja.ehEstoqueCentral??loja.EhEstoqueCentral)){mensagem("Entradas de mercadoria devem ser lançadas no estoque central. Para lojas de venda, use transferência.","error");return;}const body={produtoId,estabelecimentoId,tipo,quantidade,observacao:observacao||null};const btn=$("btnRegistrar");const restaurarBotao=MerkditoUI.setBusy(btn,"Registrando movimentação...");try{const r=await MerkditoAuth.apiFetch(`${API_URL}/MovimentacoesEstoque`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});await jsonOrError(r,"Não foi possível registrar a movimentação");$("quantidade").value="";$("observacao").value="";mensagem("Movimentação registrada com sucesso.","success");await carregarProdutos();await carregarHistorico();}catch(e){console.error(e);mensagem(e.message||"Não foi possível registrar a movimentação.","error");}finally{restaurarBotao();btn.disabled=false;}});
+inicializar();
+</script>
+</body>
+</html>

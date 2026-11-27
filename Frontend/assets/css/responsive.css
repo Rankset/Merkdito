@@ -1,0 +1,566 @@
+/* Merkdito — Etapa 27: layout responsivo compartilhado. Carregado após os estilos locais. */
+:root {
+    --layout-gutter: clamp(12px, 2.4vw, 40px);
+    --mobile-nav-bg: rgba(255, 250, 240, .96);
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scroll-padding-top: 16px;
+}
+
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+img, svg, video, canvas, iframe {
+    max-width: 100%;
+}
+
+.app-container,
+.sidebar,
+.main-content,
+.top-header,
+.glass-panel,
+.form-row,
+.filter-bar,
+.table-container {
+    min-width: 0;
+}
+
+.sidebar {
+    flex: 0 0 280px;
+    min-width: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.main-content {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.top-header {
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.top-header > div,
+.header-actions,
+.user-profile,
+.card-header,
+.form-actions,
+.export-panel-head,
+.export-actions {
+    min-width: 0;
+}
+
+.header-actions,
+.form-actions,
+.export-actions,
+.dashboard-quick-actions {
+    flex-wrap: wrap;
+}
+
+.btn,
+button,
+input,
+select,
+textarea {
+    max-width: 100%;
+    touch-action: manipulation;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    line-height: 1.25;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.btn:focus-visible,
+.nav-item:focus-visible,
+.action-btn:focus-visible,
+.form-control:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid rgba(42, 176, 163, .8);
+    outline-offset: 2px;
+}
+
+.form-control {
+    min-width: 0;
+}
+
+.form-row > *,
+.form-group,
+.search-input,
+.dashboard-grid > *,
+.charts-grid > *,
+.alert-list > *,
+.filter-bar > * {
+    min-width: 0;
+}
+
+.table-container {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+}
+
+.data-table {
+    min-width: 720px;
+}
+
+.data-table th,
+.data-table td {
+    overflow-wrap: anywhere;
+}
+
+.stat-value,
+.report-stat-value,
+.mv-value,
+.qc-value {
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 1120px) {
+    .main-content {
+        padding-left: 24px;
+        padding-right: 24px;
+    }
+
+    .sidebar {
+        flex-basis: 248px;
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+    }
+
+    .charts-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .filter-bar {
+        flex-wrap: wrap;
+    }
+
+    .filter-bar .search-input {
+        flex: 1 1 100%;
+    }
+}
+
+/* Mobile/tablet: the sidebar becomes a horizontally scrollable navigation rail. */
+@media (max-width: 800px) {
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        overflow: visible;
+    }
+
+    .sidebar {
+        position: relative;
+        top: auto;
+        z-index: 20;
+        width: 100%;
+        max-height: none;
+        flex: 0 0 auto;
+        overflow: visible;
+        padding: 14px 16px 8px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(44, 58, 71, .09);
+        background: var(--mobile-nav-bg);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+    }
+
+    .logo {
+        margin-bottom: 12px;
+        font-size: 1.35rem;
+    }
+
+    .logo-text {
+        font-size: clamp(1.7rem, 5vw, 2rem) !important;
+    }
+
+    .nav-menu {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        gap: 6px;
+        width: 100%;
+        max-width: 100%;
+        padding: 0 0 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        white-space: nowrap;
+    }
+
+    .nav-menu > li {
+        flex: 0 0 auto;
+        list-style: none;
+    }
+
+    .nav-item {
+        min-height: 42px;
+        gap: 8px;
+        padding: 10px 12px;
+        white-space: nowrap;
+        font-size: .92rem;
+    }
+
+    .nav-item i {
+        width: auto;
+    }
+
+    .logout-container {
+        margin-top: 0;
+        padding-top: 4px;
+        border-top: 0;
+    }
+
+    .logout-container .nav-item {
+        display: inline-flex;
+        min-height: 38px;
+        padding: 8px 12px;
+    }
+
+    .main-content {
+        width: 100%;
+        flex: 1 1 auto;
+        overflow: visible;
+        padding: 0 16px 28px;
+    }
+
+    .top-header {
+        position: relative;
+        top: auto;
+        height: auto;
+        min-height: 0;
+        padding-top: 18px;
+        padding-bottom: 8px;
+        margin-bottom: 16px;
+        align-items: flex-start;
+        background: none;
+    }
+
+    .page-title {
+        font-size: clamp(1.35rem, 4vw, 1.8rem);
+        line-height: 1.2;
+        overflow-wrap: anywhere;
+    }
+
+    .page-subtitle {
+        margin-top: 6px;
+        margin-bottom: 12px;
+        line-height: 1.45;
+    }
+
+    .header-actions {
+        gap: 8px;
+        max-width: 100%;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .charts-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .chart-card,
+    .stat-card {
+        padding: 18px;
+    }
+
+    .filter-bar {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .filter-bar input,
+    .filter-bar select,
+    .filter-bar .form-control {
+        width: 100% !important;
+        max-width: 100%;
+    }
+
+    .form-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+    }
+
+    .form-card {
+        max-width: none;
+        padding: 20px !important;
+    }
+
+    .form-actions {
+        gap: 10px;
+    }
+
+    .alert-list {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .alert-item {
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .alert-footer > *,
+    .form-actions > .btn,
+    .header-actions > .btn {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 560px) {
+    .sidebar {
+        padding: 12px 12px 6px;
+    }
+
+    .main-content {
+        padding: 0 12px 20px;
+    }
+
+    .top-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .top-header > div {
+        width: 100%;
+    }
+
+    .header-actions,
+    .export-actions,
+    .form-actions,
+    .dashboard-quick-actions {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .header-actions > *,
+    .export-actions > *,
+    .form-actions > *,
+    .dashboard-quick-actions > * {
+        width: 100%;
+    }
+
+    .btn {
+        min-height: 42px;
+        padding: 10px 14px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .stat-card {
+        padding: 16px;
+        padding-right: 64px;
+    }
+
+    .stat-value {
+        font-size: 1.65rem;
+    }
+
+    .stat-icon {
+        top: 16px;
+        right: 16px;
+        width: 36px;
+        height: 36px;
+        font-size: 1.1rem;
+    }
+
+    .glass-panel {
+        border-radius: 14px;
+    }
+
+    .card-header {
+        align-items: flex-start;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .card-title {
+        font-size: 1.05rem;
+    }
+
+    .data-table {
+        min-width: 660px;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 10px;
+        font-size: .86rem;
+    }
+
+    .alert-card {
+        padding: 15px;
+    }
+
+    .alert-footer > .btn {
+        width: 100%;
+    }
+
+    .login-wrapper {
+        width: 100%;
+        height: auto;
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: 20px 12px;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 420px;
+        padding: 24px 18px;
+    }
+
+    .login-logo .logo-text {
+        font-size: clamp(2.1rem, 10vw, 3.2rem) !important;
+        line-height: 1.1;
+    }
+
+    .login-subtitle {
+        margin-bottom: 26px;
+    }
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+}
+
+@media (max-width: 360px) {
+    .nav-item {
+        padding: 9px 10px;
+        font-size: .86rem;
+    }
+
+    .nav-item i {
+        font-size: 1rem;
+    }
+
+    .main-content {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .stat-card {
+        padding-left: 13px;
+        padding-right: 56px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+    }
+}
+
+@media print {
+    body {
+        background: #fff !important;
+        color: #000 !important;
+        overflow: visible !important;
+    }
+
+    .bg-blob,
+    .sidebar,
+    .top-header .header-actions,
+    .dashboard-quick-actions,
+    .form-actions,
+    .export-actions,
+    button,
+    .btn {
+        display: none !important;
+    }
+
+    .app-container {
+        display: block !important;
+        height: auto !important;
+        min-height: 0 !important;
+        overflow: visible !important;
+    }
+
+    .main-content {
+        display: block !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+
+    .top-header {
+        position: static !important;
+        height: auto !important;
+        background: none !important;
+    }
+
+    .glass-panel {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+        break-inside: avoid;
+        backdrop-filter: none !important;
+    }
+
+    .table-container {
+        overflow: visible !important;
+    }
+
+    .data-table {
+        min-width: 0 !important;
+        width: 100% !important;
+        border-spacing: 0 !important;
+        font-size: 9pt !important;
+    }
+}
+
+/* Override específico para a navegação agrupada da etapa de Vendas. */
+@media (max-width: 800px) {
+    .nav-menu {
+        flex-direction: row;
+        flex-wrap: wrap;
+        overflow: visible;
+        overflow-x: visible;
+        overflow-y: visible;
+        white-space: normal;
+    }
+    .nav-menu > li { flex: 0 0 auto; }
+    .nav-group { width: auto; flex: 0 0 auto; }
+    .nav-group-toggle { width: auto; }
+    .nav-submenu { position: static; min-width: 230px; max-width: calc(100vw - 32px); max-height: 55vh; overflow-y: auto; }
+}

@@ -1,0 +1,73 @@
+{
+  "versao": "1.4.0-laboratorio-usb",
+  "base": "integração v1.3 + ZIPs originais reanalisados",
+  "arquivos_originais": [
+    {
+      "nome": "merkdito_finalizado(1).zip",
+      "sha256": "3986eaa1cf1d91167dea0d5814fed7cc9dbe539f337915e8358bef922b2bf557"
+    },
+    {
+      "nome": "app_pim_4_final (1).zip",
+      "sha256": "802fd7969f00628af9b98ececa01a5651a3094c152ec4cfb9107e962bc2b8813"
+    }
+  ],
+  "rastreabilidade_site": {
+    "originais_com_extensao_cs_csproj_razor_html_js_css": 150,
+    "mantidos_identicos": 109,
+    "alterados_ou_estendidos_com_mesmo_nome": [
+      "MerkditoDbContextModelSnapshot.cs",
+      "MerkditoDbContext.cs",
+      "VendasController.cs",
+      "vendas.html",
+      "JwtTokenService.cs"
+    ],
+    "ausentes": [
+      "bootstrap.rtl.min.css",
+      "bootstrap.rtl.css",
+      "ValidatableTypeAttribute.cs",
+      "bootstrap-grid.min.css",
+      "bootstrap.bundle.min.js",
+      "bootstrap-utilities.css",
+      "bootstrap-utilities.rtl.css",
+      "Merkdito.Web.styles.css",
+      "bootstrap-reboot.min.css",
+      "bootstrap-reboot.rtl.min.css",
+      "Merkdito.Api.MvcApplicationPartsAssemblyInfo.cs",
+      "ReconnectModal.razor.rz.scp.css",
+      "bootstrap.bundle.js",
+      "Merkdito.Web.GlobalUsings.g.cs",
+      "Merkdito.Web.AssemblyInfo.cs",
+      "bootstrap-grid.rtl.min.css",
+      "Login.razor.rz.scp.css",
+      "bootstrap.js",
+      "bootstrap.css",
+      "bootstrap.esm.min.js",
+      "bootstrap-grid.rtl.css",
+      "Merkdito.Api.GlobalUsings.g.cs",
+      "Merkdito.Data.GlobalUsings.g.cs",
+      "bootstrap.esm.js",
+      "bootstrap-reboot.css",
+      "MainLayout.razor.rz.scp.css",
+      "bootstrap-utilities.min.css",
+      "bootstrap-grid.css",
+      "Merkdito.Web.bundle.scp.css",
+      "Merkdito.Api.AssemblyInfo.cs",
+      "EmbeddedAttribute.cs",
+      "NavMenu.razor.rz.scp.css",
+      "Merkdito.Data.AssemblyInfo.cs",
+      "bootstrap.min.js",
+      "bootstrap-reboot.rtl.css",
+      "bootstrap-utilities.rtl.min.css"
+    ],
+    "observacao": "ausências majoritariamente assets Bootstrap e arquivos gerados de build; não interpretar como perda de funcionalidades sem teste runtime"
+  },
+  "validacao": {
+    "integracao_estatica": 59,
+    "modo_usb_estatico": 20,
+    "node_check_site": true,
+    "compilacao_nesta_sessao": false,
+    "sql_server_local_nesta_sessao": false,
+    "android_usb_nesta_sessao": false
+  },
+  "status": "Fonte preparada; teste real no notebook do grupo ainda obrigatório"
+}

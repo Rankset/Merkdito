@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fornecedores - MerKdito</title><link rel="stylesheet" href="assets/css/style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="assets/js/config.js"></script><script src="assets/js/auth.js"></script><script src="assets/js/ui.js"></script><link rel="stylesheet" href="assets/css/responsive.css"><script src="assets/js/navigation.js" defer></script>
+<style>
+.grid{display:grid;grid-template-columns:minmax(280px,.8fr) minmax(0,1.5fr);gap:18px;margin-top:20px}.panel{background:#fff;border-radius:14px;padding:22px;box-shadow:0 4px 16px #14283c0d}.form{display:grid;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-weight:650;font-size:.9rem}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.msg{display:none;padding:12px;border-radius:9px;margin:14px 0;white-space:pre-line}.msg.on{display:block}.error{background:#fff0f0;color:#8e2424}.success{background:#effaf2;color:#176b3a}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:650px}th,td{padding:11px;border-bottom:1px solid #e8edf1;text-align:left}th{background:#f6f8fa;font-size:.82rem}.muted{color:var(--text-muted);font-size:.88rem}.actions{display:flex;gap:6px;flex-wrap:wrap}.status{font-size:.78rem;border-radius:30px;padding:4px 8px;background:#effaf2;color:#176b3a}.status.off{background:#f0f1f3;color:#646e78}@media(max-width:900px){.grid{grid-template-columns:1fr}}@media(max-width:600px){.row{grid-template-columns:1fr}.panel{padding:16px}}
+</style></head>
+<body data-require-client="true"><div class="bg-blob blob-1"></div><div class="bg-blob blob-2"></div><div class="app-container">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo">
+                <span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px;">MerKdito</span>
+            </a>
+
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+
+            <div class="logout-container">
+                <a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </div>
+        </aside>
+<main class="main-content"><header class="top-header"><div><h1 class="page-title">Fornecedores</h1><p class="page-subtitle" style="margin-bottom:0">Cadastre e mantenha os fornecedores usados nas compras da empresa.</p></div><div class="header-actions"><button id="reload" class="btn btn-outline" type="button"><i class="fa-solid fa-rotate"></i> Atualizar</button></div></header>
+<div id="msg" class="msg" role="status" aria-live="polite"></div>
+<div class="grid"><section class="panel"><h2 id="formTitle">Cadastrar fornecedor</h2><p class="muted">CNPJ é opcional, mas não pode se repetir dentro da mesma conta.</p>
+<form id="form" class="form"><input type="hidden" id="id"><div class="field"><label for="nome">Nome / razão social *</label><input class="form-control" id="nome" maxlength="150" required></div>
+<div class="field"><label for="cnpj">CNPJ</label><input class="form-control" id="cnpj" maxlength="18" placeholder="00.000.000/0000-00"></div>
+<div class="row"><div class="field"><label for="email">E-mail</label><input class="form-control" id="email" type="email" maxlength="254"></div><div class="field"><label for="telefone">Telefone</label><input class="form-control" id="telefone" maxlength="30"></div></div>
+<div class="field"><label for="endereco">Endereço</label><input class="form-control" id="endereco" maxlength="250"></div>
+<label><input id="ativo" type="checkbox" checked> Fornecedor ativo</label><div class="actions"><button id="save" class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Salvar</button><button id="cancel" class="btn btn-outline" type="button">Limpar</button></div></form></section>
+<section class="panel"><h2>Fornecedores cadastrados</h2><p class="muted">Fornecedores associados a compras são inativados em vez de excluídos, preservando o histórico.</p><div class="table-wrap"><table><thead><tr><th>Fornecedor</th><th>CNPJ</th><th>Contato</th><th>Status</th><th>Ações</th></tr></thead><tbody id="rows"><tr><td colspan="5">Carregando...</td></tr></tbody></table></div></section></div>
+</main></div>
+<script>
+(()=>{"use strict";const $=id=>document.getElementById(id),API=window.MERKDITO_API_URL;let list=[];
+function show(t,kind="success"){$("msg").textContent=t;$("msg").className="msg on "+kind}function clear(){ $("msg").className="msg";$("msg").textContent=""}
+async function req(path,opts={}){const r=await MerkditoAuth.apiFetch(`${API}/${path}`,opts);let d=null;try{d=await r.json()}catch{}if(!r.ok)throw new Error(d?.mensagem||d?.message||d||`Falha HTTP ${r.status}`);return d}
+function reset(){ $("id").value="";["nome","cnpj","email","telefone","endereco"].forEach(x=>$(x).value="");$("ativo").checked=true;$("formTitle").textContent="Cadastrar fornecedor";$("save").innerHTML='<i class="fa-solid fa-floppy-disk"></i> Salvar';}
+function render(){ $("rows").innerHTML=list.length?list.map(f=>`<tr><td><strong>${esc(f.nome)}</strong><br><span class="muted">${esc(f.email||"")}</span></td><td>${esc(f.cnpj||"—")}</td><td>${esc(f.telefone||"—")}</td><td><span class="status ${f.ativo?"":"off"}">${f.ativo?"Ativo":"Inativo"}</span></td><td><div class="actions"><button class="btn btn-outline" data-edit="${f.id}" type="button">Editar</button>${f.ativo?`<button class="btn btn-outline" data-off="${f.id}" type="button">Inativar</button>`:""}</div></td></tr>`).join(""):'<tr><td colspan="5">Nenhum fornecedor cadastrado.</td></tr>';document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>edit(+b.dataset.edit));document.querySelectorAll("[data-off]").forEach(b=>b.onclick=()=>disable(+b.dataset.off));}
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+async function load(){try{list=await req("Fornecedores?incluirInativos=true");render()}catch(e){show(e.message,"error")}}
+function edit(id){const f=list.find(x=>x.id===id);if(!f)return;$("id").value=f.id;$("nome").value=f.nome||"";$("cnpj").value=f.cnpj||"";$("email").value=f.email||"";$("telefone").value=f.telefone||"";$("endereco").value=f.endereco||"";$("ativo").checked=!!f.ativo;$("formTitle").textContent="Editar fornecedor";$("save").textContent="Salvar alterações";window.scrollTo({top:0,behavior:"smooth"});}
+async function disable(id){if(!confirm("Inativar este fornecedor? O histórico de compras será preservado."))return;try{await req(`Fornecedores/${id}`,{method:"DELETE"});show("Fornecedor inativado.");await load()}catch(e){show(e.message,"error")}}
+$("form").addEventListener("submit",async e=>{e.preventDefault();clear();const id=$("id").value;const body={nome:$("nome").value.trim(),cnpj:$("cnpj").value.trim()||null,email:$("email").value.trim()||null,telefone:$("telefone").value.trim()||null,endereco:$("endereco").value.trim()||null,ativo:$("ativo").checked};try{await req(id?`Fornecedores/${id}`:"Fornecedores",{method:id?"PUT":"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});reset();show(id?"Fornecedor atualizado.":"Fornecedor cadastrado.");await load()}catch(err){show(err.message,"error")}});
+$("cancel").onclick=()=>{reset();clear()};$("reload").onclick=load;load();
+})();
+</script></body></html>

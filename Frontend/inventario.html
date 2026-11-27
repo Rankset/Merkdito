@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventário físico - MerKdito</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="assets/js/config.js"></script><script src="assets/js/auth.js"></script><script src="assets/js/ui.js"></script>
+<link rel="stylesheet" href="assets/css/responsive.css"><script src="assets/js/navigation.js" defer></script>
+<style>
+.page-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin-top:20px}
+.panel{background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(20,40,60,.05);padding:22px;min-width:0}
+.panel h2{font-size:1.1rem;margin:0 0 8px;color:var(--text-dark)}
+.muted{color:var(--text-muted);font-size:.9rem;line-height:1.5}
+.message{display:none;padding:12px 14px;border-radius:10px;margin:14px 0;white-space:pre-line}
+.message.visible{display:block}.message.error{background:#fff0f0;color:#8e2424;border:1px solid #f0caca}.message.success{background:#effaf2;color:#176b3a;border:1px solid #c8ead2}.message.info{background:#eef7fc;color:#245878;border:1px solid #cbe5f4}
+.form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.form-group{display:flex;flex-direction:column;gap:6px;min-width:0}.form-group label{font-weight:600;font-size:.9rem}.form-control{width:100%;min-width:0}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.table-wrap{overflow:auto;width:100%;margin-top:14px}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:12px 10px;border-bottom:1px solid #e8edf1;text-align:left;vertical-align:middle}th{background:#f6f8fa;font-size:.82rem;white-space:nowrap}td{font-size:.9rem}
+.empty{padding:28px;text-align:center;color:var(--text-muted);border:1px dashed #cfd8de;border-radius:10px}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:14px}
+.summary-card{padding:16px;border:1px solid #e1e8ed;border-radius:12px;background:#fff}.summary-card span{display:block;color:var(--text-muted);font-size:.84rem}.summary-card strong{display:block;font-size:1.6rem;margin-top:5px}
+.pill{display:inline-flex;align-items:center;border-radius:30px;padding:4px 9px;font-size:.78rem;font-weight:700;white-space:nowrap}.pill.critical{background:#fff0f0;color:#9b2424}.pill.low{background:#fff7df;color:#805c00}.pill.ok{background:#effaf2;color:#176b3a}
+@media(max-width:720px){.form-grid{grid-template-columns:1fr}.panel{padding:16px}}
+</style></head><body data-require-client="true">
+<div class="bg-blob blob-1"></div><div class="bg-blob blob-3"></div><div class="app-container">
+<aside class="sidebar">
+            <a href="dashboard.html" class="logo">
+                <span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px;">MerKdito</span>
+            </a>
+
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+
+            <div class="logout-container">
+                <a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </div>
+        </aside>
+<main class="main-content"><header class="top-header"><div><h1 class="page-title">Inventário físico</h1><p class="page-subtitle" style="margin-bottom:0">Confira o estoque real e registre diferenças com rastreabilidade.</p></div><div class="header-actions"><button id="btnAtualizar" class="btn btn-outline" type="button"><i class="fa-solid fa-rotate"></i> Atualizar</button></div></header>
+<div id="msg" class="message" role="status" aria-live="polite"></div>
+<section class="page-grid"><div class="panel"><h2>Contagem física de estoque</h2><p class="muted">Informe a quantidade realmente encontrada no estabelecimento. Ao salvar, o sistema registra um ajuste de estoque e preserva o saldo anterior, o novo saldo e a justificativa no histórico de movimentações. O ajuste é feito por produto.</p>
+<div class="form-grid"><div class="form-group"><label for="lojaSelect">Estabelecimento *</label><select id="lojaSelect" class="form-control" required><option value="">Carregando...</option></select></div><div class="form-group"><label for="pesquisa">Buscar produto</label><input id="pesquisa" class="form-control" type="search" placeholder="Nome ou código de barras"></div><div class="form-group"><label for="justificativa">Justificativa padrão</label><input id="justificativa" class="form-control" maxlength="220" value="Inventário físico" placeholder="Ex.: contagem mensal"></div></div>
+<div class="summary-grid"><div class="summary-card"><span>Produtos vinculados</span><strong id="totalProdutos">—</strong></div><div class="summary-card"><span>Diferenças identificadas</span><strong id="totalDiferencas">—</strong></div><div class="summary-card"><span>Ajustes salvos nesta sessão</span><strong id="totalSalvos">0</strong></div></div>
+<div class="table-wrap"><table><thead><tr><th>Produto</th><th>Saldo no sistema</th><th>Contagem física</th><th>Diferença</th><th>Ação</th></tr></thead><tbody id="linhas"><tr><td colspan="5" class="empty">Selecione um estabelecimento.</td></tr></tbody></table></div></div></section>
+</main></div>
+<script>
+(function(){'use strict';const auth=window.MerkditoAuth,$=id=>document.getElementById(id);let lojas=[],itens=[],salvos=0;
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function msg(t,type){const e=$('msg');e.textContent=t||'';e.className='message'+(t?' visible '+(type||'info'):'');}
+async function req(path,opt){const r=await auth.apiFetch(path,opt);const t=await r.text();let d=null;try{d=t?JSON.parse(t):null}catch{}if(!r.ok)throw new Error(d?.mensagem||d?.message||d?.title||('Falha HTTP '+r.status));return d;}
+const v=(o,a,b)=>o?.[a]??o?.[b];
+async function loadStores(){try{lojas=await req('Lojas');$('lojaSelect').innerHTML='<option value="">Selecione um estabelecimento</option>'+lojas.filter(l=>Boolean(v(l,'ativo','Ativo'))).map(l=>`<option value="${v(l,'id','Id')}">${esc(v(l,'nomeFantasia','NomeFantasia'))}${v(l,'ehEstoqueCentral','EhEstoqueCentral')?' (estoque central)':''}</option>`).join('');const q=new URLSearchParams(location.search).get('estabelecimentoId');if(q&&lojas.some(l=>String(v(l,'id','Id'))===q))$('lojaSelect').value=q;if($('lojaSelect').value)await loadStock();}catch(e){msg(e.message,'error');}}
+async function loadStock(){const id=Number($('lojaSelect').value);if(!id){itens=[];render();return;}try{const data=await req('ProdutosEstabelecimentos?estabelecimentoId='+id);itens=(data.itens||[]).map(x=>({...x,contagem:Number(x.quantidadeEstoque)}));render();msg('Estoque carregado. Confira as quantidades físicas antes de salvar qualquer ajuste.','info');}catch(e){msg(e.message,'error');}}
+function filtered(){const q=$('pesquisa').value.trim().toLocaleLowerCase('pt-BR');return itens.filter(x=>!q||String(x.nome||'').toLocaleLowerCase('pt-BR').includes(q)||String(x.codigoBarras||'').toLocaleLowerCase('pt-BR').includes(q));}
+function render(){const rows=filtered();$('totalProdutos').textContent=itens.length;$('totalDiferencas').textContent=itens.filter(x=>Number(x.contagem)!==Number(x.quantidadeEstoque)).length;if(!rows.length){$('linhas').innerHTML='<tr><td colspan="5" class="empty">Nenhum produto vinculado a este estabelecimento.</td></tr>';return;}$('linhas').innerHTML=rows.map(x=>{const diff=Number(x.contagem)-Number(x.quantidadeEstoque);return `<tr data-id="${x.produtoId}"><td><strong>${esc(x.nome)}</strong><div class="muted">${esc(x.codigoBarras||'Sem código')}</div></td><td>${Number(x.quantidadeEstoque)}</td><td><input class="form-control count" type="number" min="0" step="1" value="${Number(x.contagem)}" aria-label="Contagem física de ${esc(x.nome)}"></td><td class="diff">${diff>0?'+':''}${diff}</td><td><button class="btn btn-outline save" type="button" ${diff===0?'disabled':''}>Registrar ajuste</button></td></tr>`;}).join('');document.querySelectorAll('input.count').forEach(i=>i.addEventListener('input',()=>{const tr=i.closest('tr'),old=Number(itens.find(x=>Number(x.produtoId)===Number(tr.dataset.id))?.quantidadeEstoque||0),n=Number(i.value);const diff=n-old;tr.querySelector('.diff').textContent=(diff>0?'+':'')+(Number.isFinite(n)&&Number.isInteger(n)&&n>=0?diff:'—');tr.querySelector('.save').disabled=!(Number.isInteger(n)&&n>=0&&diff!==0);}));document.querySelectorAll('button.save').forEach(b=>b.addEventListener('click',save));}
+async function save(e){const tr=e.currentTarget.closest('tr'),id=Number(tr.dataset.id),input=tr.querySelector('.count'),final=Number(input.value),item=itens.find(x=>Number(x.produtoId)===id);if(!item||!Number.isInteger(final)||final<0){msg('Informe uma contagem física inteira igual ou maior que zero.','error');return;}if(final===Number(item.quantidadeEstoque)){msg('A contagem é igual ao saldo atual; nenhum ajuste é necessário.','info');return;}const note=$('justificativa').value.trim()||'Inventário físico';if(!confirm(`Confirmar ajuste de “${item.nome}” de ${item.quantidadeEstoque} para ${final} unidade(s)? Esta ação será registrada no histórico.`))return;const btn=e.currentTarget;btn.disabled=true;try{await req('MovimentacoesEstoque',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({produtoId:id,estabelecimentoId:Number($('lojaSelect').value),tipo:'AJUSTE',quantidade:final,observacao:note+' — contagem física'})});salvos++;$('totalSalvos').textContent=salvos;msg(`Ajuste de “${item.nome}” registrado com sucesso.`,'success');await loadStock();}catch(err){msg(err.message,'error');btn.disabled=false;}}
+$('lojaSelect').addEventListener('change',loadStock);$('pesquisa').addEventListener('input',render);$('btnAtualizar').addEventListener('click',loadStock);loadStores();})();
+</script></body></html>

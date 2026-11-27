@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atualizar Cadastro de Produtos - MerKdito</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <style>
+        .bulk-layout { display:grid; gap:20px; }
+        .bulk-panel { padding:24px; }
+        .bulk-help { color:var(--text-muted); font-size:.91rem; line-height:1.6; }
+        .bulk-counters { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:18px 0; }
+        .bulk-counter { border-radius:12px; background:rgba(255,255,255,.62); padding:14px; border:1px solid rgba(30,50,50,.08); }
+        .bulk-counter span { color:var(--text-muted); font-size:.84rem; display:block; }
+        .bulk-counter strong { display:block; font-size:1.5rem; margin-top:5px; }
+        .bulk-status { padding:12px 14px; border-radius:8px; margin:14px 0; display:none; white-space:pre-line; }
+        .bulk-status.info { display:block; color:#174f6e; background:rgba(13,110,253,.10); }
+        .bulk-status.success { display:block; color:#28652a; background:rgba(93,165,74,.15); }
+        .bulk-status.error { display:block; color:#a51f2d; background:rgba(220,53,69,.12); }
+        .bulk-drop { display:block; border:2px dashed var(--color-teal); border-radius:var(--radius-md); padding:25px 18px; text-align:center; background:rgba(255,255,255,.45); cursor:pointer; }
+        .bulk-drop:hover { background:rgba(42,176,163,.08); }
+        .bulk-drop i { font-size:2rem; color:var(--color-teal); margin-bottom:10px; }
+        .bulk-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+        .bulk-table-wrap { overflow:auto; max-height:560px; }
+        .bulk-table { width:100%; border-collapse:collapse; min-width:1400px; }
+        .bulk-table th,.bulk-table td { padding:10px 12px; border-bottom:1px solid rgba(30,50,50,.09); text-align:left; vertical-align:top; font-size:.86rem; }
+        .bulk-table th { position:sticky; top:0; background:#f5f8f6; z-index:1; }
+        .bulk-pill { display:inline-block; border-radius:999px; padding:4px 9px; font-size:.78rem; font-weight:700; white-space:nowrap; }
+        .pill-valid { background:rgba(93,165,74,.14); color:#28652a; }
+        .pill-invalid { background:rgba(220,53,69,.12); color:#a51f2d; }
+        .pill-pending { background:rgba(13,110,253,.10); color:#174f6e; }
+        .pill-neutral { background:rgba(80,90,90,.12); color:#495252; }
+        .bulk-note { padding:13px 15px; background:rgba(255,193,7,.13); border-left:4px solid #d4a000; border-radius:8px; line-height:1.55; }
+        code { background:rgba(40,60,50,.08); padding:2px 5px; border-radius:4px; }
+        @media(max-width:900px) { .bulk-counters { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+        @media(max-width:620px) { .bulk-counters { grid-template-columns:1fr; } .bulk-panel { padding:16px; } .bulk-actions .btn { width:100%; } }
+    </style>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="assets/js/navigation.js" defer></script>
+</head>
+<body data-require-client="true">
+    <div class="bg-blob blob-2"></div>
+    <div class="app-container">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo"><span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px;">MerKdito</span></a>
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+            <div class="logout-container"><a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a></div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div>
+                    <h1 class="page-title">Atualizar cadastro em lote</h1>
+                    <p class="page-subtitle" style="margin-bottom:0;">Altere preço, nome, descrição, estoque mínimo e situação de produtos existentes.</p>
+                </div>
+                <div class="header-actions">
+                    <a href="produtos.html" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Voltar aos produtos</a>
+                </div>
+            </header>
+
+            <div class="bulk-layout animate-fade-in delay-1">
+                <section class="glass-panel bulk-panel">
+                    <h2 style="margin-top:0;">Como funciona</h2>
+                    <p class="bulk-help">Use um CSV para atualizar os dados cadastrais de produtos já existentes. Identifique cada produto pelo ID ou código de barras. O sistema compara os dados atuais com os valores propostos e exibe uma prévia antes de salvar.</p>
+                    <div class="bulk-note"><strong><i class="fa-solid fa-circle-exclamation"></i> Importante:</strong> células vazias não alteram o campo correspondente. Esta tela <strong>não altera a quantidade em estoque nem a categoria</strong>; use “Atualizar Estoque” para o saldo e a tela do produto para alterar a categoria. Nenhum produto será criado por esta operação.</div>
+                    <div class="bulk-actions" style="margin-top:16px;">
+                        <a href="modelo_atualizacao_produtos.csv" download class="btn btn-outline"><i class="fa-solid fa-download"></i> Baixar modelo CSV</a>
+                        <a href="produtos.html" class="btn btn-outline"><i class="fa-solid fa-magnifying-glass"></i> Consultar catálogo</a>
+                    </div>
+                </section>
+
+                <section class="glass-panel bulk-panel">
+                    <h2 style="margin-top:0;">1. Selecione a planilha</h2>
+                    <p class="bulk-help">CSV separado por <code>;</code>, UTF-8, até 5 MB e 500 linhas. Use <code>produtoId</code>, <code>codigoBarras</code> ou os dois. Preencha apenas os campos que deseja alterar: <code>nome</code>, <code>descricao</code>, <code>preco</code>, <code>estoqueMinimo</code> e <code>ativo</code>.</p>
+                    <label for="arquivoCsv" class="bulk-drop">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <strong id="nomeArquivo">Clique para selecionar o CSV</strong>
+                        <div class="bulk-help" style="margin-top:7px;">Campos vazios mantêm os dados atuais.</div>
+                        <input id="arquivoCsv" type="file" accept=".csv,text/csv" hidden>
+                    </label>
+                    <div id="statusAtualizacao" class="bulk-status" role="status" aria-live="polite"></div>
+                    <div class="bulk-counters" aria-live="polite">
+                        <div class="bulk-counter"><span>Linhas lidas</span><strong id="totalLinhas">0</strong></div>
+                        <div class="bulk-counter"><span>Prontas para atualizar</span><strong id="totalPendentes">0</strong></div>
+                        <div class="bulk-counter"><span>Sem alteração</span><strong id="totalIguais">0</strong></div>
+                        <div class="bulk-counter"><span>Com erro</span><strong id="totalErros">0</strong></div>
+                    </div>
+                    <div class="bulk-actions">
+                        <button id="btnAtualizar" type="button" class="btn btn-primary" disabled><i class="fa-solid fa-floppy-disk"></i> Aplicar alterações</button>
+                        <button id="btnRelatorio" type="button" class="btn btn-outline" disabled><i class="fa-solid fa-file-csv"></i> Baixar resultado CSV</button>
+                        <button id="btnLimpar" type="button" class="btn btn-outline">Limpar</button>
+                    </div>
+                </section>
+
+                <section class="glass-panel bulk-panel">
+                    <h2 style="margin-top:0;">2. Confira antes de aplicar</h2>
+                    <p class="bulk-help">Linhas sem produto correspondente, identificadores conflitantes, identificadores repetidos ou valores inválidos são recusados. A API valida todas as alterações e salva em uma transação; se o lote for rejeitado, nenhuma alteração é aplicada. Em caso de timeout, consulte o catálogo antes de repetir.</p>
+                    <div class="bulk-table-wrap">
+                        <table class="bulk-table">
+                            <thead><tr><th>Linha</th><th>Produto</th><th>ID</th><th>Preço atual → novo</th><th>Estoque mínimo atual → novo</th><th>Situação atual → nova</th><th>Descrição</th><th>Validação / resultado</th><th>Status</th></tr></thead>
+                            <tbody id="linhasPrevia"><tr><td colspan="9" style="text-align:center;padding:22px;color:var(--text-muted);">Selecione um CSV para visualizar as alterações propostas.</td></tr></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+<script>
+(function () {
+    "use strict";
+    const API_URL = MerkditoAuth.apiBaseUrl;
+    const MAX_BYTES = 5 * 1024 * 1024;
+    const MAX_ROWS = 500;
+    const el = id => document.getElementById(id);
+    const arquivoCsv = el("arquivoCsv"), btnAtualizar = el("btnAtualizar"), btnRelatorio = el("btnRelatorio"), btnLimpar = el("btnLimpar"), tbody = el("linhasPrevia"), statusBox = el("statusAtualizacao");
+    let catalogo = [], linhas = [], emAndamento = false, catalogoCarregado = false;
+
+    function esc(v) { return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]); }
+    function norm(v) { return String(v ?? "").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]/g, ""); }
+    function money(v) { const n = Number(v); return Number.isFinite(n) ? n.toLocaleString("pt-BR", { style:"currency", currency:"BRL" }) : "—"; }
+    function showStatus(text, type="info") { MerkditoUI.inlineStatus(statusBox, text, type); }
+    function clearStatus() { MerkditoUI.clearInline(statusBox); }
+    async function responseError(res) {
+        return window.MerkditoUI
+            ? await MerkditoUI.responseMessage(res, "Não foi possível concluir a operação.")
+            : `A API recusou a operação (HTTP ${res.status}).`;
+    }
+    async function responseBatchError(res) {
+        const text = await res.text();
+        let data = null;
+        try { data = text ? JSON.parse(text) : null; } catch { /* resposta não-JSON */ }
+        return {
+            mensagem: data?.mensagem || data?.message || data?.title || data?.detail || text.slice(0, 400) || `HTTP ${res.status}`,
+            erros: Array.isArray(data?.erros) ? data.erros : []
+        };
+    }
+    async function loadCatalog() {
+        const response = await MerkditoAuth.apiFetch(`${API_URL}/Produtos`);
+        if (!response.ok) throw new Error(`Falha ao consultar produtos (HTTP ${response.status}): ${await responseError(response)}`);
+        const data = await response.json();
+        if (!Array.isArray(data)) throw new Error("A API retornou uma lista de produtos em formato inesperado.");
+        catalogo = data; catalogoCarregado = true;
+    }
+    function parseCsv(text) {
+        text = String(text || "").replace(/^\uFEFF/, "");
+        const rows=[]; let row=[], cell="", quoted=false;
+        for (let i=0;i<text.length;i++) {
+            const ch=text[i];
+            if (quoted) {
+                if (ch==='"' && text[i+1]==='"') { cell+='"'; i++; }
+                else if (ch==='"') quoted=false;
+                else cell+=ch;
+            } else if (ch==='"' && cell.length===0) quoted=true;
+            else if (ch===';') { row.push(cell.trim()); cell=""; }
+            else if (ch==='\n' || ch==='\r') { if (ch==='\r' && text[i+1]==='\n') i++; row.push(cell.trim()); if (row.some(v=>v!=="")) rows.push(row); row=[]; cell=""; }
+            else cell+=ch;
+        }
+        if (quoted) throw new Error("O CSV contém um campo entre aspas que não foi fechado.");
+        row.push(cell.trim()); if (row.some(v=>v!=="")) rows.push(row);
+        return rows;
+    }
+    function csvEscape(v) {
+        let s=String(v ?? "");
+        // Protege relatórios CSV contra fórmulas de planilhas.
+        if (/^[\s\u0000-\u001f]*[=+@\-]/.test(s)) s="'"+s;
+        return /[;"\r\n]/.test(s) ? `"${s.replace(/"/g,'""')}"` : s;
+    }
+    function downloadCsv(name, content) {
+        const blob = new Blob(["\uFEFF", content], { type:"text/csv;charset=utf-8;" });
+        const url=URL.createObjectURL(blob), a=document.createElement("a"); a.href=url; a.download=name; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+    function getHeaderIndexes(header) {
+        const aliases = {
+            produtoid:["produtoid","idproduto","id"],
+            codigobarras:["codigobarras","codigo","ean","gtin"],
+            nome:["nome","nomeproduto","produto"],
+            descricao:["descricao","descricaoproduto"],
+            preco:["preco","valor","precovenda"],
+            estoqueminimo:["estoqueminimo","minimoestoque","estoquemin"],
+            ativo:["ativo","situacao","status"]
+        };
+        const ix={};
+        for (const [key, names] of Object.entries(aliases)) ix[key]=header.findIndex(h=>names.includes(norm(h)));
+        if (ix.produtoid < 0 && ix.codigobarras < 0) throw new Error("Inclua pelo menos uma coluna de identificação: produtoId ou codigoBarras.");
+        return ix;
+    }
+    function get(row, ix, field) {
+        if (ix[field] < 0) return "";
+        // Remove apenas o apóstrofo de proteção acrescentado nas exportações do Merkdito.
+        return String(row[ix[field]] ?? "").trim().replace(/^'(?=\s*[=+@-])/, "");
+    }
+    function parseDecimal(value, field) {
+        let s=String(value).trim().replace(/R\$/gi,"").replace(/\s/g,"");
+        if (!s) return null;
+        if (s.includes(",") && s.includes(".")) {
+            if (s.lastIndexOf(",") > s.lastIndexOf(".")) s=s.replace(/\./g,"").replace(",",".");
+            else s=s.replace(/,/g,"");
+        } else if (s.includes(",")) s=s.replace(",",".");
+        const n=Number(s);
+        if (!Number.isFinite(n) || n < 0) throw new Error(`${field}: informe um número maior ou igual a zero.`);
+        return n;
+    }
+    function parseInteger(value, field) {
+        const s=String(value).trim(); if (!s) return null;
+        if (!/^\d+$/.test(s)) throw new Error(`${field}: informe um número inteiro maior ou igual a zero.`);
+        const n=Number(s); if (!Number.isSafeInteger(n)) throw new Error(`${field}: número fora do limite permitido.`); return n;
+    }
+    function parseActive(value) {
+        const s=norm(value); if (!s) return null;
+        if (["1","true","sim","ativo","yes","on"].includes(s)) return true;
+        if (["0","false","nao","inativo","no","off"].includes(s)) return false;
+        throw new Error("ativo: use sim/não, true/false, 1/0 ou ativo/inativo.");
+    }
+    function findProduct(idRaw, codeRaw) {
+        let byId=null, byCode=null;
+        if (idRaw) {
+            const id=parseInteger(idRaw, "produtoId");
+            if (id === null || id < 1) throw new Error("produtoId: informe um ID positivo.");
+            const found=catalogo.filter(p=>Number(p.id ?? p.Id)===id);
+            if (found.length !== 1) throw new Error(found.length ? `O ID ${idRaw} está duplicado no catálogo.` : `Produto ID ${idRaw} não encontrado.`);
+            byId=found[0];
+        }
+        if (codeRaw) {
+            const matches=catalogo.filter(p=>String(p.codigoBarras ?? p.CodigoBarras ?? "").trim()===codeRaw);
+            if (matches.length !== 1) throw new Error(matches.length ? `Código de barras ${codeRaw} é ambíguo no catálogo.` : `Código de barras ${codeRaw} não encontrado.`);
+            byCode=matches[0];
+        }
+        if (byId && byCode && Number(byId.id ?? byId.Id)!==Number(byCode.id ?? byCode.Id)) throw new Error("produtoId e codigoBarras apontam para produtos diferentes.");
+        return byId || byCode;
+    }
+    function prepare(text) {
+        const rows=parseCsv(text);
+        if (rows.length<2) throw new Error("O CSV não contém linhas de produtos além do cabeçalho.");
+        if (rows.length-1>MAX_ROWS) throw new Error(`O arquivo ultrapassa o limite de ${MAX_ROWS} linhas.`);
+        const ix=getHeaderIndexes(rows[0]);
+        const seen=new Set();
+        linhas=rows.slice(1).map((r,i)=>{
+            const l={numero:i+2, raw:r, produto:null, alteracoes:{}, erros:[], status:"Aguardando", resultado:""};
+            try {
+                const id=get(r,ix,"produtoid"), code=get(r,ix,"codigobarras");
+                l.rawId=id; l.rawCode=code;
+                if (!id && !code) throw new Error("Informe produtoId ou codigoBarras.");
+                l.produto=findProduct(id,code);
+                const pid=Number(l.produto.id ?? l.produto.Id);
+                if (!Number.isSafeInteger(pid) || pid < 1) throw new Error("A API não retornou um ID válido para o produto.");
+                if ((l.produto.categoriaId ?? l.produto.CategoriaId) === undefined || (l.produto.categoriaId ?? l.produto.CategoriaId) === null) throw new Error("A API não retornou a categoria do produto; não é seguro reenviar o cadastro completo.");
+                if ((l.produto.quantidadeEstoque ?? l.produto.QuantidadeEstoque) === undefined || (l.produto.quantidadeEstoque ?? l.produto.QuantidadeEstoque) === null) throw new Error("A API não retornou o saldo atual; a atualização foi bloqueada para evitar zerar o estoque por engano.");
+                if (seen.has(pid)) throw new Error("O mesmo produto aparece em mais de uma linha do arquivo.");
+                seen.add(pid);
+                const nome=get(r,ix,"nome"), descricao=get(r,ix,"descricao"), preco=get(r,ix,"preco"), min=get(r,ix,"estoqueminimo"), ativo=get(r,ix,"ativo");
+                if (nome) { if (nome.length>150) throw new Error("nome: máximo de 150 caracteres."); l.alteracoes.nome=nome; }
+                if (descricao) { if (descricao.length>2000) throw new Error("descricao: máximo de 2000 caracteres."); l.alteracoes.descricao=descricao; }
+                if (preco) l.alteracoes.preco=parseDecimal(preco,"preco");
+                if (min) l.alteracoes.estoqueMinimo=parseInteger(min,"estoqueMinimo");
+                if (ativo) l.alteracoes.ativo=parseActive(ativo);
+                if (!Object.keys(l.alteracoes).length) throw new Error("Preencha pelo menos um campo a alterar além do identificador.");
+                const p=l.produto;
+                const current={nome:p.nome ?? p.Nome ?? "", descricao:p.descricao ?? p.Descricao ?? "", preco:Number(p.preco ?? p.Preco ?? 0), estoqueMinimo:Number(p.estoqueMinimo ?? p.EstoqueMinimo ?? 0), ativo:Boolean(p.ativo ?? p.Ativo)};
+                l.current=current;
+                const next={...current,...l.alteracoes};
+                l.next=next;
+                if (next.nome.trim()==="") throw new Error("O nome final não pode ficar vazio.");
+                if (next.preco<0 || !Number.isFinite(next.preco)) throw new Error("O preço final é inválido.");
+                if (!Number.isInteger(next.estoqueMinimo) || next.estoqueMinimo<0) throw new Error("O estoque mínimo final é inválido.");
+                if (JSON.stringify(current)===JSON.stringify(next)) { l.status="Sem alteração"; l.resultado="Os valores informados são iguais aos atuais."; }
+            } catch (e) { l.erros.push(e.message || "Linha inválida."); l.status="Erro de validação"; l.resultado=l.erros.join(" "); }
+            return l;
+        });
+        render();
+    }
+    function statusClass(l) {
+        if (l.status==="Atualizado") return "pill-valid";
+        if (["Erro de validação", "Falha na API", "Rejeitado pela API", "Lote não aplicado", "Resultado incerto"].includes(l.status) || l.status.startsWith("Não enviado")) return "pill-invalid";
+        if (l.status==="Aguardando") return "pill-pending";
+        return "pill-neutral";
+    }
+    function render() {
+        const ready=linhas.filter(l=>l.status==="Aguardando" && l.produto && !l.erros.length).length;
+        const same=linhas.filter(l=>l.status==="Sem alteração").length;
+        const errors=linhas.filter(l=>["Erro de validação", "Falha na API", "Rejeitado pela API", "Lote não aplicado", "Resultado incerto"].includes(l.status) || l.status.startsWith("Não enviado")).length;
+        el("totalLinhas").textContent=String(linhas.length); el("totalPendentes").textContent=String(ready); el("totalIguais").textContent=String(same); el("totalErros").textContent=String(errors);
+        btnAtualizar.disabled=emAndamento || !catalogoCarregado || ready===0;
+        btnRelatorio.disabled=emAndamento || linhas.length===0;
+        if (!linhas.length) { tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:22px;color:var(--text-muted);">Selecione um CSV para visualizar as alterações propostas.</td></tr>'; return; }
+        tbody.innerHTML=linhas.map(l=>{
+            const p=l.produto || {};
+            const current=l.current || {preco:Number(p.preco ?? p.Preco), estoqueMinimo:Number(p.estoqueMinimo ?? p.EstoqueMinimo), ativo:Boolean(p.ativo ?? p.Ativo)};
+            const next=l.next || current;
+            const desc=(l.alteracoes && Object.prototype.hasOwnProperty.call(l.alteracoes,"descricao")) ? l.alteracoes.descricao : (p.descricao ?? p.Descricao ?? "");
+            const priceText=l.current ? `${money(current.preco)} → ${money(next.preco)}` : "—";
+            const minText=l.current ? `${current.estoqueMinimo} → ${next.estoqueMinimo}` : "—";
+            const activeText=l.current ? `${current.ativo ? "Ativo":"Inativo"} → ${next.ativo ? "Ativo":"Inativo"}` : "—";
+            const detail=l.resultado || l.erros.join("; ") || (Object.keys(l.alteracoes||{}).length ? "Pronto para aplicar" : "—");
+            return `<tr><td>${l.numero}</td><td>${esc(p.nome ?? p.Nome ?? l.raw?.[0] ?? "—")}</td><td>${esc(p.id ?? p.Id ?? "—")}</td><td>${esc(priceText)}</td><td>${esc(minText)}</td><td>${esc(activeText)}</td><td>${esc(desc || "—")}</td><td>${esc(detail)}</td><td><span class="bulk-pill ${statusClass(l)}">${esc(l.status)}</span></td></tr>`;
+        }).join("");
+    }
+    function report() {
+        const headers=["linha","produtoId","codigoBarras","nome","descricao","preco","estoqueMinimo","ativo","status","resultado"];
+        const lines=[headers.join(";")];
+        for(const l of linhas) {
+            const p=l.produto||{}, a=l.alteracoes||{};
+            const row=[l.numero,p.id ?? p.Id ?? l.rawId ?? "",p.codigoBarras ?? p.CodigoBarras ?? l.rawCode ?? "",a.nome ?? "",a.descricao ?? "",a.preco ?? "",a.estoqueMinimo ?? "",a.ativo===undefined?"":(a.ativo?"sim":"nao"),l.status,l.resultado || l.erros.join("; ")];
+            lines.push(row.map(csvEscape).join(";"));
+        }
+        downloadCsv("resultado_atualizacao_produtos.csv",lines.join("\r\n")+"\r\n");
+    }
+    async function chooseFile(file) {
+        if(!file) return;
+        linhas=[]; catalogoCarregado=false; render();
+        el("nomeArquivo").textContent=file.name; clearStatus();
+        if(!file.name.toLowerCase().endsWith(".csv")) { showStatus("Selecione um arquivo com extensão .csv.","error"); return; }
+        if(file.size>MAX_BYTES) { showStatus("O arquivo ultrapassa o limite de 5 MB.","error"); return; }
+        try {
+            showStatus("Consultando o catálogo atual e validando o arquivo...","info");
+            if(!catalogoCarregado) await loadCatalog();
+            prepare(await file.text());
+            const n=linhas.filter(l=>l.status==="Aguardando").length, e=linhas.filter(l=>l.status==="Erro de validação").length, s=linhas.filter(l=>l.status==="Sem alteração").length;
+            showStatus(`Prévia pronta: ${n} linha(s) para atualizar, ${s} sem alteração e ${e} com erro. Nenhuma alteração foi salva ainda.`, e ? "info" : "success");
+        } catch(err) { showStatus(err.message || "Não foi possível ler o arquivo.","error"); }
+        render();
+    }
+    async function applyUpdates() {
+        if (emAndamento) return;
+        const pending = linhas.filter(l => l.status === "Aguardando" && l.produto && !l.erros.length);
+        if (!pending.length) { showStatus("Não há alterações válidas pendentes.", "info"); return; }
+        if (!confirm(`Aplicar ${pending.length} atualização(ões) cadastral(is)? A quantidade em estoque não será alterada.\n\nA API validará e salvará todas as alterações em uma única transação. Se o lote for rejeitado, nenhuma alteração será aplicada.`)) return;
+
+        emAndamento = true;
+        const restaurarBotao = window.MerkditoUI
+            ? MerkditoUI.setBusy(btnAtualizar, "Atualizando cadastro...")
+            : function () {};
+        btnLimpar.disabled = true;
+        arquivoCsv.disabled = true;
+        showStatus("Enviando as alterações para processamento transacional na API...", "info");
+        for (const l of pending) { l.status = "Enviando lote"; l.resultado = "Aguardando confirmação da API."; }
+        render();
+
+        try {
+            const response = await MerkditoAuth.apiFetch(`${API_URL}/ProdutosLote/atualizar-cadastro`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ itens: pending.map(l => {
+                    const p = l.produto;
+                    const item = { linhaArquivo: l.numero, produtoId: Number(p.id ?? p.Id) };
+                    if (l.next.nome !== undefined) item.nome = l.next.nome;
+                    if (l.next.descricao !== undefined) item.descricao = l.next.descricao;
+                    if (l.next.preco !== undefined) item.preco = Number(l.next.preco);
+                    if (l.next.estoqueMinimo !== undefined) item.estoqueMinimo = Number(l.next.estoqueMinimo);
+                    if (l.next.ativo !== undefined) item.ativo = Boolean(l.next.ativo);
+                    return item;
+                }) })
+            });
+
+            if (response.ok) {
+                const payload = await response.json().catch(() => null);
+                for (const l of pending) {
+                    l.status = "Atualizado";
+                    l.resultado = "Alteração salva na transação do lote.";
+                    const p = l.produto;
+                    if (l.next.nome !== undefined) p.nome = l.next.nome;
+                    if (l.next.descricao !== undefined) p.descricao = l.next.descricao;
+                    if (l.next.preco !== undefined) p.preco = Number(l.next.preco);
+                    if (l.next.estoqueMinimo !== undefined) p.estoqueMinimo = Number(l.next.estoqueMinimo);
+                    if (l.next.ativo !== undefined) p.ativo = Boolean(l.next.ativo);
+                }
+                showStatus(`Lote concluído: ${payload?.totalAtualizado ?? pending.length} produto(s) atualizados atomicamente.`, "success");
+            } else {
+                const failure = await responseBatchError(response);
+                const byLine = new Map();
+                for (const error of failure.erros) {
+                    const key = Number(error.linhaArquivo);
+                    if (!byLine.has(key)) byLine.set(key, []);
+                    byLine.get(key).push(String(error.mensagem || "A API rejeitou esta linha."));
+                }
+                const uncertain = response.status === 408 || response.status >= 500;
+                for (const l of pending) {
+                    const errors = byLine.get(Number(l.numero)) || [];
+                    if (uncertain) {
+                        l.status = "Resultado incerto";
+                        l.resultado = "A resposta não confirma o resultado; atualize o catálogo antes de repetir.";
+                    } else if (errors.length) {
+                        l.status = "Rejeitado pela API";
+                        l.resultado = errors.join("; ");
+                    } else {
+                        l.status = "Lote não aplicado";
+                        l.resultado = "A API rejeitou a transação inteira; este produto não foi alterado.";
+                    }
+                }
+                showStatus(`A API não confirmou a atualização: ${failure.mensagem}${uncertain ? " Atualize o catálogo e confira antes de repetir." : " A transação foi rejeitada sem alterações parciais."}`, "error");
+            }
+        } catch (err) {
+            for (const l of pending) {
+                l.status = "Resultado incerto";
+                l.resultado = "Falha de comunicação; confira os dados atuais antes de repetir.";
+            }
+            showStatus(`${err.message || "Falha de comunicação."} Confira o catálogo antes de repetir o lote.`, "error");
+        } finally {
+            emAndamento = false;
+            btnLimpar.disabled = false;
+            arquivoCsv.disabled = false;
+            render();
+            restaurarBotao();
+        }
+    }
+    function clearAll() {
+        if(emAndamento) return;
+        arquivoCsv.value=""; el("nomeArquivo").textContent="Clique para selecionar o CSV"; linhas=[]; catalogo=[]; catalogoCarregado=false; clearStatus(); render();
+    }
+    function downloadTemplate() { downloadCsv("modelo_atualizacao_produtos.csv","produtoId;codigoBarras;nome;descricao;preco;estoqueMinimo;ativo\r\n"); }
+    arquivoCsv.addEventListener("change",()=>chooseFile(arquivoCsv.files && arquivoCsv.files[0]));
+    btnAtualizar.addEventListener("click",applyUpdates); btnRelatorio.addEventListener("click",report); btnLimpar.addEventListener("click",clearAll);
+    render();
+})();
+</script>
+</body>
+</html>

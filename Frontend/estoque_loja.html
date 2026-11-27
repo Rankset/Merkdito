@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produtos por loja - MerKdito</title>
+
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js"></script>
+<script src="assets/js/ui.js"></script>
+<link rel="stylesheet" href="assets/css/responsive.css">
+<script src="assets/js/navigation.js" defer></script>
+
+<style>
+.page-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin-top:20px}
+.panel{background:#fff;border-radius:14px;box-shadow:0 4px 16px rgba(20,40,60,.05);padding:22px}
+.panel h2{font-size:1.1rem;margin:0 0 8px;color:var(--text-dark)}
+.muted{color:var(--text-muted);font-size:.9rem;line-height:1.5}
+.message{display:none;padding:12px 14px;border-radius:10px;margin:14px 0;white-space:pre-line}
+.message.visible{display:block}
+.message.error{background:#fff0f0;color:#8e2424;border:1px solid #f0caca}
+.message.success{background:#effaf2;color:#176b3a;border:1px solid #c8ead2}
+.message.info{background:#eef7fc;color:#245878;border:1px solid #cbe5f4}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.form-group{display:flex;flex-direction:column;gap:6px;min-width:0}
+.form-group.full{grid-column:1/-1}
+.form-group label{font-weight:600;font-size:.9rem}
+.form-control{width:100%;min-width:0}
+.form-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:16px}
+.central-callout{display:flex;align-items:flex-start;gap:16px;background:#edf8ef;border:1px solid #bfe2c4;border-radius:12px;padding:18px}
+.central-callout .icon{width:46px;height:46px;flex:0 0 46px;border-radius:12px;background:#d5efd8;color:#237a37;display:grid;place-items:center;font-size:1.25rem}
+.table-wrap{overflow:auto;width:100%;margin-top:14px}
+table{width:100%;border-collapse:collapse;min-width:720px}
+th,td{padding:12px 10px;border-bottom:1px solid #e8edf1;text-align:left;vertical-align:middle}
+th{background:#f6f8fa;font-size:.82rem;white-space:nowrap}
+td{font-size:.9rem}
+td input{max-width:125px;min-width:80px}
+.empty{padding:28px;text-align:center;color:var(--text-muted);border:1px dashed #cfd8de;border-radius:10px}
+@media(max-width:720px){
+.form-grid{grid-template-columns:1fr}
+.form-group.full{grid-column:auto}
+.panel{padding:16px}
+.top-header{height:auto;min-height:72px;gap:10px;flex-wrap:wrap;padding-bottom:16px}
+}
+</style>
+</head>
+
+<body data-require-client="true">
+<div class="bg-blob blob-1"></div>
+<div class="bg-blob blob-2"></div>
+<div class="app-container">
+
+<aside class="sidebar">
+    <a href="dashboard.html" class="logo">
+        <span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px;">MerKdito</span>
+    </a>
+
+    <ul class="nav-menu" aria-label="Navegação principal">
+        <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a></li>
+
+        <li class="nav-group" data-nav-group="products">
+            <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                <i class="fa-solid fa-box-open"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+            </button>
+            <ul class="nav-submenu" id="submenuProdutos" hidden>
+                <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list"></i><span>Consultar produtos</span></a></li>
+                <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle"></i><span>Cadastrar produto</span></a></li>
+                <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import"></i><span>Importar produtos</span></a></li>
+                <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked"></i><span>Atualizar estoque</span></a></li>
+                <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check"></i><span>Atualizar cadastro</span></a></li>
+                <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags"></i><span>Categorias</span></a></li>
+                <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines"></i><span>Relatórios de estoque</span></a></li>
+                <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check"></i><span>Qualidade do catálogo</span></a></li>
+                <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate"></i><span>Movimentações de estoque</span></a></li>
+            </ul>
+        </li>
+
+        <li class="nav-group" data-nav-group="stores">
+            <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                <i class="fa-solid fa-store"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+            </button>
+            <ul class="nav-submenu" id="submenuLojas" hidden>
+                <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop"></i><span>Consultar / cadastrar lojas</span></a></li>
+                <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked"></i><span>Produtos por loja</span></a></li>
+                <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation"></i><span>Alertas de estoque</span></a></li>
+                <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check"></i><span>Inventário físico</span></a></li>
+            </ul>
+        </li>
+
+        <li class="nav-group" data-nav-group="sales">
+            <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                <i class="fa-solid fa-cash-register"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+            </button>
+            <ul class="nav-submenu" id="submenuVendas" hidden>
+                <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt"></i><span>Consultar vendas</span></a></li>
+                <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column"></i><span>Relatórios de vendas</span></a></li>
+            </ul>
+        </li>
+
+        <li class="nav-group" data-nav-group="purchases">
+            <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+            </button>
+            <ul class="nav-submenu" id="submenuCompras" hidden>
+                <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+            </ul>
+        </li>
+
+        <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie"></i><span>Meu perfil</span></a></li>
+        <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key"></i><span>Alterar senha</span></a></li>
+        <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear"></i><span>Usuários e permissões</span></a></li>
+    </ul>
+
+    <div class="logout-container">
+        <a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
+        </a>
+    </div>
+</aside>
+
+<main class="main-content">
+    <header class="top-header">
+        <div>
+            <h1 class="page-title">Produtos por loja</h1>
+            <p class="page-subtitle" style="margin-bottom:0">Transfira quantidades do estoque central e configure o preço de cada unidade.</p>
+        </div>
+        <div class="header-actions">
+            <a href="lojas.html" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Voltar para lojas</a>
+        </div>
+    </header>
+
+    <div id="msg" class="message" role="status" aria-live="polite"></div>
+
+    <section class="page-grid">
+
+        <div class="panel">
+            <div class="form-grid">
+                <div class="form-group full">
+                    <label for="lojaSelect">Loja de venda</label>
+                    <select id="lojaSelect" class="form-control">
+                        <option value="">Carregando lojas...</option>
+                    </select>
+                </div>
+            </div>
+            <p id="lojaSubtitulo" class="muted" style="margin:8px 0 0">Selecione uma loja para gerenciar seu estoque.</p>
+        </div>
+
+        <div class="central-callout">
+            <div class="icon"><i class="fa-solid fa-warehouse"></i></div>
+            <div>
+                <h2 style="margin:0 0 6px">Origem das transferências: estoque central</h2>
+                <p class="muted" style="margin:0">O saldo transferido sai do estoque central e entra na loja selecionada em uma única transação. O preço informado aqui vale apenas para a loja destino e não altera o preço das demais lojas.</p>
+                <div id="centralStockInfo" class="muted" style="margin-top:8px">Selecione um produto para conferir o saldo central.</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Vincular produto / transferir estoque</h2>
+            <p class="muted">Escolha um produto do catálogo central. Quantidade zero vincula o produto sem transferir unidades; quantidade maior que zero move saldo do depósito para esta loja.</p>
+
+            <form id="formTransferir">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="produtoId">Produto do estoque central *</label>
+                        <select id="produtoId" class="form-control" required>
+                            <option value="">Carregando catálogo...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="quantidade">Quantidade a transferir *</label>
+                        <input id="quantidade" type="number" min="0" step="1" class="form-control" required value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="precoVenda">Preço nesta loja (R$)</label>
+                        <input id="precoVenda" type="number" min="0" step="0.01" class="form-control" placeholder="Usar preço central">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estoqueMinimo">Estoque mínimo desta loja</label>
+                        <input id="estoqueMinimo" type="number" min="0" step="1" class="form-control" placeholder="Usar mínimo central">
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button id="btnTransferir" class="btn btn-primary" type="submit">
+                        <i class="fa-solid fa-right-left"></i> Vincular / transferir
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel">
+            <h2>Estoque e preços desta loja</h2>
+            <p class="muted">A quantidade muda por transferência desde o estoque central; preço, estoque mínimo e disponibilidade podem ser ajustados por loja.</p>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Estoque</th>
+                            <th>Mínimo</th>
+                            <th>Preço venda (R$)</th>
+                            <th>Disponibilidade</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="linhas">
+                        <tr><td colspan="7" class="empty">Selecione uma loja.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </section>
+</main>
+
+<script>
+(function () {
+    const api = window.MerkditoAuth;
+    const $ = id => document.getElementById(id);
+
+    let lojas = [];
+    let produtos = [];
+    let itens = [];
+    let lojaSelecionada = 0;
+
+    function msg(text, type) {
+        const elemento = $('msg');
+        elemento.textContent = text || '';
+        elemento.className = 'message' + (text ? ' visible ' + (type || 'info') : '');
+    }
+
+    function esc(valor) {
+        return String(valor ?? '').replace(/[&<>"']/g, caractere => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        })[caractere]);
+    }
+
+    async function json(response) {
+        const texto = await response.text();
+        let dados = null;
+
+        try {
+            dados = texto ? JSON.parse(texto) : null;
+        } catch {
+            dados = null;
+        }
+
+        if (!response.ok) {
+            let detalhe = dados && (dados.mensagem || dados.message);
+
+            if (!detalhe && dados && dados.errors && typeof dados.errors === 'object') {
+                detalhe = Object.entries(dados.errors)
+                    .flatMap(([campo, mensagens]) =>
+                        (Array.isArray(mensagens) ? mensagens : [mensagens])
+                            .map(mensagem => `${campo}: ${mensagem}`)
+                    )
+                    .join(' | ');
+            }
+
+            throw new Error(
+                detalhe ||
+                (dados && dados.title) ||
+                ('Falha HTTP ' + response.status)
+            );
+        }
+
+        return dados;
+    }
+
+    async function req(caminho, opcoes) {
+        const response = await api.apiFetch(caminho, opcoes);
+        return json(response);
+    }
+
+    const val = (objeto, minusculo, maiusculo) =>
+        objeto?.[minusculo] ?? objeto?.[maiusculo];
+
+    async function loadStores() {
+        lojas = await req('Lojas');
+
+        const central = lojas.find(loja =>
+            Boolean(val(loja, 'ehEstoqueCentral', 'EhEstoqueCentral'))
+        );
+
+        const lojasVenda = lojas.filter(loja =>
+            !Boolean(val(loja, 'ehEstoqueCentral', 'EhEstoqueCentral'))
+        );
+
+        $('lojaSelect').innerHTML = lojasVenda.length
+            ? lojasVenda.map(loja => `
+                <option value="${val(loja, 'id', 'Id')}">
+                    ${esc(val(loja, 'nomeFantasia', 'NomeFantasia'))}
+                    ${!Boolean(val(loja, 'ativo', 'Ativo')) ? ' (inativa)' : ''}
+                </option>
+            `).join('')
+            : '<option value="">Nenhuma loja de venda cadastrada</option>';
+
+        if (central) {
+            $('centralStockInfo').textContent =
+                `Depósito: ${val(central, 'nomeFantasia', 'NomeFantasia')}. Os produtos importados no catálogo entram neste estoque.`;
+        }
+
+        const parametro = new URLSearchParams(location.search).get('estabelecimentoId');
+
+        if (parametro && lojasVenda.some(loja =>
+            String(val(loja, 'id', 'Id')) === parametro
+        )) {
+            $('lojaSelect').value = parametro;
+        }
+
+        lojaSelecionada = Number($('lojaSelect').value || 0);
+
+        await loadCatalog();
+        await loadStoreStock();
+    }
+
+    async function loadCatalog() {
+        produtos = await req('Produtos');
+
+        if (!Array.isArray(produtos)) {
+            produtos = produtos.produtos || [];
+        }
+
+        $('produtoId').innerHTML =
+            '<option value="">Selecione um produto</option>' +
+            produtos
+                .filter(produto => Boolean(val(produto, 'ativo', 'Ativo')))
+                .map(produto => `
+                    <option value="${val(produto, 'id', 'Id')}">
+                        ${esc(val(produto, 'nome', 'Nome'))}
+                        · central: ${Number(val(produto, 'quantidadeEstoque', 'QuantidadeEstoque') || 0)} un.
+                    </option>
+                `).join('');
+    }
+
+    async function loadStoreStock() {
+        lojaSelecionada = Number($('lojaSelect').value || 0);
+
+        if (!lojaSelecionada) {
+            $('linhas').innerHTML =
+                '<tr><td colspan="7" class="empty">Cadastre uma loja de venda primeiro.</td></tr>';
+            return;
+        }
+
+        const loja = lojas.find(item =>
+            Number(val(item, 'id', 'Id')) === lojaSelecionada
+        );
+
+        $('lojaSubtitulo').textContent =
+            `${val(loja, 'nomeFantasia', 'NomeFantasia') || ''} · ` +
+            `${Boolean(val(loja, 'ativo', 'Ativo')) ? 'loja ativa' : 'loja inativa'}` +
+            `${Boolean(val(loja, 'ehEstoqueCentral', 'EhEstoqueCentral')) ? ' · estoque central' : ''}`;
+
+        if (Boolean(val(loja, 'ehEstoqueCentral', 'EhEstoqueCentral'))) {
+            $('linhas').innerHTML =
+                '<tr><td colspan="7" class="empty">O estoque central é gerenciado pela seção Produtos. Selecione uma loja de venda.</td></tr>';
+            return;
+        }
+
+        try {
+            const dados = await req(
+                `ProdutosEstabelecimentos?estabelecimentoId=${lojaSelecionada}`
+            );
+
+            itens = dados.itens || [];
+            renderRows();
+        } catch (erro) {
+            msg(erro.message, 'error');
+            $('linhas').innerHTML =
+                '<tr><td colspan="7" class="empty">Não foi possível carregar o estoque desta loja.</td></tr>';
+        }
+    }
+
+    function renderRows() {
+        if (!itens.length) {
+            $('linhas').innerHTML =
+                '<tr><td colspan="7" class="empty">Nenhum produto vinculado ainda. Use o formulário acima para adicionar produtos do estoque central.</td></tr>';
+            return;
+        }
+
+        $('linhas').innerHTML = itens.map(item => `
+            <tr data-product-id="${item.produtoId}">
+                <td>
+                    <strong>${esc(item.nome)}</strong>
+                    <div class="muted">${esc(item.codigoBarras || 'Sem código')}</div>
+                </td>
+                <td>${esc(item.categoria || '—')}</td>
+                <td><strong>${Number(item.quantidadeEstoque)}</strong></td>
+                <td>
+                    <input class="form-control input-min" type="number" min="0" step="1"
+                        value="${Number(item.estoqueMinimo)}" aria-label="Estoque mínimo">
+                </td>
+                <td>
+                    <input class="form-control input-price" type="number" min="0" step="0.01"
+                        value="${Number(item.precoVenda).toFixed(2)}" aria-label="Preço de venda">
+                </td>
+                <td>
+                    <select class="form-control input-active" aria-label="Disponibilidade">
+                        <option value="true" ${item.ativoNaLoja ? 'selected' : ''}>Ativo</option>
+                        <option value="false" ${!item.ativoNaLoja ? 'selected' : ''}>Inativo</option>
+                    </select>
+                </td>
+                <td>
+                    <button class="btn btn-outline btn-save" type="button">Salvar</button>
+                </td>
+            </tr>
+        `).join('');
+
+        document.querySelectorAll('.btn-save').forEach(botao => {
+            botao.addEventListener('click', saveRow);
+        });
+    }
+
+    async function saveRow(evento) {
+        const linha = evento.currentTarget.closest('tr');
+        const id = Number(linha.dataset.productId);
+        const price = Number(linha.querySelector('.input-price').value);
+        const minimum = Number(linha.querySelector('.input-min').value);
+        const active = linha.querySelector('.input-active').value === 'true';
+
+        const botao = evento.currentTarget;
+
+        if (!Number.isFinite(price) || price < 0 ||
+            !Number.isInteger(minimum) || minimum < 0) {
+            msg('Informe preço e estoque mínimo válidos.', 'error');
+            return;
+        }
+
+        botao.disabled = true;
+
+        try {
+            await req(`ProdutosEstabelecimentos/${lojaSelecionada}/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    precoVenda: price,
+                    estoqueMinimo: minimum,
+                    ativo: active
+                })
+            });
+
+            msg('Preço e configuração da loja foram salvos.', 'success');
+            await loadStoreStock();
+        } catch (erro) {
+            msg(erro.message, 'error');
+        } finally {
+            botao.disabled = false;
+        }
+    }
+
+    $('produtoId').addEventListener('change', () => {
+        const produto = produtos.find(item =>
+            Number(val(item, 'id', 'Id')) === Number($('produtoId').value)
+        );
+
+        if (!produto) {
+            $('centralStockInfo').textContent =
+                'Selecione um produto para conferir o saldo central.';
+            return;
+        }
+
+        $('centralStockInfo').textContent =
+            `Saldo disponível no estoque central: ${Number(val(produto, 'quantidadeEstoque', 'QuantidadeEstoque') || 0)} unidade(s). ` +
+            `Preço central: R$ ${Number(val(produto, 'preco', 'Preco') || 0).toFixed(2)}.`;
+
+        if (!$('precoVenda').value) {
+            $('precoVenda').placeholder =
+                `Padrão: ${Number(val(produto, 'preco', 'Preco') || 0).toFixed(2)}`;
+        }
+
+        if (!$('estoqueMinimo').value) {
+            $('estoqueMinimo').placeholder =
+                `Padrão: ${Number(val(produto, 'estoqueMinimo', 'EstoqueMinimo') || 0)}`;
+        }
+    });
+
+    $('formTransferir').addEventListener('submit', async evento => {
+        evento.preventDefault();
+
+        if (!lojaSelecionada) {
+            msg('Selecione uma loja de venda.', 'error');
+            return;
+        }
+
+        const produtoId = Number.parseInt($('produtoId').value, 10);
+        const quantidadeTexto = $('quantidade').value.trim();
+        const quantidade = Number(quantidadeTexto);
+        const precoTexto = $('precoVenda').value.trim();
+        const minimoTexto = $('estoqueMinimo').value.trim();
+
+        if (!Number.isInteger(produtoId) || produtoId <= 0) {
+            msg('Selecione um produto válido.', 'error');
+            return;
+        }
+
+        if (quantidadeTexto === '' ||
+            !Number.isSafeInteger(quantidade) ||
+            quantidade < 0) {
+            msg('Informe uma quantidade inteira válida, igual ou maior que zero.', 'error');
+            $('quantidade').focus();
+            return;
+        }
+
+        const precoVenda = precoTexto === '' ? null : Number(precoTexto);
+
+        if (precoVenda !== null &&
+            (!Number.isFinite(precoVenda) || precoVenda < 0)) {
+            msg('Informe um preço válido ou deixe o campo vazio para usar o preço central.', 'error');
+            $('precoVenda').focus();
+            return;
+        }
+
+        const estoqueMinimo = minimoTexto === '' ? null : Number(minimoTexto);
+
+        if (estoqueMinimo !== null &&
+            (!Number.isSafeInteger(estoqueMinimo) || estoqueMinimo < 0)) {
+            msg('O estoque mínimo deve ser um número inteiro igual ou maior que zero.', 'error');
+            $('estoqueMinimo').focus();
+            return;
+        }
+
+        const botao = $('btnTransferir');
+        botao.disabled = true;
+
+        try {
+            // Envia o DTO diretamente, sem envolver em { request: payload }.
+            const payload = {
+                produtoId: produtoId,
+                estabelecimentoDestinoId: Number.parseInt(String(lojaSelecionada), 10),
+                quantidade: quantidade,
+                precoVenda: precoVenda,
+                estoqueMinimo: estoqueMinimo
+            };
+
+            if (!Number.isInteger(payload.estabelecimentoDestinoId) ||
+                payload.estabelecimentoDestinoId <= 0) {
+                throw new Error('A loja de destino selecionada é inválida.');
+            }
+
+            const response = await api.apiFetch(
+                'ProdutosEstabelecimentos/transferir',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }
+            );
+
+            const resultado = await json(response);
+
+            msg(
+                resultado?.mensagem || 'Produto vinculado/transferido com sucesso.',
+                'success'
+            );
+
+            $('quantidade').value = '0';
+            $('precoVenda').value = '';
+            $('estoqueMinimo').value = '';
+
+            await loadCatalog();
+            await loadStoreStock();
+
+        } catch (erro) {
+            if (api.isSessionRedirectError && api.isSessionRedirectError(erro)) {
+                return;
+            }
+
+            msg(
+                erro.message || 'Não foi possível realizar a transferência.',
+                'error'
+            );
+        } finally {
+            botao.disabled = false;
+        }
+    });
+
+    $('lojaSelect').addEventListener('change', async () => {
+        const url = new URL(location.href);
+        url.searchParams.set('estabelecimentoId', $('lojaSelect').value);
+        history.replaceState(null, '', url);
+        await loadStoreStock();
+    });
+
+    loadStores().catch(erro => {
+        msg(erro.message, 'error');
+        $('linhas').innerHTML =
+            '<tr><td colspan="7" class="empty">Falha ao carregar a tela de lojas.</td></tr>';
+    });
+
+})();
+</script>
+</body>
+</html>

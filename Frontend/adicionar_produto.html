@@ -1,0 +1,523 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Produto - MerKdito</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="assets/js/navigation.js" defer></script>
+</head>
+<body data-require-client="true">
+    <div class="bg-blob blob-3"></div>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo">
+                <span class="logo-text" style="color: #5DA54A; font-size: 2rem; font-weight: 800; letter-spacing: -1px;">MerKdito</span>
+            </a>
+
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+
+            <div class="logout-container">
+                <a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 16px;">
+                        <a href="produtos.html" style="color: var(--text-dark); text-decoration: none; font-size: 1.2rem;">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </a>
+                        <h1 class="page-title" id="tituloPagina">Adicionar Produto</h1>
+                    </div>
+                </div>
+                <div class="header-actions"></div>
+            </header>
+
+            <div class="animate-fade-in delay-1">
+                <div class="glass-panel form-card">
+
+                    <div id="mensagem" role="status" aria-live="polite"
+                         style="display:none; padding:12px; margin-bottom:18px; border-radius:8px;">
+                    </div>
+
+                    <form id="formProduto">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="codigoBarras">Código de barras / código interno (opcional)</label>
+                                <input type="text" id="codigoBarras" class="form-control"
+                                       placeholder="Ex: 7891234567890 ou PROD001" maxlength="100">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="nome">Nome do Produto *</label>
+                                <input type="text" id="nome" class="form-control"
+                                       placeholder="Ex: Limpador Multiuso" maxlength="150" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="categoriaId">Categoria *</label>
+                                <select id="categoriaId" class="form-control" required>
+                                    <option value="">Carregando categorias...</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="quantidadeEstoque">Quantidade Inicial *</label>
+                                <input type="number" id="quantidadeEstoque" class="form-control"
+                                       placeholder="Ex: 50" min="0" step="1" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="preco">Preço unitário (R$) *</label>
+                                <input type="number" id="preco" step="0.01" min="0.01"
+                                       class="form-control" placeholder="Ex: 25,00" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="estoqueMinimo">Estoque mínimo *</label>
+                                <input type="number" id="estoqueMinimo" class="form-control"
+                                       min="0" step="1" value="5" required>
+                                <small style="color: var(--text-muted);">O sistema destaca o produto quando o estoque chegar a este limite.</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="grupoAtivo">
+                            <label class="form-label" for="ativo">Situação do produto</label>
+                            <select id="ativo" class="form-control">
+                                <option value="true" selected>Ativo</option>
+                                <option value="false">Inativo</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="fotoUpload">Foto do Produto</label>
+                            <label for="fotoUpload"
+                                   style="display:block; border:2px dashed var(--color-teal); border-radius:var(--radius-md); padding:30px; text-align:center; background-color:rgba(255,255,255,0.4); cursor:pointer; transition:all 0.3s ease;">
+                                <i class="fa-solid fa-cloud-arrow-up"
+                                   style="font-size:2.5rem; color:var(--color-teal); margin-bottom:15px;"></i>
+                                <p id="textoFoto" style="margin:0; color:var(--text-dark); font-weight:500;">
+                                    Clique para enviar uma foto
+                                </p>
+                                <p style="margin:5px 0 0 0; color:var(--text-muted); font-size:0.85rem;">
+                                    JPG, PNG ou WEBP (Máx. 5MB)
+                                </p>
+                                <input type="file" id="fotoUpload" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="descricao">Descrição</label>
+                            <textarea id="descricao" class="form-control"
+                                      placeholder="Descrição opcional do produto..."></textarea>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" id="btnSalvar" class="btn btn-primary">
+                                <i class="fa-solid fa-box"></i> Adicionar Produto
+                            </button>
+                            <a href="produtos.html" class="btn btn-outline">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = MerkditoAuth.apiBaseUrl;
+
+        const form = document.getElementById("formProduto");
+        const campoCategoria = document.getElementById("categoriaId");
+        const campoFoto = document.getElementById("fotoUpload");
+        const mensagem = document.getElementById("mensagem");
+        const botaoSalvar = document.getElementById("btnSalvar");
+
+        const parametros = new URLSearchParams(window.location.search);
+        const produtoId = parametros.get("id");
+        const modoEdicao = produtoId !== null;
+
+        let produtoOriginal = null;
+        let categoriasDisponiveis = [];
+        let inicializacaoConcluida = false;
+
+        function mostrarMensagem(texto, sucesso = false) {
+            MerkditoUI.showInline(mensagem, texto, sucesso ? "success" : "error");
+        }
+
+        async function obterResposta(resposta) {
+            const texto = await resposta.text();
+
+            if (!texto) {
+                return null;
+            }
+
+            try {
+                return JSON.parse(texto);
+            } catch {
+                return texto;
+            }
+        }
+
+        function mensagemErro(dados, padrao) {
+            if (typeof dados === "string" && dados.trim()) {
+                return dados;
+            }
+
+            if (dados && typeof dados === "object") {
+                if (dados.errors) {
+                    return Object.values(dados.errors)
+                        .flat()
+                        .join(" ");
+                }
+
+                if (dados.title) {
+                    return dados.title;
+                }
+
+                if (dados.message) {
+                    return dados.message;
+                }
+            }
+
+            return padrao;
+        }
+
+        async function carregarCategorias() {
+            const resposta = await MerkditoAuth.apiFetch(`${API_URL}/Categorias`);
+
+            if (!resposta.ok) {
+                throw new Error("Não foi possível carregar as categorias.");
+            }
+
+            const categorias = await resposta.json();
+            categoriasDisponiveis = Array.isArray(categorias) ? categorias : [];
+
+            campoCategoria.innerHTML =
+                '<option value="">Selecione uma categoria</option>';
+
+            categoriasDisponiveis
+                .filter(categoria => categoria.ativa)
+                .forEach(categoria => {
+                    const opcao = document.createElement("option");
+                    opcao.value = categoria.id;
+                    opcao.textContent = categoria.nome;
+                    campoCategoria.appendChild(opcao);
+                });
+
+            if (campoCategoria.options.length === 1) {
+                campoCategoria.innerHTML =
+                    '<option value="">Cadastre ou ative uma categoria primeiro</option>';
+            }
+        }
+
+        async function carregarProdutoParaEdicao() {
+            const resposta = await MerkditoAuth.apiFetch(`${API_URL}/Produtos`);
+
+            if (!resposta.ok) {
+                throw new Error("Não foi possível consultar os produtos.");
+            }
+
+            const produtos = await resposta.json();
+
+            produtoOriginal = produtos.find(
+                produto => String(produto.id) === String(produtoId)
+            );
+
+            if (!produtoOriginal) {
+                throw new Error("O produto solicitado não foi encontrado.");
+            }
+
+            document.getElementById("tituloPagina").textContent = "Editar Produto";
+            document.title = "Editar Produto - MerKdito";
+
+            document.getElementById("codigoBarras").value =
+                produtoOriginal.codigoBarras ?? "";
+
+            document.getElementById("nome").value =
+                produtoOriginal.nome ?? "";
+
+            document.getElementById("quantidadeEstoque").value =
+                produtoOriginal.quantidadeEstoque ?? 0;
+
+            document.getElementById("preco").value =
+                produtoOriginal.preco ?? "";
+
+            document.getElementById("descricao").value =
+                produtoOriginal.descricao ?? "";
+
+            const categoriaAtual = categoriasDisponiveis.find(
+                categoria => String(categoria.id) === String(produtoOriginal.categoriaId)
+            );
+
+            if (categoriaAtual && categoriaAtual.ativa) {
+                campoCategoria.value = String(produtoOriginal.categoriaId);
+            } else {
+                const opcaoIndisponivel = document.createElement("option");
+                opcaoIndisponivel.value = String(produtoOriginal.categoriaId);
+                opcaoIndisponivel.textContent = categoriaAtual
+                    ? `${categoriaAtual.nome} (inativa — selecione uma categoria ativa)`
+                    : "Categoria anterior indisponível — selecione uma categoria ativa";
+                opcaoIndisponivel.disabled = true;
+                campoCategoria.appendChild(opcaoIndisponivel);
+                campoCategoria.value = "";
+                mostrarMensagem("A categoria atual está inativa ou indisponível. Selecione uma categoria ativa antes de salvar.");
+            }
+
+            document.getElementById("estoqueMinimo").value =
+                produtoOriginal.estoqueMinimo ?? 5;
+            document.getElementById("ativo").value =
+                produtoOriginal.ativo === false ? "false" : "true";
+
+            botaoSalvar.innerHTML =
+                '<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações';
+        }
+
+        campoFoto.addEventListener("change", function () {
+            const arquivo = this.files[0];
+
+            if (!arquivo) {
+                document.getElementById("textoFoto").textContent =
+                    "Clique para enviar uma foto";
+                return;
+            }
+
+            const formatosPermitidos = [
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            ];
+
+            if (!formatosPermitidos.includes(arquivo.type)) {
+                mostrarMensagem("Selecione uma imagem JPG, PNG ou WEBP.");
+                this.value = "";
+                return;
+            }
+
+            if (arquivo.size > 5 * 1024 * 1024) {
+                mostrarMensagem("A imagem deve ter no máximo 5 MB.");
+                this.value = "";
+                return;
+            }
+
+            document.getElementById("textoFoto").textContent = arquivo.name;
+            mostrarMensagem("Imagem selecionada. Ela será enviada ao salvar o produto.", true);
+        });
+
+        form.addEventListener("submit", async function (evento) {
+            evento.preventDefault();
+
+            const nome = document.getElementById("nome").value.trim();
+            const codigoBarras = document.getElementById("codigoBarras").value.trim();
+            const descricao = document.getElementById("descricao").value.trim();
+            const preco = Number(document.getElementById("preco").value);
+            const quantidadeEstoque = Number(
+                document.getElementById("quantidadeEstoque").value
+            );
+            const categoriaId = Number(campoCategoria.value);
+            const estoqueMinimo = Number(document.getElementById("estoqueMinimo").value);
+            const ativo = document.getElementById("ativo").value === "true";
+
+            if (!nome || !Number.isInteger(categoriaId) || categoriaId <= 0) {
+                mostrarMensagem("Informe o nome e selecione uma categoria ativa.");
+                return;
+            }
+
+            if (codigoBarras.length > 100) {
+                mostrarMensagem("O código deve ter no máximo 100 caracteres.");
+                return;
+            }
+
+            if (!Number.isFinite(preco) || preco <= 0) {
+                mostrarMensagem("Informe um preço maior que zero.");
+                return;
+            }
+
+            if (!Number.isInteger(quantidadeEstoque) || quantidadeEstoque < 0) {
+                mostrarMensagem("Informe uma quantidade inteira igual ou maior que zero.");
+                return;
+            }
+
+            if (!Number.isInteger(estoqueMinimo) || estoqueMinimo < 0) {
+                mostrarMensagem("Informe um estoque mínimo inteiro igual ou maior que zero.");
+                return;
+            }
+
+            const produto = {
+                nome,
+                descricao: descricao || null,
+                codigoBarras: codigoBarras || null,
+                preco,
+                quantidadeEstoque,
+                estoqueMinimo,
+                ativo,
+                categoriaId
+            };
+
+            const url = modoEdicao
+                ? `${API_URL}/Produtos/${produtoId}`
+                : `${API_URL}/Produtos`;
+
+            const metodo = modoEdicao ? "PUT" : "POST";
+
+            const restaurarBotao = MerkditoUI.setBusy(botaoSalvar, "Salvando produto...");
+
+            try {
+                const resposta = await MerkditoAuth.apiFetch(url, {
+                    method: metodo,
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(
+                        modoEdicao
+                            ? { id: Number(produtoId), ...produto }
+                            : produto
+                    )
+                });
+
+                if (!resposta.ok) {
+                    const dados = await obterResposta(resposta);
+
+                    throw new Error(
+                        mensagemErro(
+                            dados,
+                            `Não foi possível salvar o produto (HTTP ${resposta.status}).`
+                        )
+                    );
+                }
+
+                // A API cria/atualiza o registro primeiro; em seguida associa a foto ao ID definitivo.
+                const respostaProduto = await obterResposta(resposta);
+                const idSalvo = modoEdicao ? Number(produtoId) : Number(respostaProduto?.id ?? respostaProduto?.Id);
+                if (campoFoto.files[0]) {
+                    if (!Number.isInteger(idSalvo) || idSalvo <= 0)
+                        throw new Error("Produto salvo, mas a API não retornou o ID para associar a foto.");
+                    const dadosFoto = new FormData();
+                    dadosFoto.append("arquivo", campoFoto.files[0]);
+                    const upload = await MerkditoAuth.apiFetch(`${API_URL}/Produtos/${idSalvo}/foto`, {
+                        method: "POST",
+                        body: dadosFoto
+                    });
+                    if (!upload.ok) {
+                        const erroFoto = await obterResposta(upload);
+                        throw new Error(mensagemErro(erroFoto, `Produto salvo, mas não foi possível enviar a foto (HTTP ${upload.status}).`));
+                    }
+                }
+
+                restaurarBotao();
+                mostrarMensagem(
+                    modoEdicao
+                        ? "Produto atualizado com sucesso!"
+                        : "Produto cadastrado com sucesso!",
+                    true
+                );
+
+                botaoSalvar.innerHTML =
+                    '<i class="fa-solid fa-check"></i> Salvo!';
+
+                setTimeout(() => {
+                    window.location.href = "produtos.html";
+                }, 1000);
+
+            } catch (erro) {
+                console.error("Erro ao salvar produto:", erro);
+                mostrarMensagem(
+                    erro.message || "Erro de comunicação com a API."
+                );
+
+                restaurarBotao();
+                botaoSalvar.disabled = false;
+                botaoSalvar.innerHTML = modoEdicao
+                    ? '<i class="fa-solid fa-floppy-disk"></i> Salvar Alterações'
+                    : '<i class="fa-solid fa-box"></i> Adicionar Produto';
+            }
+        });
+
+        async function inicializarPagina() {
+            botaoSalvar.disabled = true;
+
+            try {
+                await carregarCategorias();
+
+                if (modoEdicao) {
+                    await carregarProdutoParaEdicao();
+                }
+
+                inicializacaoConcluida = true;
+
+            } catch (erro) {
+                console.error("Erro ao inicializar formulário:", erro);
+                mostrarMensagem(erro.message);
+            } finally {
+                // Não libera o envio se a inicialização falhou ou se não há uma categoria ativa.
+                const temCategoriaSelecionavel = Array.from(campoCategoria.options)
+                    .some(opcao => Boolean(opcao.value) && !opcao.disabled);
+                botaoSalvar.disabled = !inicializacaoConcluida || !temCategoriaSelecionavel;
+            }
+        }
+
+        inicializarPagina();
+    </script>
+</body>
+</html>

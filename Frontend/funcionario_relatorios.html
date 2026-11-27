@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatórios do Funcionário - MerKdito</title>
+<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="assets/css/responsive.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="assets/js/config.js"></script>
+<script src="assets/js/auth.js"></script>
+<style>
+.employee-wrap{max-width:1180px;margin:0 auto}.employee-card{padding:22px;margin:18px 0}
+.employee-row{display:flex;gap:12px;align-items:end;flex-wrap:wrap}.employee-field{display:flex;flex-direction:column;gap:6px;flex:1;min-width:180px}
+.employee-field label{font-weight:600;font-size:.9rem}.employee-message{display:none;padding:12px 14px;border-radius:9px;margin:14px 0;white-space:pre-line}
+.employee-message.show{display:block}.employee-message.error{background:#fff0f0;color:#8e2424}.employee-message.success{background:#effaf2;color:#176b3a}.employee-message.info{background:#eef7fc;color:#245878}
+.employee-table-wrap{overflow:auto}.employee-table{width:100%;border-collapse:collapse;min-width:700px}.employee-table th,.employee-table td{padding:11px;border-bottom:1px solid #ddd;text-align:left}
+.employee-table th{font-size:.85rem}.metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.metric{padding:18px}.metric-label{font-size:.9rem}.metric-value{font-size:1.5rem;font-weight:700;margin-top:6px}
+.employee-footer{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;margin-top:16px}
+@media(max-width:760px){.employee-card{padding:14px}.employee-field{min-width:100%}.metric-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-require-employee="true">
+<div class="bg-blob blob-1"></div><div class="bg-blob blob-2"></div>
+<div class="app-container">
+<aside class="sidebar">
+<a href="funcionario_vendas.html" class="logo" style="text-decoration:none"><span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800">MerKdito</span></a>
+<ul class="nav-menu">
+<li><a href="funcionario_vendas.html" class="nav-item"><i class="fa-solid fa-cash-register"></i><span>Registrar venda</span></a></li><li><a href="funcionario_produtos.html" class="nav-item"><i class="fa-solid fa-box"></i><span>Produtos</span></a></li>
+<li><a href="funcionario_estoque.html" class="nav-item"><i class="fa-solid fa-boxes-stacked"></i><span>Estoque</span></a></li><li><a href="funcionario_relatorios.html" class="nav-item active"><i class="fa-solid fa-chart-column"></i><span>Relatórios</span></a></li><li><a href="funcionario_compras.html" class="nav-item"><i class="fa-solid fa-truck"></i><span>Compras e fornecedores</span></a></li>
+</ul>
+<div class="logout-container"><a href="index.html" class="nav-item" onclick="MerkditoAuth.logout();return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a></div>
+</aside>
+<main class="main-content"><div class="employee-wrap">
+<header class="top-header"><div><h1 class="page-title">Relatórios de vendas</h1><p class="page-subtitle">Olá, <span id="nomeFuncionario">funcionário</span>. Os dados exibidos respeitam as permissões da sua conta.</p></div></header>
+<div id="mensagem" class="employee-message" role="status" aria-live="polite"></div>
+<section class="glass-panel employee-card">
+<div class="employee-row">
+<div class="employee-field"><label for="loja">Estabelecimento autorizado</label><select id="loja" class="form-control"><option value="">Carregando estabelecimentos…</option></select></div>
+<div class="employee-field"><label for="de">Data inicial</label><input id="de" class="form-control" type="date"></div>
+<div class="employee-field"><label for="ate">Data final</label><input id="ate" class="form-control" type="date"></div>
+<div class="employee-field" style="flex:0 0 180px"><button id="btnConsultar" class="btn btn-primary" type="button">Consultar</button></div>
+</div>
+</section>
+<section class="metric-grid">
+<div class="glass-panel metric"><div class="metric-label">Vendas confirmadas</div><div id="qtdVendas" class="metric-value">—</div></div>
+<div class="glass-panel metric"><div class="metric-label">Faturamento</div><div id="faturamento" class="metric-value">—</div></div>
+<div class="glass-panel metric"><div class="metric-label">Ticket médio</div><div id="ticketMedio" class="metric-value">—</div></div>
+</section>
+<section class="glass-panel employee-card">
+<h2 style="margin-top:0">Vendas do período</h2>
+<div class="employee-table-wrap"><table class="employee-table"><thead><tr><th>Nº</th><th>Data</th><th>Referência</th><th>Itens</th><th>Status</th><th>Total</th><th></th></tr></thead><tbody id="vendas"><tr><td colspan="7">Selecione um estabelecimento e consulte o período.</td></tr></tbody></table></div>
+<div class="employee-footer"><span id="paginacao">Página 1</span><div><button id="btnAnterior" class="btn btn-outline" type="button" disabled>Anterior</button> <button id="btnProxima" class="btn btn-outline" type="button" disabled>Próxima</button></div></div>
+</section>
+<section class="glass-panel employee-card">
+<h2 style="margin-top:0">Detalhes da venda</h2>
+<div id="detalheAjuda">Selecione “Detalhes” em uma venda para consultar os itens.</div>
+<div class="employee-table-wrap"><table class="employee-table"><thead><tr><th>Produto</th><th>Código</th><th>Quantidade</th><th>Preço unitário</th><th>Total</th></tr></thead><tbody id="itensDetalhe"><tr><td colspan="5">Nenhuma venda selecionada.</td></tr></tbody></table></div>
+</section>
+</div></main></div>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);
+const state={page:1,pageSize:50,total:0,estabelecimentoId:0};
+const money=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v||0));
+const dateFmt=v=>{if(!v)return '—';const d=new Date(v);return Number.isNaN(d.getTime())?String(v):d.toLocaleString('pt-BR');};
+function message(text,type='info'){const e=$('mensagem');e.textContent=text;e.className='employee-message show '+type;}
+function clearMessage(){const e=$('mensagem');e.textContent='';e.className='employee-message';}
+async function parse(response){const text=await response.text();let data=null;try{data=text?JSON.parse(text):null}catch{}if(!response.ok)throw new Error(data?.mensagem||data?.message||`A API respondeu HTTP ${response.status}.`);return data;}
+function queryString(extra={}){const p=new URLSearchParams();p.set('estabelecimentoId',String(state.estabelecimentoId));if($('de').value)p.set('de',$('de').value);if($('ate').value)p.set('ate',$('ate').value);for(const [k,v] of Object.entries(extra))p.set(k,String(v));return p.toString();}
+function appendCell(row,value){const td=document.createElement('td');td.textContent=value==null?'—':String(value);row.appendChild(td);return td;}
+async function loadStores(){const data=await parse(await MerkditoAuth.apiFetchEmployee('funcionario/relatorios/estabelecimentos'));const stores=Array.isArray(data)?data:[];const select=$('loja');select.replaceChildren();const first=document.createElement('option');first.value='';first.textContent='Selecione um estabelecimento';select.appendChild(first);for(const store of stores){const o=document.createElement('option');o.value=String(store.id);o.textContent=String(store.nome||`Estabelecimento ${store.id}`);select.appendChild(o);}if(!stores.length)message('Sua conta não possui estabelecimentos com permissão para consultar relatórios. Solicite ao responsável que revise suas permissões.','info');}
+async function loadSummary(){const data=await parse(await MerkditoAuth.apiFetchEmployee('funcionario/relatorios/vendas/resumo?'+queryString()));$('qtdVendas').textContent=String(data?.quantidadeVendas??0);$('faturamento').textContent=money(data?.faturamentoTotal);$('ticketMedio').textContent=money(data?.ticketMedio);}
+function renderSales(data){const tbody=$('vendas');tbody.replaceChildren();const sales=Array.isArray(data?.vendas)?data.vendas:[];state.total=Number(data?.totalRegistros||0);if(!sales.length){const tr=document.createElement('tr');const td=appendCell(tr,'Nenhuma venda encontrada para o período.');td.colSpan=7;tbody.appendChild(tr);}else{for(const sale of sales){const tr=document.createElement('tr');appendCell(tr,sale.id);appendCell(tr,dateFmt(sale.dataVendaUtc));appendCell(tr,sale.idVendaExterna||'—');appendCell(tr,sale.quantidadeItens??0);appendCell(tr,sale.status||'—');appendCell(tr,money(sale.total));const td=appendCell(tr,'');const btn=document.createElement('button');btn.type='button';btn.className='btn btn-outline';btn.textContent='Detalhes';btn.addEventListener('click',()=>loadDetail(sale.id));td.appendChild(btn);tbody.appendChild(tr);}}
+const pages=Math.max(1,Math.ceil(state.total/state.pageSize));$('paginacao').textContent=`Página ${state.page} de ${pages} · ${state.total} venda(s)`;$('btnAnterior').disabled=state.page<=1;$('btnProxima').disabled=state.page>=pages;}
+async function loadSales(){clearMessage();state.estabelecimentoId=Number($('loja').value);if(!state.estabelecimentoId){message('Selecione um estabelecimento.','error');return;}const de=$('de').value,ate=$('ate').value;if(de&&ate&&ate<de){message('A data final deve ser igual ou posterior à data inicial.','error');return;}const btn=$('btnConsultar');btn.disabled=true;try{const qs=queryString({pagina:state.page,tamanhoPagina:state.pageSize});const data=await parse(await MerkditoAuth.apiFetchEmployee('funcionario/relatorios/vendas?'+qs));renderSales(data);await loadSummary();$('itensDetalhe').replaceChildren();const tr=document.createElement('tr');const td=appendCell(tr,'Selecione “Detalhes” em uma venda para consultar os itens.');td.colSpan=5;$('itensDetalhe').appendChild(tr);$('detalheAjuda').textContent='Selecione “Detalhes” em uma venda para consultar os itens.';}catch(e){if(!MerkditoAuth.isSessionRedirectError?.(e))message(e.message||'Não foi possível consultar os relatórios.','error');}finally{btn.disabled=false;}}
+async function loadDetail(id){try{const qs=queryString();const data=await parse(await MerkditoAuth.apiFetchEmployee(`funcionario/relatorios/vendas/${encodeURIComponent(id)}?${qs}`));const tbody=$('itensDetalhe');tbody.replaceChildren();for(const item of (data?.itens||[])){const tr=document.createElement('tr');appendCell(tr,item.nomeProduto);appendCell(tr,item.codigoBarrasProduto||'—');appendCell(tr,item.quantidade);appendCell(tr,money(item.precoUnitario));appendCell(tr,money(item.totalItem));tbody.appendChild(tr);}if(!(data?.itens||[]).length){const tr=document.createElement('tr');const td=appendCell(tr,'Esta venda não possui itens.');td.colSpan=5;tbody.appendChild(tr);} $('detalheAjuda').textContent=`Venda #${data.id} · ${dateFmt(data.dataVendaUtc)} · Total ${money(data.total)}`;}catch(e){if(!MerkditoAuth.isSessionRedirectError?.(e))message(e.message||'Não foi possível carregar os detalhes.','error');}}
+$('btnConsultar').addEventListener('click',()=>{state.page=1;loadSales();});
+$('btnAnterior').addEventListener('click',()=>{if(state.page>1){state.page--;loadSales();}});
+$('btnProxima').addEventListener('click',()=>{if(state.page<Math.ceil(state.total/state.pageSize)){state.page++;loadSales();}});
+$('nomeFuncionario').textContent=MerkditoAuth.nome||'funcionário';
+if(MerkditoAuth.requireEmployee())loadStores().catch(e=>{if(!MerkditoAuth.isSessionRedirectError?.(e))message(e.message||'Não foi possível carregar os estabelecimentos.','error');});
+})();
+</script>
+</body></html>

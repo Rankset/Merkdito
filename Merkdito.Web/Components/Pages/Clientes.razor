@@ -1,0 +1,1708 @@
+@page "/admin/clientes"
+
+@using System.Net
+
+@using System.Net.Http.Json
+
+@using System.ComponentModel.DataAnnotations
+@using System.Security.Cryptography
+@using Microsoft.JSInterop
+
+@using Microsoft.AspNetCore.Components.Forms
+@using Merkdito.Web.Services
+
+@inject AuthService Auth
+@inject NavigationManager Navigation
+
+@inject IConfiguration Configuration
+@inject IJSRuntime JS
+
+<PageTitle>Merkdito - Clientes</PageTitle>
+
+<div class="container-fluid py-4">
+
+    @* Cabeçalho *@
+
+    <div class="d-flex flex-column flex-md-row
+
+                justify-content-between align-items-md-center
+
+                gap-3 mb-4">
+
+        <div>
+
+            <h1 class="fw-bold">Clientes</h1>
+
+            <p class="text-muted mb-0">
+
+                Cadastre e gerencie os clientes do Merkdito.
+
+            </p>
+
+        </div>
+
+        <button type="button"
+
+                class="btn btn-primary"
+
+                @onclick="NovoCliente"
+
+                disabled="@salvando">
+
+            <i class="bi bi-person-plus me-2"></i>
+
+            Novo cliente
+
+        </button>
+
+    </div>
+
+    @* Mensagens *@
+
+    @if (!string.IsNullOrWhiteSpace(mensagem))
+
+    {
+
+        <div class="alert @(erro ? "alert-danger" : "alert-success")"
+
+             role="alert"
+
+             aria-live="polite">
+
+            @mensagem
+
+        </div>
+
+    }
+
+    @if (mostrarCredenciais && !string.IsNullOrWhiteSpace(senhaCredencial))
+    {
+        <div class="alert alert-warning border shadow-sm" role="alert" aria-live="polite">
+            <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+                <div class="flex-grow-1">
+                    <h2 class="h6 fw-bold mb-2"><i class="bi bi-shield-lock me-2" aria-hidden="true"></i>@tituloCredenciais</h2>
+                    <p class="mb-2">Entregue estas credenciais ao cliente por um canal seguro. A senha aparece somente nesta tela; ela não é devolvida pela API nem salva em texto puro.</p>
+                    <div class="mb-1"><strong>E-mail:</strong> <code>@emailCredencial</code></div>
+                    <div><strong>Senha temporária:</strong> <code class="user-select-all">@senhaCredencial</code></div>
+                </div>
+                <div class="d-flex flex-wrap align-content-start gap-2">
+                    <button type="button" class="btn btn-sm btn-outline-dark" @onclick="CopiarEmailAsync">
+                        <i class="bi bi-clipboard me-1" aria-hidden="true"></i>Copiar e-mail
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-dark" @onclick="CopiarSenhaAsync">
+                        <i class="bi bi-clipboard-check me-1" aria-hidden="true"></i>Copiar senha
+                    </button>
+                    <button type="button" class="btn btn-sm btn-dark" @onclick="DispensarCredenciais">
+                        Dispensar
+                    </button>
+                </div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(mensagemCopia))
+            {
+                <div class="small mt-2" aria-live="polite">@mensagemCopia</div>
+            }
+        </div>
+    }
+
+    @* Carregamento *@
+
+    @if (carregando)
+
+    {
+
+        <div class="text-muted py-4" role="status">
+
+            <span class="spinner-border spinner-border-sm me-2"
+
+                  aria-hidden="true"></span>
+
+            Carregando clientes...
+
+        </div>
+
+    }
+
+    else
+
+    {
+
+        @* Pesquisa e filtros *@
+
+        <div class="card border-0 shadow-sm mb-4">
+
+            <div class="card-body">
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-12 col-md-8">
+
+                        <label for="pesquisaCliente" class="form-label">
+
+                            Pesquisar cliente
+
+                        </label>
+
+                        <input id="pesquisaCliente"
+
+                               class="form-control"
+
+                               placeholder="Nome, e-mail, telefone, empresa ou CNPJ"
+
+                               @bind="pesquisa"
+
+                               @bind:event="oninput" />
+
+                    </div>
+
+                    <div class="col-12 col-md-4">
+
+                        <label for="filtroSituacao" class="form-label">
+
+                            Situação
+
+                        </label>
+
+                        <select id="filtroSituacao"
+
+                                class="form-select"
+
+                                @bind="filtroSituacao">
+
+                            <option value="Todos">Todos</option>
+
+                            <option value="Ativos">Ativos</option>
+
+                            <option value="Inativos">Inativos</option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        @* Tabela de clientes *@
+
+        <div class="card border-0 shadow-sm">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th scope="col">Cliente</th>
+<th scope="col">Empresa / CNPJ</th>
+<th scope="col">E-mail</th>
+
+                            <th scope="col">Telefone</th>
+
+                            <th scope="col">Situação</th>
+<th scope="col">Cadastro</th>
+<th scope="col" class="text-end">Ações</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        @foreach (var cliente in ClientesFiltrados)
+
+                        {
+
+                            <tr @key="cliente.Id">
+
+                                <td>
+
+                                    <div class="fw-semibold">
+
+                                        @cliente.Nome
+
+                                    </div>
+
+                                    <small class="text-muted">
+
+                                        Código: @cliente.Id
+
+                                    </small>
+
+                                </td>
+<td>
+    <div class="fw-semibold">@(cliente.Estabelecimento?.NomeFantasia ?? "—")</div>
+    <small class="text-muted">@FormatarCnpj(cliente.Estabelecimento?.Cnpj)</small>
+</td>
+<td>@cliente.Email</td>
+
+                                <td>@(cliente.Telefone ?? "—")</td>
+
+                                <td>
+
+                                    @if (cliente.Ativo)
+
+                                    {
+
+                                        <span class="badge bg-success">
+
+                                            Ativo
+
+                                        </span>
+
+                                    }
+
+                                    else
+
+                                    {
+
+                                        <span class="badge bg-secondary">
+
+                                            Inativo
+
+                                        </span>
+
+                                    }
+
+                                </td>
+<td>@FormatarData(cliente.CriadoEm)</td>
+
+                                <td class="text-end">
+
+                                    <div class="d-inline-flex flex-wrap justify-content-end gap-2">
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-primary"
+                                                @onclick="@(() => EditarCliente(cliente))"
+                                                disabled="@(salvando || redefinindoSenha)">
+                                            <i class="bi bi-pencil me-1" aria-hidden="true"></i>Editar
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-warning"
+                                                @onclick="@(() => IniciarRedefinicaoSenha(cliente))"
+                                                disabled="@(salvando || redefinindoSenha || clienteExcluindoId.HasValue)">
+                                            <i class="bi bi-key me-1" aria-hidden="true"></i>Redefinir senha
+                                        </button>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-danger"
+                                                @onclick="@(() => ExcluirClienteAsync(cliente))"
+                                                disabled="@(salvando || redefinindoSenha || clienteExcluindoId.HasValue)">
+                                            @if (clienteExcluindoId == cliente.Id)
+                                            {
+                                                <span class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span><span>Excluindo...</span>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-trash me-1" aria-hidden="true"></i><span>Excluir</span>
+                                            }
+                                        </button>
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            @if (ClientesFiltrados.Count == 0)
+
+            {
+
+                <div class="text-center text-muted py-4">
+
+                    Nenhum cliente encontrado.
+
+                </div>
+
+            }
+
+        </div>
+
+    }
+
+    @* Modal de cadastro e edição *@
+
+    @if (mostrarFormulario)
+
+    {
+
+        <div class="modal d-block"
+
+             tabindex="-1"
+
+             style="background-color: rgba(0,0,0,.45);"
+
+             role="dialog"
+
+             aria-modal="true"
+
+             aria-labelledby="tituloFormulario">
+
+            <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+
+                <div class="modal-content">
+
+                    <EditForm Model="@formulario"
+
+                              OnValidSubmit="@SalvarCliente">
+
+                        <DataAnnotationsValidator />
+
+                        <div class="modal-header">
+
+                            <h2 id="tituloFormulario"
+
+                                class="modal-title fs-5">
+
+                                @(formulario.Id == 0
+
+                                    ? "Cadastrar cliente"
+
+                                    : "Editar cliente")
+
+                            </h2>
+
+                            <button type="button"
+
+                                    class="btn-close"
+
+                                    aria-label="Fechar"
+
+                                    @onclick="FecharFormulario"
+
+                                    disabled="@salvando">
+
+                            </button>
+
+                        </div>
+
+                        <div class="modal-body">
+                            @if (!string.IsNullOrWhiteSpace(mensagem))
+                            {
+                                <div class="alert @(erro ? "alert-danger" : "alert-success")" role="alert" aria-live="polite">@mensagem</div>
+                            }
+                            <ValidationSummary class="alert alert-danger" />
+
+                            <div class="row g-3">
+
+                                @* Dados do cliente *@
+
+                                <div class="col-12">
+
+                                    <h3 class="fs-6 fw-bold mb-0">
+
+                                        Dados do cliente
+
+                                    </h3>
+
+                                </div>
+
+                                <div class="col-12">
+
+                                    <label for="nomeCliente" class="form-label">
+
+                                        Nome completo *
+
+                                    </label>
+
+                                    <InputText id="nomeCliente"
+
+                                               class="form-control"
+
+                                               autocomplete="name"
+
+                                               maxlength="150"
+
+                                               @bind-Value="formulario.Nome" />
+
+                                    <ValidationMessage
+
+                                        For="@(() => formulario.Nome)" />
+
+                                </div>
+
+                                <div class="col-12 col-md-6">
+
+                                    <label for="emailCliente" class="form-label">
+
+                                        E-mail *
+
+                                    </label>
+
+                                    <InputText id="emailCliente"
+
+                                               class="form-control"
+
+                                               type="email"
+
+                                               autocomplete="email"
+
+                                               maxlength="254"
+
+                                               @bind-Value="formulario.Email" />
+
+                                    <ValidationMessage
+
+                                        For="@(() => formulario.Email)" />
+
+                                </div>
+
+                                <div class="col-12 col-md-6">
+
+                                    <label for="telefoneCliente" class="form-label">
+
+                                        Telefone
+
+                                    </label>
+
+                                    <InputText id="telefoneCliente"
+
+                                               class="form-control"
+
+                                               type="tel"
+
+                                               autocomplete="tel"
+
+                                               maxlength="30"
+
+                                               @bind-Value="formulario.Telefone" />
+
+                                    <ValidationMessage
+
+                                        For="@(() => formulario.Telefone)" />
+
+                                </div>
+
+                                @* Dados do estabelecimento, tanto no cadastro quanto na edição *@
+                                <div class="col-12">
+                                    <hr />
+                                    <h3 class="fs-6 fw-bold mb-0">Dados do estabelecimento</h3>
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label for="nomeFantasia" class="form-label">Nome fantasia *</label>
+                                    <InputText id="nomeFantasia"
+                                               class="form-control"
+                                               maxlength="150"
+                                               @bind-Value="formulario.NomeFantasia" />
+                                    <ValidationMessage For="@(() => formulario.NomeFantasia)" />
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label for="cnpjCliente" class="form-label">CNPJ *</label>
+                                    <InputText id="cnpjCliente"
+                                               class="form-control"
+                                               placeholder="00.000.000/0000-00"
+                                               maxlength="18"
+                                               inputmode="numeric"
+                                               @bind-Value="formulario.Cnpj" />
+                                    <ValidationMessage For="@(() => formulario.Cnpj)" />
+                                    <small class="text-muted">Informe um CNPJ válido. O sistema aceita CNPJ numérico ou alfanumérico e armazena os caracteres normalizados.</small>
+                                </div>
+
+                                @if (formulario.Id == 0)
+                                {
+                                    @* Acesso à plataforma: somente ao criar cliente *@
+                                    <div class="col-12">
+                                        <hr />
+                                        <h3 class="fs-6 fw-bold mb-0">Acesso à plataforma</h3>
+                                    </div>
+
+                                    <div class="col-12 col-md-8">
+                                        <label for="senhaInicial" class="form-label">Senha inicial *</label>
+                                        <div class="input-group">
+                                            <InputText id="senhaInicial"
+                                                       class="form-control"
+                                                       type="@(mostrarSenhaInicial ? "text" : "password")"
+                                                       autocomplete="new-password"
+                                                       maxlength="128"
+                                                       @bind-Value="formulario.SenhaInicial" />
+                                            <button type="button" class="btn btn-outline-secondary"
+                                                    @onclick="AlternarVisibilidadeSenhaInicial"
+                                                    aria-label="Mostrar ou ocultar senha inicial">
+                                                <i class="bi @(mostrarSenhaInicial ? "bi-eye-slash" : "bi-eye")" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                        <ValidationMessage For="@(() => formulario.SenhaInicial)" />
+                                        <div class="d-flex flex-wrap gap-2 mt-2">
+                                            <button type="button" class="btn btn-sm btn-outline-primary" @onclick="GerarSenhaInicial">
+                                                <i class="bi bi-magic me-1" aria-hidden="true"></i>Gerar senha segura
+                                            </button>
+                                        </div>
+                                        <small class="text-muted d-block mt-2">
+                                            Mínimo de 12 caracteres, com maiúscula, minúscula, número e símbolo. A API armazena somente o hash da senha.
+                                        </small>
+                                    </div>
+
+                                    <div class="col-12 col-md-8">
+                                        <label for="confirmacaoSenhaInicial" class="form-label">Confirmar senha inicial *</label>
+                                        <InputText id="confirmacaoSenhaInicial"
+                                                   class="form-control"
+                                                   type="@(mostrarSenhaInicial ? "text" : "password")"
+                                                   autocomplete="new-password"
+                                                   maxlength="128"
+                                                   @bind-Value="formulario.ConfirmacaoSenhaInicial" />
+                                        <ValidationMessage For="@(() => formulario.ConfirmacaoSenhaInicial)" />
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-12">
+                                        <div class="alert alert-info mb-0">
+                                            As alterações de empresa serão aplicadas ao primeiro estabelecimento associado ao cliente. A senha é gerenciada separadamente pela ação “Redefinir senha”.
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label" for="clienteAtivo">Situação do acesso</label>
+                                        <div class="form-check form-switch">
+                                            <InputCheckbox id="clienteAtivo"
+                                                           class="form-check-input"
+                                                           @bind-Value="formulario.Ativo" />
+                                            <label class="form-check-label" for="clienteAtivo">Cliente ativo (pode entrar no sistema)</label>
+                                        </div>
+                                    </div>
+                                }
+
+
+                            </div>
+
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <button type="button"
+
+                                    class="btn btn-outline-secondary"
+
+                                    @onclick="FecharFormulario"
+
+                                    disabled="@salvando">
+
+                                Cancelar
+
+                            </button>
+
+                            <button type="submit"
+
+                                    class="btn btn-primary"
+
+                                    disabled="@salvando">
+
+                                @if (salvando)
+
+                                {
+
+                                    <span class="spinner-border spinner-border-sm me-2"
+
+                                          aria-hidden="true"></span>
+
+                                    <span>Salvando...</span>
+
+                                }
+
+                                else
+
+                                {
+
+                                    <i class="bi bi-check-lg me-1"></i>
+
+                                    <span>Salvar cliente</span>
+
+                                }
+
+                            </button>
+
+                        </div>
+
+                    </EditForm>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    }
+
+    @if (mostrarModalRedefinicaoSenha && clienteParaRedefinir is not null)
+    {
+        <div class="modal d-block" tabindex="-1" style="background-color: rgba(0,0,0,.45);"
+             role="dialog" aria-modal="true" aria-labelledby="tituloRedefinicaoSenha">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 id="tituloRedefinicaoSenha" class="modal-title fs-5">Redefinir senha do cliente</h2>
+                        <button type="button" class="btn-close" aria-label="Fechar"
+                                @onclick="FecharModalRedefinicaoSenha" disabled="@redefinindoSenha"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-secondary">Cliente: <strong>@clienteParaRedefinir.Nome</strong></p>
+                        <p class="small text-secondary">E-mail de acesso: @clienteParaRedefinir.Email</p>
+                        @if (!string.IsNullOrWhiteSpace(erroRedefinicaoSenha))
+                        {
+                            <div class="alert alert-danger" role="alert" aria-live="polite">@erroRedefinicaoSenha</div>
+                        }
+                        <div class="mb-3">
+                            <label for="senhaTemporaria" class="form-label">Nova senha temporária *</label>
+                            <div class="input-group">
+                                <InputText id="senhaTemporaria" class="form-control"
+                                           type="@(mostrarSenhaTemporaria ? "text" : "password")"
+                                           autocomplete="new-password" maxlength="128"
+                                           @bind-Value="senhaTemporaria" />
+                                <button type="button" class="btn btn-outline-secondary"
+                                        @onclick="AlternarVisibilidadeSenhaTemporaria"
+                                        aria-label="Mostrar ou ocultar senha temporária">
+                                    <i class="bi @(mostrarSenhaTemporaria ? "bi-eye-slash" : "bi-eye")" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmacaoSenhaTemporaria" class="form-label">Confirmar senha temporária *</label>
+                            <InputText id="confirmacaoSenhaTemporaria" class="form-control"
+                                       type="@(mostrarSenhaTemporaria ? "text" : "password")"
+                                       autocomplete="new-password" maxlength="128"
+                                       @bind-Value="confirmacaoSenhaTemporaria" />
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary" @onclick="GerarSenhaTemporaria">
+                            <i class="bi bi-magic me-1" aria-hidden="true"></i>Gerar outra senha segura
+                        </button>
+                        <div class="small text-secondary mt-3">A senha deve ter pelo menos 12 caracteres, incluindo letras maiúsculas, minúsculas, números e símbolos. Entregue-a por um canal seguro.</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" @onclick="FecharModalRedefinicaoSenha" disabled="@redefinindoSenha">Cancelar</button>
+                        <button type="button" class="btn btn-warning" @onclick="RedefinirSenhaAsync" disabled="@redefinindoSenha">
+                            @if (redefinindoSenha)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span><span>Redefinindo...</span>
+                            }
+                            else
+                            {
+                                <i class="bi bi-key me-1" aria-hidden="true"></i><span>Redefinir senha</span>
+                            }
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+@code {
+
+    private List<ClienteItem> clientes = new();
+
+    private ClienteFormulario formulario = new();
+
+    private bool carregando = true;
+
+    private bool salvando;
+
+    private bool ativoOriginal = true;
+
+    private bool mostrarFormulario;
+
+    private bool erro;
+
+    private bool mostrarSenhaInicial;
+    private bool mostrarModalRedefinicaoSenha;
+    private bool redefinindoSenha;
+    private int? clienteExcluindoId;
+    private bool mostrarSenhaTemporaria;
+    private bool mostrarCredenciais;
+    private string mensagemCopia = string.Empty;
+    private string tituloCredenciais = string.Empty;
+    private string emailCredencial = string.Empty;
+    private string senhaCredencial = string.Empty;
+    private string senhaTemporaria = string.Empty;
+    private string confirmacaoSenhaTemporaria = string.Empty;
+    private string? erroRedefinicaoSenha;
+    private ClienteItem? clienteParaRedefinir;
+
+    private string mensagem = string.Empty;
+
+    private string pesquisa = string.Empty;
+
+    private string filtroSituacao = "Todos";
+
+    private HttpClient? api;
+
+    private List<ClienteItem> ClientesFiltrados =>
+
+        clientes
+
+            .Where(c =>
+
+                string.IsNullOrWhiteSpace(pesquisa) ||
+
+                c.Nome.Contains(
+
+                    pesquisa.Trim(),
+
+                    StringComparison.OrdinalIgnoreCase) ||
+
+                c.Email.Contains(
+
+                    pesquisa.Trim(),
+
+                    StringComparison.OrdinalIgnoreCase) ||
+
+                (c.Telefone?.Contains(
+    pesquisa.Trim(),
+    StringComparison.OrdinalIgnoreCase) ?? false) ||
+(c.Estabelecimento?.NomeFantasia?.Contains(
+    pesquisa.Trim(),
+    StringComparison.OrdinalIgnoreCase) ?? false) ||
+CnpjCorresponde(c.Estabelecimento?.Cnpj, pesquisa))
+
+            .Where(c =>
+
+                filtroSituacao == "Todos" ||
+
+                (filtroSituacao == "Ativos" && c.Ativo) ||
+
+                (filtroSituacao == "Inativos" && !c.Ativo))
+
+            .OrderBy(c => c.Nome)
+
+            .ToList();
+
+    protected override async Task OnInitializedAsync()
+
+    {
+
+        if (!Auth.EstaAutenticado ||
+            !string.Equals(Auth.Perfil, "ADMIN", StringComparison.OrdinalIgnoreCase))
+        {
+            Navigation.NavigateTo("/login");
+            carregando = false;
+            return;
+        }
+
+        var enderecoApi = Configuration["ApiBaseUrl"];
+
+        if (string.IsNullOrWhiteSpace(enderecoApi))
+
+        {
+
+            DefinirErro(
+
+                "Configure ApiBaseUrl nas configurações do Merkdito.Web.");
+
+            carregando = false;
+
+            return;
+
+        }
+
+        if (!Uri.TryCreate(
+
+                enderecoApi,
+
+                UriKind.Absolute,
+
+                out var uri) ||
+
+            (uri.Scheme != Uri.UriSchemeHttp &&
+
+             uri.Scheme != Uri.UriSchemeHttps))
+
+        {
+
+            DefinirErro(
+
+                "O endereço configurado em ApiBaseUrl é inválido.");
+
+            carregando = false;
+
+            return;
+
+        }
+
+        api = Auth.CriarClienteAutenticado();
+
+        api.BaseAddress = new Uri(uri.AbsoluteUri.TrimEnd('/') + "/");
+
+        await CarregarClientes();
+
+    }
+
+    private async Task CarregarClientes()
+
+    {
+
+        if (api is null)
+
+            return;
+
+        carregando = true;
+
+        try
+
+        {
+
+            using var resposta = await api.GetAsync("api/Clientes");
+
+            if (resposta.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                ExpirarSessao();
+                return;
+            }
+
+            if (!resposta.IsSuccessStatusCode)
+
+            {
+
+                DefinirErro(resposta.StatusCode switch
+
+                {
+
+                    HttpStatusCode.Unauthorized =>
+
+                        "Sua sessão não está autenticada. Entre novamente.",
+
+                    HttpStatusCode.Forbidden =>
+
+                        "Você não tem permissão para consultar os clientes.",
+
+                    _ =>
+
+                        "Não foi possível carregar os clientes. Tente novamente."
+
+                });
+
+                return;
+
+            }
+
+            clientes =
+
+                await resposta.Content.ReadFromJsonAsync<List<ClienteItem>>()
+
+                ?? new List<ClienteItem>();
+
+            erro = false;
+
+            mensagem = string.Empty;
+
+        }
+
+        catch (HttpRequestException)
+
+        {
+
+            DefinirErro(
+
+                "Não foi possível conectar à API do Merkdito.");
+
+        }
+
+        catch (System.Text.Json.JsonException)
+
+        {
+
+            DefinirErro(
+
+                "A resposta da API não está no formato esperado.");
+
+        }
+
+        finally
+
+        {
+
+            carregando = false;
+
+        }
+
+    }
+
+    private void NovoCliente()
+
+    {
+
+        formulario = new ClienteFormulario
+
+        {
+
+            Ativo = true
+
+        };
+        ativoOriginal = true;
+        mostrarSenhaInicial = false;
+
+        LimparMensagem();
+
+        mostrarFormulario = true;
+
+    }
+
+    private void EditarCliente(ClienteItem cliente)
+
+    {
+
+        formulario = new ClienteFormulario
+
+        {
+
+            Id = cliente.Id,
+
+            Nome = cliente.Nome,
+            Email = cliente.Email,
+            Telefone = cliente.Telefone,
+            NomeFantasia = cliente.Estabelecimento?.NomeFantasia ?? string.Empty,
+            Cnpj = cliente.Estabelecimento?.Cnpj ?? string.Empty,
+            Ativo = cliente.Ativo
+
+        };
+        ativoOriginal = cliente.Ativo;
+
+        LimparMensagem();
+
+        mostrarFormulario = true;
+
+    }
+
+    private void FecharFormulario()
+
+    {
+
+        if (salvando)
+
+            return;
+
+        mostrarFormulario = false;
+
+    }
+
+    private async Task SalvarCliente()
+
+    {
+
+        if (api is null || salvando)
+
+            return;
+
+        LimparMensagem();
+
+        if (!CnpjValido(formulario.Cnpj))
+
+        {
+
+            DefinirErro(
+
+                "O CNPJ informado é inválido. Confira os números.");
+
+            return;
+
+        }
+
+        if (formulario.Id == 0 && formulario.SenhaInicial != formulario.ConfirmacaoSenhaInicial)
+        {
+            DefinirErro("A confirmação da senha inicial não corresponde à senha informada.");
+            return;
+        }
+
+        if (formulario.Id == 0 && !SenhaAtendePolitica(formulario.SenhaInicial))
+        {
+            DefinirErro("A senha inicial deve ter pelo menos 12 caracteres e conter maiúscula, minúscula, número e símbolo.");
+            return;
+        }
+
+        if (formulario.Id != 0 && ativoOriginal && !formulario.Ativo)
+        {
+            var confirmarDesativacao = await JS.InvokeAsync<bool>(
+                "confirm",
+                $"Desativar o acesso de {formulario.Nome.Trim()}? O cliente não poderá iniciar novas sessões enquanto estiver inativo.");
+            if (!confirmarDesativacao)
+                return;
+        }
+
+        salvando = true;
+
+        try
+
+        {
+
+            HttpResponseMessage resposta;
+
+            if (formulario.Id == 0)
+
+            {
+
+                var dadosCadastro = new CriarClienteRequest
+
+                {
+
+                    Nome = formulario.Nome.Trim(),
+
+                    Email = formulario.Email.Trim(),
+
+                    Telefone = formulario.Telefone?.Trim(),
+
+                    NomeFantasia = formulario.NomeFantasia.Trim(),
+
+                    Cnpj = formulario.Cnpj.Trim(),
+
+                    SenhaInicial = formulario.SenhaInicial
+
+                };
+
+                resposta = await api.PostAsJsonAsync(
+
+                    "api/Clientes/cadastro-completo",
+
+                    dadosCadastro);
+
+            }
+
+            else
+
+            {
+
+                var dadosAtualizacao = new AtualizarClienteRequest
+
+                {
+
+                    Nome = formulario.Nome.Trim(),
+
+                    Email = formulario.Email.Trim(),
+
+                    Telefone = formulario.Telefone?.Trim(),
+                    NomeFantasia = formulario.NomeFantasia.Trim(),
+                    Cnpj = formulario.Cnpj.Trim(),
+                    Ativo = formulario.Ativo
+
+                };
+
+                resposta = await api.PutAsJsonAsync(
+
+                    $"api/Clientes/{formulario.Id}",
+
+                    dadosAtualizacao);
+
+            }
+
+            using (resposta)
+
+            {
+
+                if (resposta.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    ExpirarSessao();
+                    return;
+                }
+
+                if (!resposta.IsSuccessStatusCode)
+                {
+                    var mensagemApi = await LerMensagemApiAsync(resposta);
+                    if (!string.IsNullOrWhiteSpace(mensagemApi))
+                    {
+                        DefinirErro(mensagemApi);
+                    }
+                    else
+                    {
+                        DefinirErro(resposta.StatusCode switch
+                        {
+                            HttpStatusCode.BadRequest => "Confira os dados informados e tente novamente.",
+                            HttpStatusCode.Unauthorized => "Sua sessão não está autenticada. Entre novamente.",
+                            HttpStatusCode.Forbidden => "Você não tem permissão para realizar esta operação.",
+                            HttpStatusCode.Conflict => "O e-mail ou CNPJ já está cadastrado, ou existe um vínculo que impede a operação.",
+                            _ => "Não foi possível salvar o cliente. Tente novamente."
+                        });
+                    }
+                    return;
+                }
+
+            }
+
+            var eraCadastro = formulario.Id == 0;
+            var emailNovoCliente = formulario.Email.Trim();
+            var senhaNovoCliente = formulario.SenhaInicial;
+
+            mostrarFormulario = false;
+            formulario = new ClienteFormulario();
+            mostrarSenhaInicial = false;
+
+            if (eraCadastro)
+            {
+                emailCredencial = emailNovoCliente;
+                senhaCredencial = senhaNovoCliente;
+                tituloCredenciais = "Acesso inicial criado";
+                mostrarCredenciais = true;
+                mensagemCopia = string.Empty;
+            }
+
+            await CarregarClientes();
+
+            if (!erro)
+            {
+                DefinirSucesso(
+                    eraCadastro
+                        ? "Cliente e estabelecimento cadastrados com sucesso. Confira as credenciais iniciais abaixo."
+                        : "Cliente atualizado com sucesso.");
+            }
+
+        }
+
+        catch (HttpRequestException)
+
+        {
+
+            DefinirErro(
+
+                "Não foi possível conectar à API do Merkdito.");
+
+        }
+
+        catch (System.Text.Json.JsonException)
+
+        {
+
+            DefinirErro(
+
+                "A resposta da API não está no formato esperado.");
+
+        }
+
+        finally
+
+        {
+
+            salvando = false;
+
+        }
+
+    }
+
+    private async Task ExcluirClienteAsync(ClienteItem cliente)
+    {
+        if (api is null || clienteExcluindoId.HasValue || salvando || redefinindoSenha)
+            return;
+
+        var confirmar = await JS.InvokeAsync<bool>(
+            "confirm",
+            $"Excluir permanentemente o cliente '{cliente.Nome}'? A conta e as categorias iniciais serão removidas. Clientes com produtos, vendas ou movimentações de estoque não podem ser excluídos para preservar o histórico; nesses casos, desative o acesso na opção Editar.");
+        if (!confirmar)
+            return;
+
+        LimparMensagem();
+        clienteExcluindoId = cliente.Id;
+        try
+        {
+            using var resposta = await api.DeleteAsync($"api/Clientes/{cliente.Id}");
+            if (resposta.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                ExpirarSessao();
+                return;
+            }
+
+            if (!resposta.IsSuccessStatusCode)
+            {
+                var mensagemApi = await LerMensagemApiAsync(resposta);
+                DefinirErro(!string.IsNullOrWhiteSpace(mensagemApi)
+                    ? mensagemApi
+                    : resposta.StatusCode switch
+                    {
+                        HttpStatusCode.NotFound => "O cliente selecionado não foi encontrado.",
+                        HttpStatusCode.Forbidden => "Você não tem permissão para excluir este cliente.",
+                        HttpStatusCode.Conflict => "Este cliente possui dados operacionais vinculados e não pode ser excluído. Desative a conta para impedir novos acessos e preservar o histórico.",
+                        _ => "Não foi possível excluir o cliente. Tente novamente."
+                    });
+                return;
+            }
+
+            clientes.RemoveAll(c => c.Id == cliente.Id);
+            DefinirSucesso($"O cliente '{cliente.Nome}' foi excluído.");
+        }
+        catch (HttpRequestException)
+        {
+            DefinirErro("Não foi possível conectar à API. Atualize a lista antes de repetir a exclusão.");
+        }
+        catch (TaskCanceledException)
+        {
+            DefinirErro("A solicitação de exclusão demorou demais. Atualize a lista para confirmar se o cliente ainda existe antes de repetir.");
+        }
+        finally
+        {
+            clienteExcluindoId = null;
+        }
+    }
+
+    private static async Task<string?> LerMensagemApiAsync(HttpResponseMessage resposta)
+    {
+        try
+        {
+            await using var stream = await resposta.Content.ReadAsStreamAsync();
+            using var documento = await System.Text.Json.JsonDocument.ParseAsync(stream);
+            if (documento.RootElement.ValueKind != System.Text.Json.JsonValueKind.Object)
+                return null;
+
+            foreach (var nome in new[] { "mensagem", "message", "detail", "title" })
+            {
+                if (documento.RootElement.TryGetProperty(nome, out var valor) &&
+                    valor.ValueKind == System.Text.Json.JsonValueKind.String)
+                {
+                    var texto = valor.GetString();
+                    if (!string.IsNullOrWhiteSpace(texto))
+                        return texto;
+                }
+            }
+        }
+        catch (Exception ex) when (ex is System.Text.Json.JsonException or IOException)
+        {
+            // Mantém a mensagem genérica quando o corpo não é JSON legível.
+        }
+
+        return null;
+    }
+
+    private void AlternarVisibilidadeSenhaInicial() => mostrarSenhaInicial = !mostrarSenhaInicial;
+
+    private void AlternarVisibilidadeSenhaTemporaria() => mostrarSenhaTemporaria = !mostrarSenhaTemporaria;
+
+    private void GerarSenhaInicial()
+    {
+        formulario.SenhaInicial = GerarSenhaSegura();
+        formulario.ConfirmacaoSenhaInicial = formulario.SenhaInicial;
+    }
+
+    private void IniciarRedefinicaoSenha(ClienteItem cliente)
+    {
+        clienteParaRedefinir = cliente;
+        senhaTemporaria = GerarSenhaSegura();
+        confirmacaoSenhaTemporaria = senhaTemporaria;
+        mostrarSenhaTemporaria = false;
+        erroRedefinicaoSenha = null;
+        mostrarModalRedefinicaoSenha = true;
+        LimparMensagem();
+    }
+
+    private void GerarSenhaTemporaria()
+    {
+        senhaTemporaria = GerarSenhaSegura();
+        confirmacaoSenhaTemporaria = senhaTemporaria;
+        erroRedefinicaoSenha = null;
+    }
+
+    private void FecharModalRedefinicaoSenha()
+    {
+        if (redefinindoSenha) return;
+        mostrarModalRedefinicaoSenha = false;
+        clienteParaRedefinir = null;
+        senhaTemporaria = string.Empty;
+        confirmacaoSenhaTemporaria = string.Empty;
+        erroRedefinicaoSenha = null;
+        mostrarSenhaTemporaria = false;
+    }
+
+    private async Task RedefinirSenhaAsync()
+    {
+        if (api is null || clienteParaRedefinir is null || redefinindoSenha) return;
+        erroRedefinicaoSenha = null;
+        if (senhaTemporaria != confirmacaoSenhaTemporaria)
+        {
+            erroRedefinicaoSenha = "A confirmação da senha não corresponde à nova senha.";
+            return;
+        }
+        if (!SenhaAtendePolitica(senhaTemporaria))
+        {
+            erroRedefinicaoSenha = "A senha deve ter pelo menos 12 caracteres e conter maiúscula, minúscula, número e símbolo.";
+            return;
+        }
+
+        redefinindoSenha = true;
+        try
+        {
+            using var resposta = await api.PostAsJsonAsync(
+                $"api/Senhas/clientes/{clienteParaRedefinir.Id}/redefinir",
+                new RedefinirSenhaRequest { SenhaTemporaria = senhaTemporaria });
+
+            if (resposta.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                ExpirarSessao();
+                return;
+            }
+            if (resposta.StatusCode == HttpStatusCode.Forbidden)
+            {
+                erroRedefinicaoSenha = "Sua conta não tem permissão para redefinir senhas.";
+                return;
+            }
+            if (!resposta.IsSuccessStatusCode)
+            {
+                erroRedefinicaoSenha = resposta.StatusCode switch
+                {
+                    HttpStatusCode.NotFound => "O cliente selecionado não foi encontrado.",
+                    HttpStatusCode.BadRequest => "A API recusou a senha. Confira os requisitos e tente novamente.",
+                    _ => "Não foi possível redefinir a senha. Tente novamente."
+                };
+                return;
+            }
+
+            emailCredencial = clienteParaRedefinir.Email;
+            senhaCredencial = senhaTemporaria;
+            tituloCredenciais = "Senha temporária redefinida";
+            mostrarCredenciais = true;
+            mensagemCopia = string.Empty;
+            // Fecha o modal sem passar pelo bloqueio destinado a cliques durante o envio.
+            mostrarModalRedefinicaoSenha = false;
+            clienteParaRedefinir = null;
+            senhaTemporaria = string.Empty;
+            confirmacaoSenhaTemporaria = string.Empty;
+            erroRedefinicaoSenha = null;
+            mostrarSenhaTemporaria = false;
+            DefinirSucesso("A senha foi redefinida. Entregue a senha temporária ao cliente por um canal seguro.");
+        }
+        catch (HttpRequestException)
+        {
+            erroRedefinicaoSenha = "Não foi possível conectar à API. Confira o cliente antes de repetir a operação.";
+        }
+        catch (TaskCanceledException)
+        {
+            erroRedefinicaoSenha = "A solicitação demorou demais. Confirme o estado do acesso antes de repetir a operação.";
+        }
+        finally
+        {
+            redefinindoSenha = false;
+        }
+    }
+
+    private async Task CopiarEmailAsync() => await CopiarTextoAsync(emailCredencial, "E-mail");
+    private async Task CopiarSenhaAsync() => await CopiarTextoAsync(senhaCredencial, "Senha");
+
+    private async Task CopiarTextoAsync(string texto, string rotulo)
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", texto);
+            mensagemCopia = $"{rotulo} copiado. Mantenha as credenciais em segurança.";
+        }
+        catch (Exception ex) when (ex is JSException or InvalidOperationException)
+        {
+            mensagemCopia = "Não foi possível copiar automaticamente. Selecione o texto da credencial e copie manualmente.";
+        }
+    }
+
+    private void DispensarCredenciais()
+    {
+        mostrarCredenciais = false;
+        emailCredencial = string.Empty;
+        senhaCredencial = string.Empty;
+        tituloCredenciais = string.Empty;
+        mensagemCopia = string.Empty;
+    }
+
+    private static bool SenhaAtendePolitica(string? senha) =>
+        !string.IsNullOrEmpty(senha) &&
+        senha.Length >= 12 &&
+        senha.Any(char.IsUpper) &&
+        senha.Any(char.IsLower) &&
+        senha.Any(char.IsDigit) &&
+        senha.Any(c => !char.IsLetterOrDigit(c));
+
+    private static string GerarSenhaSegura()
+    {
+        const string maiusculas = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        const string minusculas = "abcdefghijkmnopqrstuvwxyz";
+        const string numeros = "23456789";
+        const string simbolos = "!@#$%*-_+?";
+        const string todos = maiusculas + minusculas + numeros + simbolos;
+
+        var caracteres = new List<char>
+        {
+            maiusculas[RandomNumberGenerator.GetInt32(maiusculas.Length)],
+            minusculas[RandomNumberGenerator.GetInt32(minusculas.Length)],
+            numeros[RandomNumberGenerator.GetInt32(numeros.Length)],
+            simbolos[RandomNumberGenerator.GetInt32(simbolos.Length)]
+        };
+        while (caracteres.Count < 18)
+            caracteres.Add(todos[RandomNumberGenerator.GetInt32(todos.Length)]);
+
+        for (var i = caracteres.Count - 1; i > 0; i--)
+        {
+            var j = RandomNumberGenerator.GetInt32(i + 1);
+            (caracteres[i], caracteres[j]) = (caracteres[j], caracteres[i]);
+        }
+        return new string(caracteres.ToArray());
+    }
+
+    private void ExpirarSessao()
+    {
+        Auth.LimparSessao();
+        Navigation.NavigateTo("/login");
+    }
+
+    private static string FormatarData(DateTime data) =>
+        data == DateTime.MinValue ? "—" : data.ToLocalTime().ToString("dd/MM/yyyy");
+
+    private static string NormalizarCnpj(string? valor) =>
+        new((valor ?? string.Empty).Where(char.IsLetterOrDigit).Select(char.ToUpperInvariant).ToArray());
+
+    private static string FormatarCnpj(string? cnpj)
+    {
+        if (string.IsNullOrWhiteSpace(cnpj)) return "CNPJ não informado";
+        var normalizado = NormalizarCnpj(cnpj);
+        return normalizado.Length == 14
+            ? $"{normalizado[..2]}.{normalizado[2..5]}.{normalizado[5..8]}/{normalizado[8..12]}-{normalizado[12..]}"
+            : cnpj;
+    }
+
+    private static bool CnpjCorresponde(string? cnpj, string pesquisa)
+    {
+        var buscaNormalizada = NormalizarCnpj(pesquisa);
+        if (buscaNormalizada.Length == 0 || string.IsNullOrWhiteSpace(cnpj)) return false;
+        return NormalizarCnpj(cnpj).Contains(buscaNormalizada, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool CnpjValido(string? cnpj)
+
+    {
+
+        if (string.IsNullOrWhiteSpace(cnpj))
+
+            return false;
+
+        var numeros = NormalizarCnpj(cnpj);
+
+        if (numeros.Length != 14)
+
+            return false;
+
+        if (!numeros[..12].All(char.IsAsciiLetterOrDigit) ||
+            numeros[12] is < '0' or > '9' || numeros[13] is < '0' or > '9')
+            return false;
+
+        if (numeros.Distinct().Count() == 1)
+
+            return false;
+
+        static int CalcularDigito(string valor, int[] pesos)
+
+        {
+
+            var soma = 0;
+
+            for (var i = 0; i < pesos.Length; i++)
+
+                soma += (valor[i] - '0') * pesos[i];
+
+            var resto = soma % 11;
+
+            return resto < 2 ? 0 : 11 - resto;
+
+        }
+
+        int[] pesosPrimeiro =
+
+        {
+
+            5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2
+
+        };
+
+        int[] pesosSegundo =
+
+        {
+
+            6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2
+
+        };
+
+        var primeiroDigito =
+
+            CalcularDigito(numeros[..12], pesosPrimeiro);
+
+        if (primeiroDigito != numeros[12] - '0')
+
+            return false;
+
+        var segundoDigito =
+
+            CalcularDigito(numeros[..13], pesosSegundo);
+
+        return segundoDigito == numeros[13] - '0';
+
+    }
+
+    private void LimparMensagem()
+
+    {
+
+        mensagem = string.Empty;
+
+        erro = false;
+
+    }
+
+    private void DefinirErro(string texto)
+
+    {
+
+        mensagem = texto;
+
+        erro = true;
+
+    }
+
+    private void DefinirSucesso(string texto)
+
+    {
+
+        mensagem = texto;
+
+        erro = false;
+
+    }
+
+    private sealed class ClienteItem
+    {
+        public int Id { get; set; }
+        public string Nome { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Telefone { get; set; }
+        public bool Ativo { get; set; }
+        public DateTime CriadoEm { get; set; }
+        public EstabelecimentoResumo? Estabelecimento { get; set; }
+    }
+
+    private sealed class EstabelecimentoResumo
+    {
+        public int Id { get; set; }
+        public string NomeFantasia { get; set; } = string.Empty;
+        public string? Cnpj { get; set; }
+        public bool Ativo { get; set; }
+    }
+
+    private sealed class ClienteFormulario : IValidatableObject
+
+    {
+
+        public int Id { get; set; }
+
+        [Required(ErrorMessage = "Informe o nome do cliente.")]
+
+        [StringLength(150,
+
+            ErrorMessage = "O nome deve ter até 150 caracteres.")]
+
+        public string Nome { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Informe o e-mail.")]
+
+        [EmailAddress(ErrorMessage = "Informe um e-mail válido.")]
+
+        [StringLength(254,
+
+            ErrorMessage = "O e-mail deve ter até 254 caracteres.")]
+
+        public string Email { get; set; } = string.Empty;
+
+        [StringLength(30,
+
+            ErrorMessage = "O telefone deve ter até 30 caracteres.")]
+
+        public string? Telefone { get; set; }
+
+        [Required(ErrorMessage = "Informe o nome fantasia.")]
+
+        [StringLength(150,
+
+            ErrorMessage = "O nome fantasia deve ter até 150 caracteres.")]
+
+        public string NomeFantasia { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Informe o CNPJ.")]
+
+        [StringLength(18,
+
+            MinimumLength = 14,
+
+            ErrorMessage = "Informe o CNPJ completo.")]
+
+        public string Cnpj { get; set; } = string.Empty;
+
+        // A senha só é exigida no cadastro. SalvarCliente valida a política
+        // condicionalmente, pois a senha não aparece no formulário de edição.
+        public string SenhaInicial { get; set; } = string.Empty;
+
+        // Validada condicionalmente apenas no cadastro, pois não se aplica à edição.
+        public string ConfirmacaoSenhaInicial { get; set; } = string.Empty;
+
+        public bool Ativo { get; set; } = true;
+
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            // Senha e confirmação são obrigatórias somente no cadastro, não na edição.
+            if (Id != 0)
+                yield break;
+
+            if (string.IsNullOrWhiteSpace(SenhaInicial))
+            {
+                yield return new ValidationResult(
+                    "Informe a senha inicial.",
+                    new[] { nameof(SenhaInicial) });
+            }
+            else if (SenhaInicial.Length > 128 ||
+                     SenhaInicial.Length < 12 ||
+                     !SenhaInicial.Any(char.IsUpper) ||
+                     !SenhaInicial.Any(char.IsLower) ||
+                     !SenhaInicial.Any(char.IsDigit) ||
+                     !SenhaInicial.Any(c => !char.IsLetterOrDigit(c)))
+            {
+                yield return new ValidationResult(
+                    "A senha deve ter entre 12 e 128 caracteres e conter maiúscula, minúscula, número e símbolo.",
+                    new[] { nameof(SenhaInicial) });
+            }
+
+            if (SenhaInicial != ConfirmacaoSenhaInicial)
+            {
+                yield return new ValidationResult(
+                    "A confirmação da senha inicial não corresponde à senha informada.",
+                    new[] { nameof(ConfirmacaoSenhaInicial) });
+            }
+        }
+    }
+
+    private sealed class CriarClienteRequest
+
+    {
+
+        public string Nome { get; set; } = string.Empty;
+
+        public string Email { get; set; } = string.Empty;
+
+        public string? Telefone { get; set; }
+
+        public string NomeFantasia { get; set; } = string.Empty;
+
+        public string Cnpj { get; set; } = string.Empty;
+
+        public string SenhaInicial { get; set; } = string.Empty;
+
+    }
+
+    private sealed class AtualizarClienteRequest
+    {
+        public string Nome { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Telefone { get; set; }
+        public string NomeFantasia { get; set; } = string.Empty;
+        public string Cnpj { get; set; } = string.Empty;
+        public bool Ativo { get; set; }
+    }
+
+    private sealed class RedefinirSenhaRequest
+    {
+        public string SenhaTemporaria { get; set; } = string.Empty;
+    }
+
+}

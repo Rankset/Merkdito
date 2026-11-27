@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "GERAR_HASH_ADMIN/1.0.0": {
+        "runtime": {
+          "GERAR_HASH_ADMIN.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "GERAR_HASH_ADMIN/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

@@ -1,0 +1,24 @@
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\bin\Debug\net10.0\Merkdito.Data.deps.json
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\bin\Debug\net10.0\Merkdito.Data.dll
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\bin\Debug\net10.0\Merkdito.Data.pdb
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.csproj.AssemblyReference.cache
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.AssemblyInfoInputs.cache
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.AssemblyInfo.cs
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.csproj.CoreCompileInputs.cache
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.dll
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\refint\Merkdito.Data.dll
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.pdb
+C:\Users\DOUG1\OneDrive\Área de Trabalho\Nova pasta (3)\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\ref\Merkdito.Data.dll
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\bin\Debug\net10.0\Merkdito.Data.deps.json
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\bin\Debug\net10.0\Merkdito.Data.dll
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\bin\Debug\net10.0\Merkdito.Data.pdb
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.csproj.AssemblyReference.cache
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.AssemblyInfoInputs.cache
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.AssemblyInfo.cs
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.csproj.CoreCompileInputs.cache
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.dll
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\refint\Merkdito.Data.dll
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\Merkdito.Data.pdb
+C:\Users\DOUG1\OneDrive\Área de Trabalho\MerkditoIntegrado\Merkdito.Data\obj\Debug\net10.0\ref\Merkdito.Data.dll

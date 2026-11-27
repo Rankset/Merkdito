@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MerKdito</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .login-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .login-logo {
+            margin-bottom: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-teal);
+        }
+        
+        .login-logo-badge {
+            background-color: var(--color-yellow);
+            color: var(--text-dark);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .login-subtitle {
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            font-size: 0.95rem;
+        }
+        
+        .login-form {
+            text-align: left;
+        }
+        
+        .demo-hint {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+    </style>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+</head>
+<body>
+    <!-- Background Decor -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <div class="login-wrapper">
+        <div class="glass-panel login-card animate-fade-in">
+            <div class="login-logo" style="margin-bottom: 30px;">
+                <span class="logo-text" style="color: #5DA54A; font-size: 3.2rem; font-weight: 800; letter-spacing: -1.5px;">MerKdito</span>
+            </div>
+            
+            <form id="formLogin" class="login-form" novalidate>
+                <div class="form-group">
+                    <label class="form-label" for="email">E-mail</label>
+                    <input id="email" name="email" type="email" class="form-control" placeholder="seu@email.com" autocomplete="username" required>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 30px;">
+                    <label class="form-label" for="senha">Senha</label>
+                    <input id="senha" name="senha" type="password" class="form-control" placeholder="Digite sua senha" autocomplete="current-password" required>
+                </div>
+                
+                <div id="mensagemLogin" role="status" aria-live="polite" style="display:none;padding:12px;margin-bottom:16px;border-radius:8px;"></div>
+                <button id="btnEntrar" type="submit" class="btn btn-primary btn-block">Entrar no Sistema</button>
+            </form>
+            
+            <p class="demo-hint">Use o e-mail e a senha fornecidos pelo administrador do Merkdito.</p>
+        </div>
+    </div>
+    <script>
+        (function () {
+            const form = document.getElementById("formLogin");
+            const mensagem = document.getElementById("mensagemLogin");
+            const botao = document.getElementById("btnEntrar");
+            const params = new URLSearchParams(window.location.search);
+
+            if (MerkditoAuth.isClientAuthenticated()) {
+                window.location.replace("dashboard.html");
+                return;
+            }
+            if (MerkditoAuth.isEmployeeAuthenticated()) {
+                window.location.replace("funcionario_vendas.html");
+                return;
+            }
+            if (params.get("motivo") === "sessao-expirada") {
+                mostrarMensagem("Sua sessão expirou ou o acesso à conta foi alterado. Entre novamente; se o problema continuar, fale com o administrador.");
+            } else if (params.get("motivo") === "autenticacao") {
+                mostrarMensagem("Entre com sua conta do Merkdito para continuar.");
+            } else if (params.get("motivo") === "logout") {
+                mostrarMensagem("Você saiu da sua conta.", true);
+            }
+
+            function mostrarMensagem(texto, sucesso) {
+                MerkditoUI.showInline(mensagem, texto, sucesso ? "success" : "error");
+            }
+
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault();
+                mensagem.style.display = "none";
+                if (!form.reportValidity()) return;
+
+                const restaurarBotao = MerkditoUI.setBusy(botao, "Entrando...");
+                try {
+                    const resultado = await MerkditoAuth.login(
+                        document.getElementById("email").value,
+                        document.getElementById("senha").value
+                    );
+                    if (!resultado.sucesso) {
+                        mostrarMensagem(resultado.mensagem);
+                        return;
+                    }
+                    const perfil = sessionStorage.getItem("merkdito_cliente_perfil");
+                    window.location.replace(perfil === "FUNCIONARIO" ? "funcionario_vendas.html" : "dashboard.html");
+                } catch {
+                    mostrarMensagem("Ocorreu um erro ao tentar entrar. Tente novamente.");
+                } finally {
+                    restaurarBotao();
+                    botao.disabled = false;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compras - MerKdito</title><link rel="stylesheet" href="assets/css/style.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="assets/js/config.js"></script><script src="assets/js/auth.js"></script><script src="assets/js/ui.js"></script><link rel="stylesheet" href="assets/css/responsive.css"><script src="assets/js/navigation.js" defer></script>
+<style>
+.grid{display:grid;grid-template-columns:minmax(0,1fr);gap:18px;margin-top:20px}.panel{background:#fff;border-radius:14px;padding:22px;box-shadow:0 4px 16px #14283c0d}.muted{color:var(--text-muted);font-size:.88rem;line-height:1.5}.form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field label{font-weight:650;font-size:.9rem}.msg{display:none;padding:12px;border-radius:9px;margin:14px 0;white-space:pre-line}.msg.on{display:block}.error{background:#fff0f0;color:#8e2424}.success{background:#effaf2;color:#176b3a}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;min-width:750px}th,td{padding:11px;border-bottom:1px solid #e8edf1;text-align:left}th{background:#f6f8fa;font-size:.82rem}td input,td select{min-width:100px}.items-table{min-width:680px}.items-table input,.items-table select{width:100%;min-width:100px}.actions{display:flex;gap:8px;flex-wrap:wrap}.status{font-size:.78rem;border-radius:30px;padding:4px 8px;font-weight:700;background:#fff8d9;color:#775b00}.status.RECEBIDA{background:#effaf2;color:#176b3a}.status.CANCELADA{background:#f0f1f3;color:#646e78}.summary{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin:15px 0}.total{font-size:1.2rem;font-weight:800}@media(max-width:800px){.form-grid{grid-template-columns:1fr}.panel{padding:16px}}
+</style></head>
+<body data-require-client="true"><div class="bg-blob blob-1"></div><div class="bg-blob blob-2"></div><div class="app-container">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo">
+                <span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px;">MerKdito</span>
+            </a>
+
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+
+            <div class="logout-container">
+                <a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </div>
+        </aside>
+<main class="main-content"><header class="top-header"><div><h1 class="page-title">Compras</h1><p class="page-subtitle" style="margin-bottom:0">Registre compras de fornecedores e receba mercadorias no estoque central.</p></div><div class="header-actions"><button id="reload" class="btn btn-outline" type="button"><i class="fa-solid fa-rotate"></i> Atualizar</button></div></header>
+<div id="msg" class="msg" role="status" aria-live="polite"></div>
+<section class="panel"><h2>Registrar compra</h2><p class="muted">Ao salvar, a compra fica pendente e não altera o estoque. Clique em “Receber” somente quando a mercadoria chegar; o recebimento atualizará o estoque central e o histórico de movimentações uma única vez.</p>
+<form id="form"><div class="form-grid">
+<div class="field"><label for="fornecedor">Fornecedor *</label><select class="form-control" id="fornecedor" required><option value="">Carregando...</option></select></div>
+<div class="field"><label for="documento">Nota fiscal / documento</label><input class="form-control" id="documento" maxlength="80"></div>
+<div class="field"><label for="data">Data da compra</label><input class="form-control" id="data" type="date"></div>
+</div>
+<div class="table-wrap" style="margin-top:16px"><table class="items-table"><thead><tr><th style="width:50%">Produto *</th><th>Quantidade *</th><th>Custo unitário (R$) *</th><th>Total (R$)</th><th></th></tr></thead><tbody id="itemRows"></tbody></table></div>
+<div class="summary"><button id="addItem" type="button" class="btn btn-outline"><i class="fa-solid fa-plus"></i> Adicionar produto</button><div class="total">Total: R$ <span id="total">0,00</span></div></div>
+<div class="field"><label for="obs">Observação</label><textarea class="form-control" id="obs" rows="2" maxlength="500"></textarea></div>
+<div class="actions" style="margin-top:16px"><button id="save" class="btn btn-primary" type="submit"><i class="fa-solid fa-floppy-disk"></i> Salvar compra pendente</button></div></form></section>
+<section class="panel"><h2>Histórico de compras</h2><div class="form-grid" style="grid-template-columns:minmax(180px,260px) minmax(180px,260px) auto;margin-bottom:14px"><div class="field"><label for="filterStatus">Status</label><select id="filterStatus" class="form-control"><option value="">Todos</option><option value="PENDENTE">Pendente</option><option value="RECEBIDA">Recebida</option><option value="CANCELADA">Cancelada</option></select></div><div class="field"><label for="filterDe">Criada a partir de</label><input id="filterDe" type="date" class="form-control"></div><div class="field" style="justify-content:end"><button id="filter" type="button" class="btn btn-outline">Filtrar</button></div></div>
+<div class="table-wrap"><table><thead><tr><th>#</th><th>Fornecedor</th><th>Documento</th><th>Data</th><th>Itens</th><th>Total</th><th>Status</th><th>Ações</th></tr></thead><tbody id="purchaseRows"><tr><td colspan="8">Carregando...</td></tr></tbody></table></div></section>
+</main></div>
+<script>
+(()=>{"use strict";const $=id=>document.getElementById(id),API=window.MERKDITO_API_URL;let products=[],suppliers=[],purchases=[];
+function esc(v){return String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function money(v){return Number(v||0).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});}
+function show(t,k="success"){$("msg").textContent=t;$("msg").className="msg on "+k;}function clear(){$("msg").textContent="";$("msg").className="msg";}
+async function req(path,opts={}){const r=await MerkditoAuth.apiFetch(`${API}/${path}`,opts);let d=null;try{d=await r.json()}catch{}if(!r.ok)throw new Error(d?.mensagem||d?.message||(typeof d==="string"?d:`Falha HTTP ${r.status}`));return d;}
+async function loadOptions(){[suppliers,products]=await Promise.all([req("Fornecedores"),req("Produtos")]);$("fornecedor").innerHTML='<option value="">Selecione...</option>'+suppliers.filter(x=>x.ativo).map(x=>`<option value="${x.id}">${esc(x.nome)}</option>`).join("");if(!products.length)show("Cadastre produtos antes de registrar uma compra.","error");}
+function addRow(){const tr=document.createElement("tr");tr.innerHTML=`<td><select class="form-control product" required><option value="">Selecione...</option>${products.filter(p=>p.ativo!==false).map(p=>`<option value="${p.id}">${esc(p.nome)}${p.codigoBarras?` — ${esc(p.codigoBarras)}`:""}</option>`).join("")}</select></td><td><input class="form-control qty" type="number" min="1" max="1000000" step="1" value="1" required></td><td><input class="form-control cost" type="number" min="0" max="9999999999.99" step="0.01" value="0.00" required></td><td class="lineTotal">0,00</td><td><button type="button" class="btn btn-outline remove" aria-label="Remover item"><i class="fa-solid fa-trash"></i></button></td>`;$("itemRows").appendChild(tr);tr.querySelectorAll(".qty,.cost").forEach(el=>el.addEventListener("input",calc));tr.querySelector(".remove").onclick=()=>{if($("itemRows").children.length>1)tr.remove();calc()};}
+function calc(){let total=0;document.querySelectorAll("#itemRows tr").forEach(tr=>{const q=Number(tr.querySelector(".qty").value)||0,c=Number(tr.querySelector(".cost").value)||0,t=q*c;tr.querySelector(".lineTotal").textContent=money(t);total+=t});$("total").textContent=money(total);}
+async function loadPurchases(){const q=new URLSearchParams();if($("filterStatus").value)q.set("status",$("filterStatus").value);if($("filterDe").value)q.set("de",$("filterDe").value);q.set("limite","500");purchases=await req(`Compras?${q}`);renderPurchases();}
+function renderPurchases(){$("purchaseRows").innerHTML=purchases.length?purchases.map(p=>`<tr><td>${p.id}</td><td>${esc(p.fornecedor)}</td><td>${esc(p.numeroDocumento||"—")}</td><td>${p.dataCompraUtc?new Date(p.dataCompraUtc).toLocaleDateString("pt-BR"):"—"}</td><td>${p.quantidadeItens}</td><td>R$ ${money(p.total)}</td><td><span class="status ${p.status}">${esc(p.status)}</span></td><td><div class="actions"><button class="btn btn-outline" type="button" data-view="${p.id}">Detalhes</button>${p.status==="PENDENTE"?`<button class="btn btn-primary" type="button" data-receive="${p.id}">Receber</button><button class="btn btn-outline" type="button" data-cancel="${p.id}">Cancelar</button>`:""}</div></td></tr>`).join(""):'<tr><td colspan="8">Nenhuma compra encontrada.</td></tr>';document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>details(+b.dataset.view));document.querySelectorAll("[data-receive]").forEach(b=>b.onclick=()=>receive(+b.dataset.receive));document.querySelectorAll("[data-cancel]").forEach(b=>b.onclick=()=>cancel(+b.dataset.cancel));}
+async function details(id){try{const p=await req(`Compras/${id}`);const lines=p.itens.map(i=>`${i.nomeProduto} — ${i.quantidade} x R$ ${money(i.custoUnitario)} = R$ ${money(i.totalItem)}`).join("\n");alert(`Compra #${p.id}\nFornecedor: ${p.fornecedor}\nStatus: ${p.status}\nTotal: R$ ${money(p.total)}\n\n${lines}\n\n${p.observacao||""}`)}catch(e){show(e.message,"error")}}
+async function receive(id){if(!confirm(`Confirmar recebimento da compra #${id}? Isso acrescentará as quantidades ao estoque central e registrará movimentações.`))return;try{await req(`Compras/${id}/receber`,{method:"POST"});show(`Compra #${id} recebida. Estoque central atualizado.`);await loadPurchases()}catch(e){show(e.message,"error")}}
+async function cancel(id){if(!confirm(`Cancelar a compra pendente #${id}?`))return;try{await req(`Compras/${id}/cancelar`,{method:"POST"});show(`Compra #${id} cancelada.`);await loadPurchases()}catch(e){show(e.message,"error")}}
+$("form").addEventListener("submit",async e=>{e.preventDefault();clear();const rows=[...document.querySelectorAll("#itemRows tr")];const itens=rows.map(tr=>({produtoId:Number(tr.querySelector(".product").value),quantidade:Number(tr.querySelector(".qty").value),custoUnitario:Number(tr.querySelector(".cost").value)}));if(itens.some(i=>!i.produtoId||!Number.isInteger(i.quantidade)||i.quantidade<1||!Number.isFinite(i.custoUnitario)||i.custoUnitario<0)){show("Confira produto, quantidade e custo de todos os itens.","error");return;}if(new Set(itens.map(i=>i.produtoId)).size!==itens.length){show("O mesmo produto não pode aparecer duas vezes. Ajuste a quantidade na linha existente.","error");return;}const body={fornecedorId:Number($("fornecedor").value),numeroDocumento:$("documento").value.trim()||null,dataCompraUtc:$("data").value?new Date($("data").value+"T12:00:00").toISOString():null,observacao:$("obs").value.trim()||null,itens};const btn=$("save");btn.disabled=true;try{const result=await req("Compras",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});show(`Compra #${result.id} salva como pendente. O estoque ainda não foi alterado.`);$("form").reset();$("itemRows").innerHTML="";addRow();calc();await loadPurchases()}catch(err){show(err.message,"error")}finally{btn.disabled=false}});
+$("addItem").onclick=addRow;$("reload").onclick=async()=>{try{await loadOptions();await loadPurchases();show("Dados atualizados.")}catch(e){show(e.message,"error")}};$("filter").onclick=()=>loadPurchases().catch(e=>show(e.message,"error"));
+(async()=>{try{await loadOptions();addRow();await loadPurchases()}catch(e){show(e.message,"error");$("purchaseRows").innerHTML='<tr><td colspan="8">Não foi possível carregar as compras. Confira autenticação, API e migration.</td></tr>'}})();
+})();
+</script></body></html>

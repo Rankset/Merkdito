@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Perfil - MerKdito</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .profile-grid { display:grid; grid-template-columns:minmax(260px, .8fr) minmax(0, 2fr); gap:24px; }
+        .profile-card, .details-card { padding:28px; }
+        .profile-card { text-align:center; height:fit-content; }
+        .profile-avatar { width:104px; height:104px; border-radius:50%; background:var(--color-orange); color:#fff; display:flex; align-items:center; justify-content:center; font-size:2.5rem; margin:0 auto 18px; border:4px solid #fff; box-shadow:var(--shadow-md); }
+        .profile-status { display:inline-block; background:rgba(254,154,52,.16); color:var(--color-orange); padding:5px 12px; border-radius:20px; font-size:.85rem; font-weight:600; margin-bottom:20px; }
+        .section-title { font-size:1.15rem; margin:0 0 20px; display:flex; align-items:center; gap:10px; color:var(--color-teal); }
+        .profile-note { color:var(--text-muted, #6b7280); font-size:.88rem; line-height:1.5; }
+        .field-readonly { background:rgba(120,120,120,.08); cursor:not-allowed; }
+        .form-message { display:none; padding:12px 14px; border-radius:10px; margin-bottom:18px; line-height:1.45; }
+        .form-message.is-visible { display:block; }
+        .form-message.is-error { color:#8e2424; background:#fff0f0; border:1px solid #f0caca; }
+        .form-message.is-success { color:#176b3a; background:#effaf2; border:1px solid #c8ead2; }
+        .form-message.is-info { color:#245878; background:#eef7fc; border:1px solid #cbe5f4; }
+        .meta-row { display:flex; justify-content:space-between; gap:12px; padding:10px 0; border-bottom:1px solid var(--border-glass); text-align:left; }
+        .meta-row:last-child { border-bottom:0; }
+        .meta-label { opacity:.72; }
+        .meta-value { font-weight:600; text-align:right; overflow-wrap:anywhere; }
+        @media (max-width: 850px) { .profile-grid { grid-template-columns:1fr; } .profile-card,.details-card { padding:20px; } }
+    </style>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="assets/js/navigation.js" defer></script>
+</head>
+<body data-require-client="true">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="app-container">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo" style="text-decoration:none">
+                <span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px">MerKdito</span>
+            </a>
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+            <div class="logout-container">
+                <a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div>
+                    <h1 class="page-title">Meu Perfil</h1>
+                    <p class="page-subtitle" style="margin-bottom:0">Consulte e atualize os dados da sua conta e do estabelecimento.</p>
+                </div>
+                <div class="header-actions">
+                    <button id="btnExportar" type="button" class="btn btn-outline"><i class="fa-solid fa-download"></i> Exportar dados</button>
+                    <button id="btnSalvar" type="submit" form="profileForm" class="btn btn-primary" disabled><i class="fa-solid fa-floppy-disk"></i> Salvar alterações</button>
+                </div>
+            </header>
+
+            <div class="animate-fade-in delay-1 profile-grid">
+                <section class="glass-panel profile-card" aria-labelledby="accountTitle">
+                    <div class="profile-avatar"><i class="fa-solid fa-building"></i></div>
+                    <h2 id="accountTitle" style="font-size:1.2rem;margin:0 0 8px">Dados da conta</h2>
+                    <div id="statusCadastro" class="profile-status">Carregando cadastro...</div>
+                    <div class="meta-row"><span class="meta-label">Cliente nº</span><span id="clienteId" class="meta-value">—</span></div>
+                    <div class="meta-row"><span class="meta-label">Cadastro desde</span><span id="criadoEm" class="meta-value">—</span></div>
+                    <p class="profile-note" style="margin-top:18px;text-align:left">Os dados apresentados são carregados da sua conta autenticada. Este perfil não exibe nem altera informações que ainda não fazem parte do cadastro do Merkdito.</p>
+                </section>
+
+                <section class="glass-panel details-card">
+                    <div id="mensagemPerfil" class="form-message" role="status" aria-live="polite"></div>
+                    <form id="profileForm" novalidate>
+                        <h2 class="section-title"><i class="fa-solid fa-address-card"></i> Dados da conta</h2>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="nome">Nome do cliente / responsável *</label>
+                                <input id="nome" name="nome" type="text" class="form-control" maxlength="150" autocomplete="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="email">E-mail de acesso *</label>
+                                <input id="email" name="email" type="email" class="form-control" maxlength="254" autocomplete="email" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="telefone">Telefone comercial</label>
+                                <input id="telefone" name="telefone" type="tel" class="form-control" maxlength="30" autocomplete="tel">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="cnpj">CNPJ do estabelecimento</label>
+                                <input id="cnpj" name="cnpj" type="text" class="form-control field-readonly" readonly aria-describedby="cnpjHelp">
+                                <small id="cnpjHelp" class="profile-note">Campo somente para consulta nesta versão.</small>
+                            </div>
+                        </div>
+
+                        <hr style="border:0;border-top:1px solid var(--border-glass);margin:26px 0">
+                        <h2 class="section-title"><i class="fa-solid fa-store"></i> Estabelecimento principal</h2>
+                        <div class="form-group">
+                            <label class="form-label" for="nomeFantasia">Nome fantasia *</label>
+                            <input id="nomeFantasia" name="nomeFantasia" type="text" class="form-control" maxlength="150" required>
+                        </div>
+                        <p class="profile-note">O nome, e-mail, telefone e nome fantasia podem ser atualizados aqui. Alterações de CNPJ, endereço físico e dados bancários não são oferecidas porque ainda não há um fluxo correspondente no modelo atual do sistema.</p>
+                        <div class="header-actions" style="justify-content:flex-end;margin-top:22px">
+                            <button id="btnCancelar" type="button" class="btn btn-outline">Descartar alterações</button>
+                            <button id="btnSalvarRodape" type="submit" class="btn btn-primary" disabled><i class="fa-solid fa-floppy-disk"></i> Salvar alterações</button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+            const form = document.getElementById("profileForm");
+            const message = document.getElementById("mensagemPerfil");
+            const saveButtons = [document.getElementById("btnSalvar"), document.getElementById("btnSalvarRodape")];
+            const fields = {
+                nome: document.getElementById("nome"),
+                email: document.getElementById("email"),
+                telefone: document.getElementById("telefone"),
+                nomeFantasia: document.getElementById("nomeFantasia"),
+                cnpj: document.getElementById("cnpj")
+            };
+            let loadedProfile = null;
+            let canSave = false;
+
+            function getValue(obj, camel, pascal) {
+                if (!obj) return null;
+                return obj[camel] !== undefined ? obj[camel] : obj[pascal];
+            }
+
+            function showMessage(text, kind) {
+                MerkditoUI.showInline(message, text, kind || "info");
+            }
+
+            function clearMessage() {
+                MerkditoUI.clearInline(message);
+            }
+
+            async function responsePayload(response) {
+                const text = await response.text();
+                if (!text) return null;
+                try { return JSON.parse(text); } catch { return null; }
+            }
+
+            function apiMessage(payload, fallback) {
+                if (!payload || typeof payload !== "object") return fallback;
+                return payload.mensagem || payload.message || payload.title || payload.detail || fallback;
+            }
+
+            function formatDate(value) {
+                if (!value) return "—";
+                const date = new Date(value);
+                return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString("pt-BR", { timeZone: "UTC" });
+            }
+
+            function currentFormData() {
+                return {
+                    nome: fields.nome.value.trim(),
+                    email: fields.email.value.trim(),
+                    telefone: fields.telefone.value.trim(),
+                    nomeFantasia: fields.nomeFantasia.value.trim()
+                };
+            }
+
+            function setBusy(busy) {
+                saveButtons.forEach(button => { button.disabled = busy || !canSave; });
+                document.getElementById("btnCancelar").disabled = busy || !loadedProfile;
+            }
+
+            function renderProfile(data) {
+                const establishment = getValue(data, "estabelecimento", "Estabelecimento");
+                fields.nome.value = getValue(data, "nome", "Nome") || "";
+                fields.email.value = getValue(data, "email", "Email") || "";
+                fields.telefone.value = getValue(data, "telefone", "Telefone") || "";
+                fields.nomeFantasia.value = getValue(establishment, "nomeFantasia", "NomeFantasia") || "";
+                fields.cnpj.value = getValue(establishment, "cnpj", "Cnpj") || "Não cadastrado";
+                document.getElementById("clienteId").textContent = getValue(data, "id", "Id") ?? "—";
+                document.getElementById("criadoEm").textContent = formatDate(getValue(data, "criadoEm", "CriadoEm"));
+                const active = Boolean(getValue(data, "ativo", "Ativo"));
+                document.getElementById("statusCadastro").textContent = active ? "Cadastro ativo" : "Cadastro inativo";
+                document.getElementById("statusCadastro").style.color = active ? "#247245" : "#9a3333";
+                document.getElementById("statusCadastro").style.background = active ? "rgba(46,160,90,.14)" : "rgba(200,50,50,.12)";
+                canSave = Boolean(establishment);
+                saveButtons.forEach(button => { button.disabled = !canSave; });
+                if (!establishment) {
+                    showMessage("Não há estabelecimento associado à sua conta. Entre em contato com o suporte para regularizar o cadastro.", "error");
+                }
+            }
+
+            async function loadProfile(quiet) {
+                if (!quiet) showMessage("Carregando dados do servidor...", "info");
+                try {
+                    const response = await MerkditoAuth.apiFetch("MeuPerfil", { method: "GET" });
+                    const payload = await responsePayload(response);
+                    if (!response.ok) throw new Error(apiMessage(payload, "Não foi possível carregar o perfil."));
+                    loadedProfile = payload;
+                    renderProfile(payload);
+                    const establishment = getValue(payload, "estabelecimento", "Estabelecimento");
+                    if (!quiet && establishment) clearMessage();
+                    return Boolean(establishment);
+                } catch (error) {
+                    canSave = false;
+                    saveButtons.forEach(button => { button.disabled = true; });
+                    showMessage(error.message || "Falha ao carregar o perfil.", "error");
+                    return false;
+                }
+            }
+
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault();
+                clearMessage();
+                const data = currentFormData();
+                if (!data.nome || !data.email || !data.nomeFantasia) {
+                    showMessage("Preencha nome, e-mail e nome fantasia.", "error");
+                    return;
+                }
+                if (!fields.email.checkValidity()) {
+                    showMessage("Informe um e-mail válido.", "error");
+                    fields.email.focus();
+                    return;
+                }
+
+                setBusy(true);
+                try {
+                    const response = await MerkditoAuth.apiFetch("MeuPerfil", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data)
+                    });
+                    const payload = await responsePayload(response);
+                    if (!response.ok) throw new Error(apiMessage(payload, "Não foi possível salvar as alterações."));
+
+                    if (window.MerkditoAuth && typeof window.MerkditoAuth.updateCachedIdentity === "function") {
+                        window.MerkditoAuth.updateCachedIdentity(data.nome, data.email);
+                    }
+                    const recarregado = await loadProfile(true);
+                    if (recarregado) {
+                        showMessage("Perfil atualizado com sucesso.", "success");
+                    } else {
+                        showMessage("As alterações foram salvas, mas não foi possível recarregar os dados. Atualize a página para conferir.", "info");
+                    }
+                } catch (error) {
+                    showMessage(error.message || "Falha ao salvar o perfil.", "error");
+                } finally {
+                    setBusy(false);
+                }
+            });
+
+            document.getElementById("btnCancelar").addEventListener("click", function () {
+                if (loadedProfile) {
+                    clearMessage();
+                    renderProfile(loadedProfile);
+                }
+            });
+
+            document.getElementById("btnExportar").addEventListener("click", function () {
+                if (!loadedProfile) {
+                    showMessage("Carregue o perfil antes de exportar os dados.", "error");
+                    return;
+                }
+                const establishment = getValue(loadedProfile, "estabelecimento", "Estabelecimento");
+                const exportData = {
+                    cliente: {
+                        id: getValue(loadedProfile, "id", "Id"),
+                        nome: getValue(loadedProfile, "nome", "Nome"),
+                        email: getValue(loadedProfile, "email", "Email"),
+                        telefone: getValue(loadedProfile, "telefone", "Telefone"),
+                        ativo: getValue(loadedProfile, "ativo", "Ativo"),
+                        criadoEm: getValue(loadedProfile, "criadoEm", "CriadoEm")
+                    },
+                    estabelecimento: establishment ? {
+                        id: getValue(establishment, "id", "Id"),
+                        nomeFantasia: getValue(establishment, "nomeFantasia", "NomeFantasia"),
+                        cnpj: getValue(establishment, "cnpj", "Cnpj"),
+                        ativo: getValue(establishment, "ativo", "Ativo"),
+                        criadoEm: getValue(establishment, "criadoEm", "CriadoEm")
+                    } : null,
+                    exportadoEm: new Date().toISOString()
+                };
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: "application/json;charset=utf-8" });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "meu_perfil_merkdito.json";
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(url);
+            });
+
+            document.addEventListener("DOMContentLoaded", function () { loadProfile(false); });
+            // O script fica no final do body; DOMContentLoaded ainda será disparado depois dele.
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/"> <span class="merkdito-nav-wordmark">MerKdito</span> <small class="opacity-75">Admin</small></a>
+    </div>
+</div>
+
+<input type="checkbox" title="Abrir menu de navegação" class="navbar-toggler" />
+
+<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler')?.click()">
+    <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span>
+                Início
+            </NavLink>
+        </div>
+        <div class="nav-item px-3 mt-3">
+            <span class="nav-link text-uppercase fw-bold">Administração</span>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/admin/clientes">
+                <span class="bi bi-people" aria-hidden="true"></span>
+                Clientes
+            </NavLink>
+        </div>
+    </nav>
+</div>

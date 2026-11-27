@@ -1,0 +1,704 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produtos - MerKdito</title>
+
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <style>
+        .export-panel { margin-bottom: 18px; padding: 18px 20px; }
+        .export-panel-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+        .export-panel-title { font-size:1rem; font-weight:750; margin:0 0 5px; }
+        .export-panel-help { color:var(--text-muted); font-size:.88rem; margin:0; line-height:1.55; max-width:680px; }
+        .export-actions { display:flex; gap:9px; flex-wrap:wrap; align-items:center; }
+        @media(max-width:700px) { .export-actions { width:100%; } .export-actions .btn { width:100%; justify-content:center; } }
+    </style>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="assets/js/navigation.js" defer></script>
+</head>
+
+<body data-require-client="true">
+    <div class="bg-blob blob-2"></div>
+
+    <div class="app-container">
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo">
+                <span class="logo-text" style="color: #5DA54A; font-size: 2rem; font-weight: 800; letter-spacing: -1px;">
+                    MerKdito
+                </span>
+            </a>
+
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+
+            <div class="logout-container">
+                <a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Sair
+                </a>
+            </div>
+        </aside>
+
+        <!-- Conteúdo principal -->
+        <main class="main-content">
+
+            <header class="top-header">
+                <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 16px; flex-wrap: wrap;">
+                    <div>
+                        <h1 class="page-title">Produtos</h1>
+
+                        <p class="page-subtitle" style="margin-bottom: 0;">
+                            Gestão do catálogo
+                            (<span id="totalProdutos">0</span> produtos)
+                        </p>
+                    </div>
+
+                    <div class="header-actions" style="display:flex;gap:10px;flex-wrap:wrap;">
+                        <a href="atualizar_estoque.html" class="btn btn-outline"><i class="fa-solid fa-boxes-stacked"></i> Atualizar estoque</a>
+                        <a href="atualizar_produtos.html" class="btn btn-outline"><i class="fa-solid fa-list-check"></i> Atualizar cadastro</a>
+                        <a href="importar_produtos.html" class="btn btn-primary">
+                            <i class="fa-solid fa-file-import"></i> Importar CSV
+                        </a>
+                        <a href="relatorios.html" class="btn btn-outline">
+                            <i class="fa-solid fa-file-invoice"></i> Gerar Relatório
+                        </a>
+                        <a href="adicionar_produto.html" class="btn btn-outline">
+                            <i class="fa-solid fa-plus"></i> Novo produto
+                        </a>
+                    </div>
+                </div>
+            </header>
+
+            <div class="glass-panel export-panel animate-fade-in delay-1" aria-labelledby="tituloExportacoes">
+                <div class="export-panel-head">
+                    <div>
+                        <h2 id="tituloExportacoes" class="export-panel-title"><i class="fa-solid fa-file-export"></i> Exportar produtos para CSV</h2>
+                        <p class="export-panel-help">Os arquivos de atualização são gerados com os produtos que correspondem à pesquisa e aos filtros abaixo. Assim você pode selecionar uma categoria ou somente os itens que deseja revisar antes de exportar.</p>
+                    </div>
+                    <div class="export-actions">
+                        <button id="btnExportarCatalogo" type="button" class="btn btn-outline" disabled title="Exporta os produtos que correspondem aos filtros"><i class="fa-solid fa-file-csv"></i> Exportar catálogo filtrado</button>
+                        <button id="btnExportarCadastro" type="button" class="btn btn-outline" disabled title="Gera um CSV no formato aceito por Atualizar Cadastro"><i class="fa-solid fa-list-check"></i> CSV para atualizar cadastro</button>
+                        <button id="btnExportarEstoque" type="button" class="btn btn-outline" disabled title="Gera um CSV no formato aceito por Atualizar Estoque"><i class="fa-solid fa-boxes-stacked"></i> CSV para atualizar estoque</button>
+                    </div>
+                </div>
+                <p id="statusExportacao" class="export-panel-help" role="status" aria-live="polite" style="margin-top:10px;"></p>
+            </div>
+
+            <div class="animate-fade-in delay-1">
+                <div class="glass-panel" style="padding: 24px;">
+
+                    <!-- Filtros -->
+                    <div class="filter-bar">
+
+                        <div class="search-input">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+
+                            <input
+                                type="text"
+                                id="buscarProduto"
+                                class="form-control"
+                                placeholder="Buscar por nome ou código..."
+                                autocomplete="off"
+                            >
+                        </div>
+
+                        <select
+                            id="filtroCategoria"
+                            class="form-control"
+                            style="width: 200px;"
+                        >
+                            <option value="">Todas as Categorias</option>
+                        </select>
+
+                        <select id="filtroSituacao" class="form-control" style="width: 170px;">
+                            <option value="todos">Todos os produtos</option>
+                            <option value="ativos">Somente ativos</option>
+                            <option value="inativos">Somente inativos</option>
+                        </select>
+
+                        <select id="filtroEstoque" class="form-control" style="width: 180px;">
+                            <option value="todos">Qualquer estoque</option>
+                            <option value="baixo">Estoque baixo</option>
+                            <option value="normal">Estoque acima do mínimo</option>
+                        </select>
+
+                    </div>
+
+                    <!-- Tabela de produtos -->
+                    <div class="table-container">
+                        <table class="data-table">
+
+                            <thead>
+                                <tr>
+                                    <th>CÓDIGO</th>
+                                    <th>FOTO</th>
+                                    <th>NOME</th>
+                                    <th>CATEGORIA</th>
+                                    <th>QUANTIDADE</th>
+                                    <th>PREÇO</th>
+                                    <th>VALOR TOTAL</th>
+                                    <th>SITUAÇÃO</th>
+                                    <th>AÇÕES</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="listaProdutos">
+                                <tr>
+                                    <td colspan="9" style="text-align: center; padding: 24px;">
+                                        <i class="fa-solid fa-spinner fa-spin"></i>
+                                        Carregando produtos...
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Endereço da API ASP.NET Core
+        const API_URL = MerkditoAuth.apiBaseUrl;
+
+        let produtos = [];
+        let categorias = [];
+        let estabelecimentos = [];
+        let estoquesPorProduto = new Map();
+
+        function lerCampo(obj, camel, pascal) {
+            return obj?.[camel] !== undefined ? obj[camel] : obj?.[pascal];
+        }
+
+        function numeroSeguro(valor) {
+            const n = Number(valor ?? 0);
+            return Number.isFinite(n) ? n : 0;
+        }
+
+        // Formata valores no padrão monetário brasileiro
+        function formatarMoeda(valor) {
+            return Number(valor).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL"
+            });
+        }
+
+        // Evita interpretar dados recebidos como HTML
+        function escaparHTML(valor) {
+            return String(valor ?? "").replace(/[&<>"']/g, caractere => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[caractere]);
+        }
+
+        // Carrega as categorias cadastradas na API
+        async function carregarCategorias() {
+            const resposta = await MerkditoAuth.apiFetch(`${API_URL}/Categorias`);
+
+            if (!resposta.ok) {
+                const detalhe = window.MerkditoUI
+                    ? await MerkditoUI.responseMessage(resposta, "Não foi possível carregar as categorias.")
+                    : `HTTP ${resposta.status}`;
+                throw new Error(detalhe);
+            }
+
+            categorias = await resposta.json();
+
+            const seletor = document.getElementById("filtroCategoria");
+
+            seletor.innerHTML =
+                '<option value="">Todas as Categorias</option>';
+
+            categorias
+                .filter(categoria => categoria.ativa)
+                .forEach(categoria => {
+                    const opcao = document.createElement("option");
+
+                    opcao.value = categoria.id;
+                    opcao.textContent = categoria.nome;
+
+                    seletor.appendChild(opcao);
+                });
+        }
+
+        // Carrega o catálogo e consolida os saldos de todos os estabelecimentos ativos.
+        async function carregarProdutos() {
+            const corpo = document.getElementById("listaProdutos");
+            corpo.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;"><i class="fa-solid fa-spinner fa-spin"></i> Carregando produtos e estoques de todas as lojas...</td></tr>`;
+
+            try {
+                const [respostaProdutos, respostaLojas] = await Promise.all([
+                    MerkditoAuth.apiFetch(`${API_URL}/Produtos`),
+                    MerkditoAuth.apiFetch(`${API_URL}/Lojas`)
+                ]);
+
+                if (!respostaProdutos.ok) throw new Error("Não foi possível carregar os produtos.");
+                if (!respostaLojas.ok) throw new Error("Não foi possível carregar os estabelecimentos.");
+
+                const [catalogo, lojas] = await Promise.all([respostaProdutos.json(), respostaLojas.json()]);
+                if (!Array.isArray(catalogo) || !Array.isArray(lojas)) {
+                    throw new Error("A API retornou um formato inesperado para produtos ou estabelecimentos.");
+                }
+
+                estabelecimentos = lojas.filter(l => lerCampo(l, "ativo", "Ativo") !== false);
+                const respostas = await Promise.all(estabelecimentos.map(loja => {
+                    const idLoja = lerCampo(loja, "id", "Id");
+                    return MerkditoAuth.apiFetch(`${API_URL}/ProdutosEstabelecimentos?estabelecimentoId=${encodeURIComponent(idLoja)}`);
+                }));
+
+                const listas = await Promise.all(respostas.map(async resposta => {
+                    if (!resposta.ok) throw new Error("Não foi possível consultar o estoque de todos os estabelecimentos.");
+                    const dados = await resposta.json();
+                    return Array.isArray(dados) ? dados : (dados?.itens || []);
+                }));
+
+                estoquesPorProduto = new Map();
+                listas.flat().forEach(item => {
+                    const idProduto = Number(lerCampo(item, "produtoId", "ProdutoId"));
+                    const atual = estoquesPorProduto.get(idProduto) || {
+                        quantidade: 0,
+                        estoqueMinimo: 0,
+                        valorTotal: 0,
+                        estabelecimentos: 0,
+                        algumEstoqueBaixo: false
+                    };
+                    const quantidade = numeroSeguro(lerCampo(item, "quantidadeEstoque", "QuantidadeEstoque"));
+                    const minimo = numeroSeguro(lerCampo(item, "estoqueMinimo", "EstoqueMinimo"));
+                    const preco = numeroSeguro(lerCampo(item, "precoVenda", "PrecoVenda"));
+                    atual.quantidade += quantidade;
+                    atual.estoqueMinimo += minimo;
+                    atual.valorTotal += quantidade * preco;
+                    atual.estabelecimentos += 1;
+                    if (quantidade <= minimo) atual.algumEstoqueBaixo = true;
+                    estoquesPorProduto.set(idProduto, atual);
+                });
+
+                produtos = catalogo.map(produto => {
+                    const id = Number(lerCampo(produto, "id", "Id"));
+                    const consolidado = estoquesPorProduto.get(id) || {
+                        quantidade: 0, estoqueMinimo: 0, valorTotal: 0, estabelecimentos: 0
+                    };
+                    return {
+                        ...produto,
+                        quantidadeEstoqueCadastro: numeroSeguro(lerCampo(produto, "quantidadeEstoque", "QuantidadeEstoque")),
+                        quantidadeEstoque: consolidado.quantidade,
+                        estoqueMinimoConsolidado: consolidado.estoqueMinimo,
+                        estoqueBaixoEmAlgumaLoja: consolidado.algumEstoqueBaixo,
+                        valorEstoqueConsolidado: consolidado.valorTotal
+                    };
+                });
+
+                document.getElementById("totalProdutos").textContent = produtos.length;
+                habilitarBotoesExportacao();
+                renderizarProdutos();
+            } catch (erro) {
+                console.error("Erro ao carregar produtos:", erro);
+                corpo.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:24px;"><i class="fa-solid fa-triangle-exclamation"></i> ${escaparHTML(erro.message || "Não foi possível carregar os produtos.")}<br><br><button type="button" class="btn btn-outline" onclick="carregarProdutos()"><i class="fa-solid fa-rotate"></i> Tentar novamente</button></td></tr>`;
+            }
+        }
+
+        // Mantém os filtros em uma única função para que a tabela e as exportações usem o mesmo conjunto.
+        function obterProdutosFiltrados() {
+            const busca = document.getElementById("buscarProduto").value.trim().toLowerCase();
+            const categoriaSelecionada = document.getElementById("filtroCategoria").value;
+            const situacaoSelecionada = document.getElementById("filtroSituacao").value;
+            const estoqueSelecionado = document.getElementById("filtroEstoque").value;
+
+            return produtos.filter(produto => {
+                const nome = String(produto.nome ?? "").toLowerCase();
+                const codigo = String(produto.codigoBarras ?? "").toLowerCase();
+                const correspondeBusca = nome.includes(busca) || codigo.includes(busca);
+                const correspondeCategoria = !categoriaSelecionada || String(produto.categoriaId) === categoriaSelecionada;
+                const correspondeSituacao = situacaoSelecionada === "todos" ||
+                    (situacaoSelecionada === "ativos" && produto.ativo !== false) ||
+                    (situacaoSelecionada === "inativos" && produto.ativo === false);
+                const quantidade = Number(produto.quantidadeEstoque ?? 0);
+                const minimo = Number(produto.estoqueMinimoConsolidado ?? produto.estoqueMinimo ?? 0);
+                const correspondeEstoque = estoqueSelecionado === "todos" ||
+                    (estoqueSelecionado === "baixo" && produto.estoqueBaixoEmAlgumaLoja === true) ||
+                    (estoqueSelecionado === "normal" && produto.estoqueBaixoEmAlgumaLoja !== true);
+                return correspondeBusca && correspondeCategoria && correspondeSituacao && correspondeEstoque;
+            });
+        }
+
+        // Aplica os filtros e atualiza a tabela.
+        function renderizarProdutos() {
+            const corpo = document.getElementById("listaProdutos");
+            const produtosFiltrados = obterProdutosFiltrados();
+
+            if (produtosFiltrados.length === 0) {
+                corpo.innerHTML = `
+                    <tr>
+                        <td colspan="9" style="text-align: center; padding: 24px;">
+                            Nenhum produto encontrado.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+            }
+
+            corpo.innerHTML = produtosFiltrados.map(produto => {
+                const id = Number(produto.id);
+                const quantidade = Number(produto.quantidadeEstoque);
+                const estoqueMinimo = Number(produto.estoqueMinimoConsolidado ?? produto.estoqueMinimo ?? 0);
+                const preco = Number(produto.preco);
+                const valorTotal = Number(produto.valorEstoqueConsolidado ?? (quantidade * preco));
+
+                const nome = escaparHTML(produto.nome);
+                const codigo = escaparHTML(produto.codigoBarras || "-");
+                const nomeCategoria = escaparHTML(
+                    produto.categoria || "Sem categoria"
+                );
+
+                const estoqueBaixo = produto.estoqueBaixoEmAlgumaLoja === true;
+
+                return `
+                    <tr>
+                        <td style="font-weight: 500;">
+                            ${codigo}
+                        </td>
+
+                        <td>
+                            <div style="
+                                width: 45px;
+                                height: 45px;
+                                border-radius: 8px;
+                                background-color: var(--color-cream-dark);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: var(--color-teal);
+                                border: 1px solid var(--border-glass);
+                            ">
+                                <i class="fa-solid fa-box-open"></i>
+                            </div>
+                        </td>
+
+                        <td>${nome}</td>
+
+                        <td>
+                            <span class="badge badge-teal">
+                                ${nomeCategoria}
+                            </span>
+                        </td>
+
+                        <td style="${
+                            estoqueBaixo
+                                ? "color: var(--color-red); font-weight: 600;"
+                                : ""
+                        }">
+                            ${quantidade}
+                        </td>
+
+                        <td>${formatarMoeda(preco)}</td>
+
+                        <td>${formatarMoeda(valorTotal)}</td>
+
+                        <td>
+                            <span class="badge ${produto.ativo === false ? "badge-red" : "badge-teal"}">
+                                ${produto.ativo === false ? "Inativo" : "Ativo"}
+                            </span>
+                        </td>
+
+                        <td>
+                            <button
+                                type="button"
+                                class="action-btn"
+                                title="Editar produto"
+                                aria-label="Editar ${nome}"
+                                onclick="editarProduto(${id})"
+                            >
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+
+                            <button
+                                type="button"
+                                class="action-btn delete"
+                                title="Excluir produto"
+                                aria-label="Excluir ${nome}"
+                                onclick="excluirProduto(${id}, this)"
+                            >
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        // Exclusão real pela API
+        async function excluirProduto(id, botao) {
+            const produto = produtos.find(item => Number(item.id) === id);
+
+            if (!produto) {
+                MerkditoUI.notify("O produto selecionado não foi encontrado na lista atual.", "error");
+                return;
+            }
+
+            const confirmar = confirm(
+                `Deseja realmente excluir o produto "${produto.nome}"?`
+            );
+            if (!confirmar) return;
+
+            const restaurarBotao = window.MerkditoUI && botao
+                ? MerkditoUI.setBusy(botao, "Excluindo produto...")
+                : function () {};
+            try {
+                const resposta = await MerkditoAuth.apiFetch(
+                    `${API_URL}/Produtos/${id}`,
+                    { method: "DELETE" }
+                );
+
+                if (!resposta.ok) {
+                    const detalhe = window.MerkditoUI
+                        ? await MerkditoUI.responseMessage(resposta, "Não foi possível excluir o produto.")
+                        : `Erro ao excluir produto (HTTP ${resposta.status}).`;
+                    throw new Error(detalhe);
+                }
+
+                await carregarProdutos();
+                if (window.MerkditoUI) MerkditoUI.notify("Produto excluído com sucesso.", "success");
+
+            } catch (erro) {
+                console.error("Erro ao excluir produto:", erro);
+                if (window.MerkditoUI && MerkditoUI.isSessionRedirectError(erro)) return;
+                MerkditoUI.notify(erro.message || "Não foi possível excluir o produto. Verifique a conexão com a API.", "error");
+            } finally {
+                restaurarBotao();
+            }
+        }
+
+        // Edição será integrada à tela de cadastro na próxima etapa
+        function editarProduto(id) {
+            window.location.href =
+                `adicionar_produto.html?id=${encodeURIComponent(id)}`;
+        }
+
+        // Exporta CSV com delimitador ponto e vírgula, BOM UTF-8 e aspas em todas as células.
+        // Em relatórios, protege células textuais que poderiam ser interpretadas como fórmulas por planilhas.
+        function protegerFormulaPlanilha(valor) {
+            const texto = String(valor ?? "");
+            return /^[\s]*[=+@-]/.test(texto) ? "'" + texto : texto;
+        }
+
+        function escaparCelulaCsv(valor, protegerFormula = false) {
+            let texto = String(valor ?? "");
+            if (protegerFormula) texto = protegerFormulaPlanilha(texto);
+            return '"' + texto.replace(/"/g, '""') + '"';
+        }
+
+        function baixarCsv(nomeArquivo, cabecalhos, linhas, camposTextoProtegidos = []) {
+            const indicesProtegidos = new Set(camposTextoProtegidos);
+            const conteudo = "\uFEFF" + [cabecalhos, ...linhas].map((linha, indiceLinha) =>
+                linha.map((valor, indiceColuna) => escaparCelulaCsv(
+                    valor,
+                    indiceLinha > 0 && indicesProtegidos.has(indiceColuna)
+                )).join(";")
+            ).join("\r\n") + "\r\n";
+            const blob = new Blob([conteudo], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = nomeArquivo;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        function campoProduto(produto, minusculo, maiusculo) {
+            return produto[minusculo] !== undefined ? produto[minusculo] : (produto[maiusculo] ?? "");
+        }
+
+        function decimalCsv(valor) {
+            const numero = Number(valor ?? 0);
+            return Number.isFinite(numero)
+                ? numero.toLocaleString("pt-BR", { useGrouping: false, maximumFractionDigits: 10 })
+                : "";
+        }
+
+        function categoriaProduto(produto) {
+            const nome = campoProduto(produto, "categoria", "Categoria");
+            if (nome) return nome;
+            const id = campoProduto(produto, "categoriaId", "CategoriaId");
+            const categoria = categorias.find(c => Number(c.id ?? c.Id) === Number(id));
+            return categoria ? (categoria.nome ?? categoria.Nome ?? "") : "";
+        }
+
+        function avisarExportacao(mensagem) {
+            document.getElementById("statusExportacao").textContent = mensagem;
+        }
+
+        function habilitarBotoesExportacao() {
+            const habilitado = produtos.length > 0;
+            ["btnExportarCatalogo", "btnExportarCadastro", "btnExportarEstoque"].forEach(id => {
+                document.getElementById(id).disabled = !habilitado;
+            });
+        }
+
+        function exportarCatalogoFiltrado() {
+            const itens = obterProdutosFiltrados();
+            if (!itens.length) { avisarExportacao("Nenhum produto corresponde aos filtros atuais."); return; }
+            const cabecalhos = ["produtoId", "codigoBarras", "nome", "descricao", "preco", "quantidadeEstoque", "estoqueMinimo", "categoria", "ativo"];
+            const linhas = itens.map(p => [
+                campoProduto(p, "id", "Id"),
+                campoProduto(p, "codigoBarras", "CodigoBarras"),
+                campoProduto(p, "nome", "Nome"),
+                campoProduto(p, "descricao", "Descricao"),
+                decimalCsv(campoProduto(p, "preco", "Preco")),
+                campoProduto(p, "quantidadeEstoque", "QuantidadeEstoque"),
+                p.estoqueMinimoConsolidado ?? campoProduto(p, "estoqueMinimo", "EstoqueMinimo"),
+                categoriaProduto(p),
+                campoProduto(p, "ativo", "Ativo") === false ? "nao" : "sim"
+            ]);
+            baixarCsv("catalogo_produtos_filtrado.csv", cabecalhos, linhas, [1, 2, 3, 7]);
+            avisarExportacao(`${itens.length} produto(s) exportado(s) para consulta. Este CSV é um relatório, não um arquivo para importar como novos produtos.`);
+        }
+
+        function exportarCadastroFiltrado() {
+            const itens = obterProdutosFiltrados();
+            if (!itens.length) { avisarExportacao("Nenhum produto corresponde aos filtros atuais."); return; }
+            const cabecalhos = ["produtoId", "codigoBarras", "nome", "descricao", "preco", "estoqueMinimo", "ativo"];
+            const linhas = itens.map(p => [
+                campoProduto(p, "id", "Id"),
+                campoProduto(p, "codigoBarras", "CodigoBarras"),
+                campoProduto(p, "nome", "Nome"),
+                campoProduto(p, "descricao", "Descricao"),
+                decimalCsv(campoProduto(p, "preco", "Preco")),
+                campoProduto(p, "estoqueMinimo", "EstoqueMinimo"),
+                campoProduto(p, "ativo", "Ativo") === false ? "nao" : "sim"
+            ]);
+            baixarCsv("base_atualizacao_cadastro.csv", cabecalhos, linhas, [1, 2, 3]);
+            avisarExportacao(`${itens.length} linha(s) prontas para revisar no CSV de atualização cadastral. Confira o arquivo antes de enviá-lo pela tela Atualizar Cadastro.`);
+        }
+
+        function exportarEstoqueFiltrado() {
+            const itens = obterProdutosFiltrados();
+            if (!itens.length) { avisarExportacao("Nenhum produto corresponde aos filtros atuais."); return; }
+            const cabecalhos = ["produtoId", "codigoBarras", "quantidadeEstoque", "observacao"];
+            const linhas = itens.map(p => [
+                campoProduto(p, "id", "Id"),
+                campoProduto(p, "codigoBarras", "CodigoBarras"),
+                p.quantidadeEstoqueCadastro ?? campoProduto(p, "quantidadeEstoque", "QuantidadeEstoque"),
+                ""
+            ]);
+            baixarCsv("base_atualizacao_estoque.csv", cabecalhos, linhas, [1]);
+            avisarExportacao(`${itens.length} linha(s) exportadas com o saldo atual. Edite quantidadeEstoque para definir o novo saldo total e depois use Atualizar Estoque.`);
+        }
+
+        document.getElementById("btnExportarCatalogo").addEventListener("click", exportarCatalogoFiltrado);
+        document.getElementById("btnExportarCadastro").addEventListener("click", exportarCadastroFiltrado);
+        document.getElementById("btnExportarEstoque").addEventListener("click", exportarEstoqueFiltrado);
+
+        // Eventos dos filtros
+        document
+            .getElementById("buscarProduto")
+            .addEventListener("input", renderizarProdutos);
+
+        document
+            .getElementById("filtroCategoria")
+            .addEventListener("change", renderizarProdutos);
+
+        document
+            .getElementById("filtroSituacao")
+            .addEventListener("change", renderizarProdutos);
+
+        document
+            .getElementById("filtroEstoque")
+            .addEventListener("change", renderizarProdutos);
+
+        // Permite abrir a tela já filtrada a partir de alertas do dashboard.
+        function aplicarFiltrosDaUrl() {
+            const parametros = new URLSearchParams(window.location.search);
+            const estoque = parametros.get("estoque");
+            const situacao = parametros.get("situacao");
+
+            if (["todos", "baixo", "normal"].includes(estoque)) {
+                document.getElementById("filtroEstoque").value = estoque;
+            }
+            if (["todos", "ativos", "inativos"].includes(situacao)) {
+                document.getElementById("filtroSituacao").value = situacao;
+            }
+        }
+
+        // Inicialização da página
+        habilitarBotoesExportacao();
+        async function inicializarPagina() {
+            aplicarFiltrosDaUrl();
+            try {
+                await carregarCategorias();
+            } catch (erro) {
+                console.error("Erro ao carregar categorias:", erro);
+            }
+
+            await carregarProdutos();
+        }
+
+        inicializarPagina();
+    </script>
+
+</body>
+</html>

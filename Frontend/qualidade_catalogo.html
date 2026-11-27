@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qualidade do Catálogo - MerKdito</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <style>
+        .qc-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:18px 0 22px}
+        .qc-stat{padding:19px;display:flex;align-items:center;gap:13px;min-width:0}
+        .qc-icon{width:44px;height:44px;flex:0 0 44px;border-radius:12px;display:grid;place-items:center;background:rgba(42,176,163,.13);color:var(--color-teal);font-size:1.15rem}
+        .qc-label{font-size:.83rem;color:var(--text-muted);margin-bottom:6px}
+        .qc-value{font-size:1.65rem;line-height:1.2;font-weight:750;overflow-wrap:anywhere}
+        .qc-toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+        .qc-field{display:flex;flex-direction:column;gap:6px;min-width:165px;flex:1}
+        .qc-field.search{min-width:220px;flex:2}
+        .qc-field label{font-size:.85rem;font-weight:600}
+        .qc-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+        .qc-message{display:none;padding:12px 14px;border-radius:10px;margin-bottom:16px;white-space:pre-line;line-height:1.45}
+        .qc-message.visible{display:block}.qc-message.error{color:#8e2424;background:#fff0f0;border:1px solid #f0caca}.qc-message.info{color:#245878;background:#eef7fc;border:1px solid #cbe5f4}.qc-message.success{color:#176b3a;background:#effaf2;border:1px solid #c8ead2}
+        .qc-meta{color:var(--text-muted);font-size:.88rem;margin:13px 0}
+        .qc-table-wrap{overflow:auto}.qc-table{width:100%;border-collapse:collapse;min-width:1050px}
+        .qc-table th,.qc-table td{padding:12px 13px;text-align:left;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+        .qc-table th{color:var(--text-muted);font-size:.76rem;letter-spacing:.035em;white-space:nowrap}.qc-table td{font-size:.89rem}
+        .qc-product{font-weight:650;min-width:150px}.qc-sub{display:block;color:var(--text-muted);font-size:.78rem;margin-top:4px;overflow-wrap:anywhere}
+        .qc-pill{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:.77rem;font-weight:700;white-space:nowrap}
+        .qc-pill.critical{color:#8e2424;background:#ffe6e6}.qc-pill.warning{color:#8a5600;background:#fff3cd}.qc-pill.info{color:#245878;background:#e7f3fa}
+        .qc-empty{text-align:center!important;padding:34px 12px!important;color:var(--text-muted)}
+        .qc-note{font-size:.86rem;line-height:1.5;color:var(--text-muted);margin-top:12px}
+        .qc-heading{display:flex;gap:9px;align-items:center}.qc-heading i{color:var(--color-teal)}
+        .qc-heading h2{margin:0}
+        @media(max-width:1000px){.qc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.top-header{height:auto;gap:12px;flex-wrap:wrap;padding-bottom:18px}}
+        @media(max-width:580px){.qc-grid{grid-template-columns:1fr;gap:10px}.qc-field,.qc-field.search{min-width:100%}.qc-actions .btn{width:100%;justify-content:center}}
+        @media print{body{background:#fff!important}.bg-blob,.sidebar,.top-header .header-actions,.qc-toolbar,.qc-actions,.qc-message,.no-print{display:none!important}.app-container{display:block!important}.main-content{margin:0!important;padding:0!important;width:100%!important}.glass-panel{box-shadow:none!important;background:#fff!important;border:1px solid #ddd!important}.qc-grid{grid-template-columns:repeat(4,1fr)}.qc-table{min-width:0}.qc-table th,.qc-table td{padding:6px;font-size:9pt}a{color:#000!important;text-decoration:none!important}}
+    </style>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="assets/js/navigation.js" defer></script>
+</head>
+<body data-require-client="true">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="app-container">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo" style="text-decoration:none"><span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px">MerKdito</span></a>
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+            <div class="logout-container"><a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a></div>
+        </aside>
+        <main class="main-content">
+            <header class="top-header">
+                <div>
+                    <h1 class="page-title">Qualidade do catálogo</h1>
+                    <p class="page-subtitle" style="margin-bottom:0">Encontre inconsistências nos produtos e categorias antes que causem problemas no estoque.</p>
+                    <p class="qc-meta" style="margin-bottom:0">A análise usa somente os dados atuais retornados pela API; ela não altera nenhum cadastro.</p>
+                </div>
+                <div class="header-actions">
+                    <button id="btnAtualizar" class="btn btn-outline" type="button"><i class="fa-solid fa-rotate"></i> Analisar novamente</button>
+                    <button id="btnImprimir" class="btn btn-outline" type="button"><i class="fa-solid fa-print"></i> Imprimir / PDF</button>
+                </div>
+            </header>
+            <div class="animate-fade-in delay-1">
+                <div id="mensagemQualidade" class="qc-message" role="status" aria-live="polite"></div>
+                <section class="qc-grid" aria-label="Resumo das inconsistências">
+                    <div class="glass-panel qc-stat"><div class="qc-icon" style="background:#ffe6e6;color:#a51f2d"><i class="fa-solid fa-circle-exclamation"></i></div><div><div class="qc-label">Problemas críticos</div><div class="qc-value" id="totalCriticos">—</div></div></div>
+                    <div class="glass-panel qc-stat"><div class="qc-icon" style="background:#fff3cd;color:#8a5600"><i class="fa-solid fa-triangle-exclamation"></i></div><div><div class="qc-label">Pontos de atenção</div><div class="qc-value" id="totalAtencao">—</div></div></div>
+                    <div class="glass-panel qc-stat"><div class="qc-icon"><i class="fa-solid fa-boxes-stacked"></i></div><div><div class="qc-label">Produtos com apontamentos</div><div class="qc-value" id="totalProdutosAfetados">—</div></div></div>
+                    <div class="glass-panel qc-stat"><div class="qc-icon"><i class="fa-solid fa-barcode"></i></div><div><div class="qc-label">Códigos de barras duplicados</div><div class="qc-value" id="totalCodigosDuplicados">—</div></div></div>
+                </section>
+                <section class="glass-panel" style="padding:22px;margin-bottom:20px">
+                    <div class="qc-heading"><i class="fa-solid fa-filter"></i><h2 class="card-title">Filtrar apontamentos</h2></div>
+                    <div class="qc-toolbar" style="margin-top:16px">
+                        <div class="qc-field search"><label for="filtroBusca">Pesquisa</label><input class="form-control" id="filtroBusca" type="search" placeholder="Produto, código, categoria ou detalhe" autocomplete="off"></div>
+                        <div class="qc-field"><label for="filtroSeveridade">Gravidade</label><select class="form-control" id="filtroSeveridade"><option value="todas">Todas</option><option value="critical">Crítico</option><option value="warning">Atenção</option><option value="info">Informativo</option></select></div>
+                        <div class="qc-field"><label for="filtroTipo">Tipo de apontamento</label><select class="form-control" id="filtroTipo"><option value="todos">Todos os tipos</option></select></div>
+                    </div>
+                    <div class="qc-actions">
+                        <button id="btnExportar" class="btn btn-primary" type="button"><i class="fa-solid fa-file-csv"></i> Exportar apontamentos CSV</button>
+                        <button id="btnLimpar" class="btn btn-outline" type="button"><i class="fa-solid fa-eraser"></i> Limpar filtros</button>
+                        <a href="produtos.html" class="btn btn-outline"><i class="fa-solid fa-box-open"></i> Abrir produtos</a>
+                    </div>
+                    <p class="qc-note">A gravidade indica prioridade de revisão, não confirma automaticamente que o cadastro esteja errado. Revise cada apontamento antes de alterar os dados.</p>
+                </section>
+                <section class="glass-panel" style="padding:22px">
+                    <div class="qc-heading"><i class="fa-solid fa-table-list"></i><h2 class="card-title">Resultado da análise</h2></div>
+                    <div class="qc-meta"><span id="resultadoContagem">Carregando produtos e categorias...</span> · Análise atualizada em <span id="dataAnalise">—</span></div>
+                    <div class="qc-table-wrap"><table class="qc-table"><thead><tr><th>Gravidade</th><th>Apontamento</th><th>Produto / código</th><th>Categoria</th><th>Detalhe</th><th>Recomendação</th></tr></thead><tbody id="corpoQualidade"><tr><td colspan="6" class="qc-empty"><i class="fa-solid fa-spinner fa-spin"></i> Analisando dados...</td></tr></tbody></table></div>
+                    <p class="qc-note">Esta verificação não substitui as validações da API. Ela não consegue confirmar eventos que não estejam disponíveis no cadastro atual, como origem de estoque, vendas ou histórico de alterações.</p>
+                </section>
+            </div>
+        </main>
+    </div>
+    <script>
+        "use strict";
+        const API_URL = MerkditoAuth.apiBaseUrl;
+        let produtos = [];
+        let categorias = [];
+        let apontamentos = [];
+        let ultimaAnalise = null;
+        const el = id => document.getElementById(id);
+
+        function ler(obj, camel, pascal) {
+            if (!obj || typeof obj !== "object") return undefined;
+            return obj[camel] !== undefined ? obj[camel] : obj[pascal];
+        }
+        function numero(v) {
+            if (v === null || v === undefined || v === "") return 0;
+            const n = typeof v === "number" ? v : Number(String(v).replace(",", "."));
+            return Number.isFinite(n) ? n : 0;
+        }
+        function texto(v) { return String(v ?? "").trim(); }
+        function booleano(v) { return v === true || v === 1 || String(v).toLowerCase() === "true"; }
+        function idProduto(p) { return ler(p, "id", "Id"); }
+        function nomeProduto(p) { return texto(ler(p, "nome", "Nome")) || "Produto sem nome"; }
+        function codigoProduto(p) { return texto(ler(p, "codigoBarras", "CodigoBarras")); }
+        function quantidade(p) { return numero(ler(p, "quantidadeEstoque", "QuantidadeEstoque")); }
+        function minimo(p) { return numero(ler(p, "estoqueMinimo", "EstoqueMinimo")); }
+        function preco(p) { return numero(ler(p, "preco", "Preco")); }
+        function ativo(p) { return booleano(ler(p, "ativo", "Ativo")); }
+        function categoriaId(p) {
+            const id = ler(p, "categoriaId", "CategoriaId");
+            if (id !== undefined && id !== null && id !== "") return Number(id);
+            const nested = ler(p, "categoria", "Categoria");
+            if (nested && typeof nested === "object") {
+                const nestedId = ler(nested, "id", "Id");
+                return nestedId === undefined || nestedId === null ? null : Number(nestedId);
+            }
+            return null;
+        }
+        function categoriaNome(c) { return texto(ler(c, "nome", "Nome")) || "Categoria sem nome"; }
+        function categoriaAtiva(c) { return booleano(ler(c, "ativa", "Ativa")); }
+        function formatarData(d) { return d.toLocaleString("pt-BR"); }
+        function escaparHtml(v) { return String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+        function mostrarMensagem(msg, tipo = "info") { MerkditoUI.showInline("mensagemQualidade", msg, tipo); }
+        function limparMensagem() { MerkditoUI.clearInline("mensagemQualidade"); }
+        async function respostaJson(response, padrao) {
+            if (!response.ok) {
+                let detail = "";
+                try {
+                    const raw = await response.text();
+                    if (raw) { try { const data = JSON.parse(raw); detail = data.mensagem || data.message || data.title || ""; } catch { detail = raw.slice(0, 300); } }
+                } catch { /* Usa mensagem padrão. */ }
+                throw new Error(detail || `${padrao} (HTTP ${response.status}).`);
+            }
+            const raw = await response.text();
+            if (!raw) return null;
+            try { return JSON.parse(raw); } catch { throw new Error("A API retornou uma resposta JSON inválida."); }
+        }
+        function adicionar(p, type, severity, detail, recommendation, category = "") {
+            apontamentos.push({
+                severity, type, productId: idProduto(p), product: p ? nomeProduto(p) : "—",
+                code: p ? codigoProduto(p) : "—", category: category || "—", detail,
+                recommendation, productRef: p || null
+            });
+        }
+        function montarApontamentos() {
+            apontamentos = [];
+            const catsById = new Map();
+            const catsByName = new Map();
+            categorias.forEach(c => {
+                const cid = ler(c, "id", "Id");
+                if (cid !== undefined && cid !== null) catsById.set(Number(cid), c);
+                catsByName.set(categoriaNome(c).toLocaleLowerCase("pt-BR"), c);
+            });
+            const productsByBarcode = new Map();
+            const categoryUsage = new Map();
+
+            for (const p of produtos) {
+                const name = nomeProduto(p);
+                const code = codigoProduto(p);
+                const qty = quantidade(p);
+                const min = minimo(p);
+                const cost = preco(p);
+                const cid = categoriaId(p);
+                const nested = ler(p, "categoria", "Categoria");
+                const nestedName = typeof nested === "string" ? nested : (nested && typeof nested === "object" ? categoriaNome(nested) : "");
+                let category = cid !== null && Number.isFinite(cid) ? catsById.get(cid) : null;
+                if (!category && nestedName) category = catsByName.get(nestedName.toLocaleLowerCase("pt-BR"));
+                const catName = category ? categoriaNome(category) : (nestedName || "Sem categoria");
+
+                const hasName = texto(ler(p, "nome", "Nome"));
+                if (!hasName) adicionar(p, "Nome ausente", "critical", "O produto não possui nome.", "Informe um nome claro e reconhecível para o produto.", catName);
+                if (cost < 0) adicionar(p, "Preço negativo", "critical", `Preço registrado: ${cost}.`, "Corrija o preço para um valor igual ou superior a zero.", catName);
+                else if (cost === 0) adicionar(p, "Preço zerado", "warning", "O preço do produto está em zero.", "Confirme se o produto realmente deve ter preço zero.", catName);
+                if (qty < 0) adicionar(p, "Estoque negativo", "critical", `Quantidade registrada: ${qty}.`, "Corrija o saldo por um processo de ajuste aprovado.", catName);
+                if (!code) adicionar(p, "Sem código de barras", "warning", "O campo de código de barras está vazio.", "Cadastre o código quando o produto utilizar identificação por código de barras.", catName);
+                else {
+                    const normalized = code.replace(/\s+/g, "").toLocaleUpperCase("pt-BR");
+                    if (!productsByBarcode.has(normalized)) productsByBarcode.set(normalized, []);
+                    productsByBarcode.get(normalized).push(p);
+                }
+                const desc = texto(ler(p, "descricao", "Descricao"));
+                if (!desc) adicionar(p, "Descrição ausente", "info", "Não há descrição cadastrada.", "Adicione uma descrição quando ela ajudar a diferenciar ou identificar o produto.", catName);
+
+                if (cid === null && !nestedName) {
+                    adicionar(p, "Categoria ausente", "warning", "O produto não apresenta uma categoria vinculada.", "Associe o produto a uma categoria ativa da empresa.", catName);
+                } else if (cid !== null && Number.isFinite(cid) && !catsById.has(cid) && !category) {
+                    adicionar(p, "Categoria não encontrada", "critical", `A categoria de ID ${cid} não foi encontrada na lista atual da empresa.`, "Confira o vínculo da categoria na API antes de alterar o produto.", catName);
+                } else if (category && !categoriaAtiva(category)) {
+                    adicionar(p, "Categoria inativa", "warning", "O produto está associado a uma categoria inativa.", "Revise se deve reativar a categoria ou transferir o produto para uma categoria ativa.", catName);
+                }
+                if (category) {
+                    const actualId = Number(ler(category, "id", "Id"));
+                    categoryUsage.set(actualId, (categoryUsage.get(actualId) || 0) + 1);
+                }
+                if (ativo(p) && qty <= min) {
+                    adicionar(p, "Estoque baixo", "warning", `Saldo ${qty}; estoque mínimo ${min}.`, "Confira a necessidade de reposição e a precisão do estoque mínimo.", catName);
+                }
+                if (!ativo(p) && qty > 0) {
+                    adicionar(p, "Produto inativo com saldo", "info", `Há ${qty} unidade(s) registradas em produto inativo.`, "Confirme se o saldo deve permanecer disponível para consulta ou se precisa de um ajuste operacional.", catName);
+                }
+            }
+
+            for (const [code, sameCodeProducts] of productsByBarcode.entries()) {
+                if (sameCodeProducts.length > 1) {
+                    const list = sameCodeProducts.map(nomeProduto).join(", ");
+                    for (const p of sameCodeProducts) {
+                        adicionar(p, "Código de barras duplicado", "critical", `O código ${code} aparece em ${sameCodeProducts.length} produtos: ${list}.`, "Confirme se os produtos são duplicados ou se algum código foi cadastrado incorretamente.", "—");
+                    }
+                }
+            }
+            for (const c of categorias) {
+                const cid = Number(ler(c, "id", "Id"));
+                if (categoriaAtiva(c) && !categoryUsage.has(cid)) {
+                    const categoryLabel = categoriaNome(c);
+                    adicionar(null, "Categoria ativa sem produtos", "info", `A categoria “${categoryLabel}” não aparece vinculada a produtos no catálogo carregado.`, "Confirme se a categoria está pronta para uso ou se pode ser desativada.", categoryLabel);
+                }
+            }
+        }
+        function preencherTipos() {
+            const select = el("filtroTipo");
+            const previous = select.value;
+            const unique = [...new Set(apontamentos.map(a => a.type))].sort((a,b) => a.localeCompare(b, "pt-BR"));
+            select.replaceChildren(new Option("Todos os tipos", "todos"));
+            unique.forEach(type => select.add(new Option(type, type)));
+            if ([...select.options].some(o => o.value === previous)) select.value = previous;
+        }
+        function apontamentosFiltrados() {
+            const q = el("filtroBusca").value.trim().toLocaleLowerCase("pt-BR");
+            const severity = el("filtroSeveridade").value;
+            const type = el("filtroTipo").value;
+            return apontamentos.filter(a => {
+                if (severity !== "todas" && a.severity !== severity) return false;
+                if (type !== "todos" && a.type !== type) return false;
+                const haystack = `${a.type} ${a.product} ${a.code} ${a.category} ${a.detail} ${a.recommendation}`.toLocaleLowerCase("pt-BR");
+                return !q || haystack.includes(q);
+            });
+        }
+        function atualizarResumo() {
+            const critical = apontamentos.filter(a => a.severity === "critical");
+            const warnings = apontamentos.filter(a => a.severity === "warning");
+            const affected = new Set(apontamentos.filter(a => a.productRef).map(a => String(a.productId ?? a.product)));
+            const duplicateCodes = new Set(critical.filter(a => a.type === "Código de barras duplicado").map(a => a.code));
+            el("totalCriticos").textContent = critical.length.toLocaleString("pt-BR");
+            el("totalAtencao").textContent = warnings.length.toLocaleString("pt-BR");
+            el("totalProdutosAfetados").textContent = affected.size.toLocaleString("pt-BR");
+            el("totalCodigosDuplicados").textContent = duplicateCodes.size.toLocaleString("pt-BR");
+        }
+        function rotuloGravidade(severity) {
+            if (severity === "critical") return '<span class="qc-pill critical">Crítico</span>';
+            if (severity === "warning") return '<span class="qc-pill warning">Atenção</span>';
+            return '<span class="qc-pill info">Informativo</span>';
+        }
+        function renderizarTabela() {
+            const rows = apontamentosFiltrados();
+            el("resultadoContagem").textContent = `${rows.length.toLocaleString("pt-BR")} apontamento(s) exibido(s) de ${apontamentos.length.toLocaleString("pt-BR")}`;
+            if (!rows.length) {
+                el("corpoQualidade").innerHTML = '<tr><td colspan="6" class="qc-empty"><i class="fa-solid fa-circle-check" style="color:#18834a"></i><br><strong>Nenhum apontamento para estes filtros.</strong><br>Isso não garante ausência de todos os problemas; indica apenas que nenhuma regra desta análise foi acionada.</td></tr>';
+                return;
+            }
+            el("corpoQualidade").innerHTML = rows.map(a => `
+                <tr>
+                    <td>${rotuloGravidade(a.severity)}</td>
+                    <td><strong>${escaparHtml(a.type)}</strong></td>
+                    <td class="qc-product">${escaparHtml(a.product)}<span class="qc-sub">ID: ${escaparHtml(a.productId ?? "—")} · Código: ${escaparHtml(a.code)}</span></td>
+                    <td>${escaparHtml(a.category)}</td>
+                    <td>${escaparHtml(a.detail)}</td>
+                    <td>${escaparHtml(a.recommendation)}</td>
+                </tr>`).join("");
+        }
+        async function analisar() {
+            limparMensagem();
+            el("btnAtualizar").disabled = true;
+            el("btnAtualizar").innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analisando';
+            el("corpoQualidade").innerHTML = '<tr><td colspan="6" class="qc-empty"><i class="fa-solid fa-spinner fa-spin"></i> Consultando API...</td></tr>';
+            try {
+                const [pr, cr] = await Promise.all([
+                    MerkditoAuth.apiFetch(`${API_URL}/Produtos`),
+                    MerkditoAuth.apiFetch(`${API_URL}/Categorias`)
+                ]);
+                const [pd, cd] = await Promise.all([
+                    respostaJson(pr, "Não foi possível carregar produtos"),
+                    respostaJson(cr, "Não foi possível carregar categorias")
+                ]);
+                if (!Array.isArray(pd) || !Array.isArray(cd)) throw new Error("A API não retornou listas válidas de produtos e categorias.");
+                produtos = pd;
+                categorias = cd;
+                montarApontamentos();
+                preencherTipos();
+                atualizarResumo();
+                renderizarTabela();
+                ultimaAnalise = new Date();
+                el("dataAnalise").textContent = formatarData(ultimaAnalise);
+                mostrarMensagem(`Análise concluída: ${produtos.length} produto(s) e ${categorias.length} categoria(s) consultados. Nenhum dado foi alterado.`, "success");
+            } catch (err) {
+                console.error("Falha na análise de qualidade do catálogo:", err);
+                mostrarMensagem(err.message || "Não foi possível realizar a análise. Verifique a API e tente novamente.", "error");
+                el("resultadoContagem").textContent = "A análise não foi concluída.";
+                el("corpoQualidade").innerHTML = '<tr><td colspan="6" class="qc-empty">Falha ao consultar a API. Nenhuma conclusão sobre a qualidade dos dados pode ser apresentada.</td></tr>';
+                ["totalCriticos", "totalAtencao", "totalProdutosAfetados", "totalCodigosDuplicados"].forEach(id => el(id).textContent = "—");
+            } finally {
+                el("btnAtualizar").disabled = false;
+                el("btnAtualizar").innerHTML = '<i class="fa-solid fa-rotate"></i> Analisar novamente';
+            }
+        }
+        function csvCell(v) {
+            let text = String(v ?? "");
+            if (/^[\s\u0000-\u001f]*[=+@\-]/.test(text)) text = "'" + text;
+            return `"${text.replace(/"/g, '""')}"`;
+        }
+        function exportarCsv() {
+            const rows = apontamentosFiltrados();
+            if (!rows.length) { mostrarMensagem("Não há apontamentos no filtro atual para exportar.", "info"); return; }
+            const headers = ["Gravidade", "Tipo", "ProdutoId", "Produto", "CodigoBarras", "Categoria", "Detalhe", "Recomendacao"];
+            const lines = [headers, ...rows.map(a => [a.severity === "critical" ? "Crítico" : a.severity === "warning" ? "Atenção" : "Informativo", a.type, a.productId ?? "", a.product, a.code, a.category, a.detail, a.recommendation])];
+            const csv = "\uFEFF" + lines.map(row => row.map(csvCell).join(";")).join("\r\n");
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement("a");
+            anchor.href = url;
+            anchor.download = `merkdito_qualidade_catalogo_${new Date().toISOString().slice(0,10)}.csv`;
+            document.body.appendChild(anchor); anchor.click(); anchor.remove(); URL.revokeObjectURL(url);
+            mostrarMensagem(`Exportados ${rows.length} apontamento(s) para CSV.`, "success");
+        }
+        ["filtroBusca", "filtroSeveridade", "filtroTipo"].forEach(id => el(id).addEventListener(id === "filtroBusca" ? "input" : "change", renderizarTabela));
+        el("btnAtualizar").addEventListener("click", analisar);
+        el("btnImprimir").addEventListener("click", () => window.print());
+        el("btnExportar").addEventListener("click", exportarCsv);
+        el("btnLimpar").addEventListener("click", () => { el("filtroBusca").value = ""; el("filtroSeveridade").value = "todas"; el("filtroTipo").value = "todos"; renderizarTabela(); });
+        document.addEventListener("DOMContentLoaded", analisar);
+    </script>
+</body>
+</html>

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorias - MerKdito</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <style>
+        .category-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin-bottom:22px; }
+        .category-stat { padding:20px 22px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+        .category-stat-label { color:var(--text-muted); font-size:.9rem; margin-bottom:6px; }
+        .category-stat-value { font-size:1.7rem; font-weight:700; }
+        .category-stat-icon { display:grid; place-items:center; width:44px; height:44px; border-radius:12px; background:rgba(42,176,163,.14); color:var(--color-teal); font-size:1.25rem; }
+        .category-toolbar { display:flex; gap:12px; align-items:center; margin-bottom:20px; flex-wrap:wrap; }
+        .category-toolbar .search-input { min-width:220px; }
+        .category-toolbar select { width:190px; }
+        .category-toolbar .toolbar-spacer { flex:1; }
+        .message { display:none; padding:12px 14px; border-radius:10px; margin-bottom:16px; line-height:1.45; white-space:pre-line; }
+        .message.visible { display:block; }
+        .message.error { color:#8e2424; background:#fff0f0; border:1px solid #f0caca; }
+        .message.success { color:#176b3a; background:#effaf2; border:1px solid #c8ead2; }
+        .message.info { color:#245878; background:#eef7fc; border:1px solid #cbe5f4; }
+        .status-pill { display:inline-flex; align-items:center; gap:6px; padding:5px 10px; border-radius:999px; font-size:.82rem; font-weight:600; white-space:nowrap; }
+        .status-pill.active { background:rgba(42,176,163,.15); color:#17796f; }
+        .status-pill.inactive { background:rgba(120,120,120,.12); color:#64707a; }
+        .category-actions { display:flex; align-items:center; gap:5px; white-space:nowrap; }
+        .action-btn[disabled] { opacity:.45; cursor:not-allowed; }
+        .empty-state { padding:34px 16px !important; text-align:center; color:var(--text-muted); }
+        .empty-state i { display:block; font-size:1.9rem; margin-bottom:10px; color:var(--color-teal); }
+        .modal-backdrop { position:fixed; inset:0; background:rgba(24,35,42,.48); display:none; align-items:center; justify-content:center; padding:20px; z-index:1000; }
+        .modal-backdrop.open { display:flex; }
+        .category-modal { width:min(100%,600px); max-height:calc(100vh - 40px); overflow:auto; padding:26px; background:#fffdf7; border-radius:18px; box-shadow:0 18px 60px rgba(0,0,0,.22); }
+        .modal-header { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:22px; }
+        .modal-header h2 { font-size:1.35rem; }
+        .modal-header p { margin-top:5px; font-size:.92rem; }
+        .icon-close { width:38px; height:38px; border:0; border-radius:8px; cursor:pointer; background:rgba(0,0,0,.05); color:var(--text-dark); font-size:1.1rem; }
+        .modal-footer { display:flex; justify-content:flex-end; gap:10px; margin-top:22px; }
+        .checkbox-line { display:flex; align-items:center; gap:10px; margin-top:4px; font-weight:500; }
+        .checkbox-line input { width:18px; height:18px; accent-color:var(--color-teal); }
+        .helper-text { color:var(--text-muted); font-size:.85rem; line-height:1.45; margin-top:8px; }
+        @media (max-width:850px) { .category-stats { grid-template-columns:1fr; gap:12px; } .category-toolbar { align-items:stretch; } .category-toolbar .search-input, .category-toolbar select { width:100%; min-width:100%; } .category-toolbar .toolbar-spacer { display:none; } .top-header { height:auto; min-height:80px; gap:12px; flex-wrap:wrap; padding-bottom:18px; } }
+    </style>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="assets/js/navigation.js" defer></script>
+</head>
+<body data-require-client="true">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="app-container">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo" style="text-decoration:none">
+                <span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px">MerKdito</span>
+            </a>
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+            <div class="logout-container">
+                <a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div>
+                    <h1 class="page-title">Categorias</h1>
+                    <p class="page-subtitle" style="margin-bottom:0">Organize os produtos por setor ou tipo de mercadoria.</p>
+                </div>
+                <div class="header-actions">
+                    <button id="btnAtualizar" type="button" class="btn btn-outline"><i class="fa-solid fa-rotate"></i> Atualizar</button>
+                    <button id="btnNovaCategoria" type="button" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Nova categoria</button>
+                </div>
+            </header>
+
+            <div class="animate-fade-in delay-1">
+                <div id="mensagemCategorias" class="message" role="status" aria-live="polite"></div>
+
+                <section class="category-stats" aria-label="Resumo das categorias">
+                    <div class="glass-panel category-stat">
+                        <div><div class="category-stat-label">Total de categorias</div><div id="totalCategorias" class="category-stat-value">—</div></div>
+                        <div class="category-stat-icon"><i class="fa-solid fa-tags"></i></div>
+                    </div>
+                    <div class="glass-panel category-stat">
+                        <div><div class="category-stat-label">Ativas</div><div id="totalAtivas" class="category-stat-value">—</div></div>
+                        <div class="category-stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+                    </div>
+                    <div class="glass-panel category-stat">
+                        <div><div class="category-stat-label">Inativas</div><div id="totalInativas" class="category-stat-value">—</div></div>
+                        <div class="category-stat-icon"><i class="fa-solid fa-circle-minus"></i></div>
+                    </div>
+                </section>
+
+                <section class="glass-panel" style="padding:24px">
+                    <div class="category-toolbar">
+                        <div class="search-input">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input id="buscarCategoria" type="search" class="form-control" placeholder="Buscar categoria..." autocomplete="off" aria-label="Buscar categoria">
+                        </div>
+                        <select id="filtroStatus" class="form-control" aria-label="Filtrar por situação">
+                            <option value="todas">Todas as situações</option>
+                            <option value="ativas">Somente ativas</option>
+                            <option value="inativas">Somente inativas</option>
+                        </select>
+                        <div class="toolbar-spacer"></div>
+                        <button id="btnCategoriasPadrao" type="button" class="btn btn-secondary"><i class="fa-solid fa-wand-magic-sparkles"></i> Adicionar categorias padrão</button>
+                    </div>
+
+                    <div class="helper-text" style="margin:-8px 0 16px">Desative categorias que não utiliza em vez de excluí-las. Assim você evita afetar o histórico ou os produtos que já estiverem vinculados.</div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead><tr><th>Nome</th><th>Descrição</th><th>Situação</th><th>Ações</th></tr></thead>
+                            <tbody id="listaCategorias">
+                                <tr><td colspan="4" class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i>Carregando categorias...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p id="resumoLista" class="helper-text" style="margin-top:14px"></p>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
+        <section class="category-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" aria-describedby="modalDescription">
+            <div class="modal-header">
+                <div><h2 id="modalTitle">Nova categoria</h2><p id="modalDescription">Informe os dados da categoria do seu estabelecimento.</p></div>
+                <button id="btnFecharModal" type="button" class="icon-close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="mensagemFormulario" class="message" role="alert" aria-live="polite"></div>
+            <form id="formCategoria" novalidate>
+                <input id="categoriaId" type="hidden">
+                <div class="form-group">
+                    <label class="form-label" for="categoriaNome">Nome da categoria *</label>
+                    <input id="categoriaNome" name="nome" type="text" class="form-control" maxlength="100" required autocomplete="off" placeholder="Ex.: Bebidas">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="categoriaDescricao">Descrição</label>
+                    <textarea id="categoriaDescricao" name="descricao" class="form-control" rows="3" placeholder="Explique quais produtos pertencem a esta categoria (opcional)"></textarea>
+                </div>
+                <label class="checkbox-line" for="categoriaAtiva"><input id="categoriaAtiva" type="checkbox" checked> Categoria ativa</label>
+                <p class="helper-text">A categoria será vinculada automaticamente ao estabelecimento associado à sua conta. Não é necessário informar um ID de cliente ou estabelecimento.</p>
+                <div class="modal-footer">
+                    <button id="btnCancelarModal" type="button" class="btn btn-outline">Cancelar</button>
+                    <button id="btnSalvarCategoria" type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Salvar categoria</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+            const tbody = document.getElementById("listaCategorias");
+            const modal = document.getElementById("modalBackdrop");
+            const form = document.getElementById("formCategoria");
+            const btnSalvar = document.getElementById("btnSalvarCategoria");
+            const msg = document.getElementById("mensagemCategorias");
+            const msgForm = document.getElementById("mensagemFormulario");
+            let categorias = [];
+            let salvando = false;
+            let focoAnterior = null;
+
+            const categoriasPadrao = [
+                "Alimentos e Mercearia", "Bebidas", "Hortifruti", "Açougue e Aves",
+                "Peixaria e Frutos do Mar", "Frios e Laticínios", "Padaria e Confeitaria",
+                "Congelados", "Doces, Chocolates e Snacks", "Higiene Pessoal",
+                "Perfumaria e Cosméticos", "Limpeza", "Utilidades Domésticas",
+                "Descartáveis e Embalagens", "Bebê e Infantil", "Pet Shop",
+                "Papelaria e Escritório", "Informática", "Eletrônicos e Acessórios",
+                "Eletrodomésticos", "Vestuário e Moda", "Calçados e Acessórios",
+                "Móveis e Decoração", "Ferramentas e Construção", "Automotivo",
+                "Esporte e Lazer", "Brinquedos e Jogos", "Jardinagem e Agro",
+                "Saúde e Farmácia", "Outros"
+            ];
+
+            function valor(obj, camel, pascal) {
+                if (!obj) return undefined;
+                return obj[camel] !== undefined ? obj[camel] : obj[pascal];
+            }
+
+            function escapar(texto) {
+                return String(texto ?? "").replace(/[&<>"']/g, c => ({
+                    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+                })[c]);
+            }
+
+            function mostrarMensagem(texto, tipo = "info", destino = msg) {
+                MerkditoUI.showInline(destino, texto, tipo);
+            }
+
+            function ocultarMensagem(destino = msg) {
+                MerkditoUI.clearInline(destino);
+            }
+
+            async function lerErro(resposta, fallback) {
+                if (window.MerkditoUI) return await MerkditoUI.responseMessage(resposta, fallback);
+                const texto = await resposta.text();
+                if (!texto) return fallback;
+                try {
+                    const dados = JSON.parse(texto);
+                    if (typeof dados === "string") return dados;
+                    return dados.mensagem || dados.Mensagem || dados.message || dados.Message || dados.detail || dados.title || fallback;
+                } catch {
+                    return texto.slice(0, 500);
+                }
+            }
+
+            function nomeCategoria(c) { return String(valor(c, "nome", "Nome") || ""); }
+            function descricaoCategoria(c) { return String(valor(c, "descricao", "Descricao") || ""); }
+            function ativaCategoria(c) { return valor(c, "ativa", "Ativa") === true; }
+            function idCategoria(c) { return Number(valor(c, "id", "Id")); }
+
+            function atualizarIndicadores() {
+                const ativas = categorias.filter(ativaCategoria).length;
+                document.getElementById("totalCategorias").textContent = categorias.length.toLocaleString("pt-BR");
+                document.getElementById("totalAtivas").textContent = ativas.toLocaleString("pt-BR");
+                document.getElementById("totalInativas").textContent = (categorias.length - ativas).toLocaleString("pt-BR");
+            }
+
+            function renderizar() {
+                const busca = document.getElementById("buscarCategoria").value.trim().toLocaleLowerCase("pt-BR");
+                const filtro = document.getElementById("filtroStatus").value;
+                const filtradas = categorias.filter(c => {
+                    const correspondeTexto = (nomeCategoria(c) + " " + descricaoCategoria(c)).toLocaleLowerCase("pt-BR").includes(busca);
+                    const ativa = ativaCategoria(c);
+                    const correspondeStatus = filtro === "todas" || (filtro === "ativas" && ativa) || (filtro === "inativas" && !ativa);
+                    return correspondeTexto && correspondeStatus;
+                }).sort((a, b) => nomeCategoria(a).localeCompare(nomeCategoria(b), "pt-BR"));
+
+                if (!filtradas.length) {
+                    const texto = categorias.length === 0
+                        ? "Nenhuma categoria cadastrada. Crie uma categoria ou adicione as categorias padrão."
+                        : "Nenhuma categoria corresponde aos filtros informados.";
+                    tbody.innerHTML = `<tr><td colspan="4" class="empty-state"><i class="fa-solid fa-tags"></i>${escapar(texto)}</td></tr>`;
+                } else {
+                    tbody.innerHTML = filtradas.map(c => {
+                        const id = idCategoria(c);
+                        const ativa = ativaCategoria(c);
+                        const nome = escapar(nomeCategoria(c));
+                        const descricao = escapar(descricaoCategoria(c) || "—");
+                        return `<tr>
+                            <td><strong>${nome}</strong></td>
+                            <td>${descricao}</td>
+                            <td><span class="status-pill ${ativa ? "active" : "inactive"}"><i class="fa-solid ${ativa ? "fa-circle-check" : "fa-circle-minus"}"></i>${ativa ? "Ativa" : "Inativa"}</span></td>
+                            <td><div class="category-actions">
+                                <button type="button" class="action-btn" data-action="editar" data-id="${id}" aria-label="Editar ${nome}" title="Editar"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button type="button" class="action-btn" data-action="alternar" data-id="${id}" aria-label="${ativa ? "Desativar" : "Ativar"} ${nome}" title="${ativa ? "Desativar" : "Ativar"}"><i class="fa-solid ${ativa ? "fa-toggle-on" : "fa-toggle-off"}"></i></button>
+                            </div></td>
+                        </tr>`;
+                    }).join("");
+                }
+                document.getElementById("resumoLista").textContent = `${filtradas.length} de ${categorias.length} categoria(s).`;
+                atualizarIndicadores();
+            }
+
+            async function carregarCategorias(mostrarSucesso = false) {
+                tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><i class="fa-solid fa-spinner fa-spin"></i>Carregando categorias...</td></tr>';
+                try {
+                    const resposta = await MerkditoAuth.apiFetch("Categorias");
+                    if (!resposta.ok) throw new Error(await lerErro(resposta, `Não foi possível carregar as categorias (HTTP ${resposta.status}).`));
+                    const dados = await resposta.json();
+                    if (!Array.isArray(dados)) throw new Error("A API retornou uma lista de categorias em formato inesperado.");
+                    categorias = dados;
+                    renderizar();
+                    if (mostrarSucesso) mostrarMensagem("Lista de categorias atualizada.", "success");
+                    else ocultarMensagem();
+                } catch (erro) {
+                    console.error("Erro ao carregar categorias:", erro);
+                    tbody.innerHTML = `<tr><td colspan="4" class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i>${escapar(erro.message || "Não foi possível carregar categorias.")}<br><br><button id="btnTentarNovamente" type="button" class="btn btn-outline"><i class="fa-solid fa-rotate"></i> Tentar novamente</button></td></tr>`;
+                    const retry = document.getElementById("btnTentarNovamente");
+                    if (retry) retry.addEventListener("click", () => carregarCategorias(false));
+                    mostrarMensagem(erro.message || "Falha ao comunicar com a API.", "error");
+                }
+            }
+
+            function abrirModal(categoria = null) {
+                focoAnterior = document.activeElement;
+                ocultarMensagem(msgForm);
+                form.reset();
+                document.getElementById("categoriaId").value = categoria ? idCategoria(categoria) : "";
+                document.getElementById("categoriaNome").value = categoria ? nomeCategoria(categoria) : "";
+                document.getElementById("categoriaDescricao").value = categoria ? descricaoCategoria(categoria) : "";
+                document.getElementById("categoriaAtiva").checked = categoria ? ativaCategoria(categoria) : true;
+                document.getElementById("modalTitle").textContent = categoria ? "Editar categoria" : "Nova categoria";
+                document.getElementById("modalDescription").textContent = categoria
+                    ? "Atualize os dados desta categoria. O vínculo com seu estabelecimento será preservado."
+                    : "Informe os dados da categoria do seu estabelecimento.";
+                btnSalvar.disabled = false;
+                btnSalvar.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar categoria';
+                modal.classList.add("open");
+                modal.setAttribute("aria-hidden", "false");
+                document.body.style.overflow = "hidden";
+                document.getElementById("categoriaNome").focus();
+            }
+
+            function fecharModal(forcar = false) {
+                if (salvando && !forcar) return;
+                modal.classList.remove("open");
+                modal.setAttribute("aria-hidden", "true");
+                document.body.style.overflow = "";
+                if (focoAnterior && typeof focoAnterior.focus === "function") focoAnterior.focus();
+            }
+
+            async function salvarCategoria(evento) {
+                evento.preventDefault();
+                if (salvando) return;
+                const idRaw = document.getElementById("categoriaId").value;
+                const id = idRaw ? Number(idRaw) : null;
+                const nome = document.getElementById("categoriaNome").value.trim();
+                const descricao = document.getElementById("categoriaDescricao").value.trim();
+                const ativa = document.getElementById("categoriaAtiva").checked;
+
+                if (!nome) { mostrarMensagem("Informe o nome da categoria.", "error", msgForm); document.getElementById("categoriaNome").focus(); return; }
+                if (nome.length > 100) { mostrarMensagem("O nome pode ter no máximo 100 caracteres.", "error", msgForm); return; }
+                const repetida = categorias.some(c => idCategoria(c) !== id && nomeCategoria(c).trim().toLocaleLowerCase("pt-BR") === nome.toLocaleLowerCase("pt-BR"));
+                if (repetida) { mostrarMensagem("Já existe uma categoria com esse nome neste estabelecimento.", "error", msgForm); return; }
+
+                salvando = true;
+                btnSalvar.disabled = true;
+                btnSalvar.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Salvando...';
+                try {
+                    const payload = { nome, descricao: descricao || null, ativa };
+                    let resposta;
+                    if (id !== null) {
+                        payload.id = id;
+                        resposta = await MerkditoAuth.apiFetch(`Categorias/${id}`, {
+                            method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+                        });
+                    } else {
+                        resposta = await MerkditoAuth.apiFetch("Categorias", {
+                            method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+                        });
+                    }
+                    if (!resposta.ok) throw new Error(await lerErro(resposta, `Não foi possível salvar a categoria (HTTP ${resposta.status}).`));
+                    fecharModal(true);
+                    await carregarCategorias(false);
+                    mostrarMensagem(id === null ? "Categoria cadastrada com sucesso." : "Categoria atualizada com sucesso.", "success");
+                } catch (erro) {
+                    mostrarMensagem(erro.message || "Não foi possível salvar a categoria.", "error", msgForm);
+                } finally {
+                    salvando = false;
+                    btnSalvar.disabled = false;
+                    btnSalvar.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Salvar categoria';
+                }
+            }
+
+            async function alternarStatus(id) {
+                const categoria = categorias.find(c => idCategoria(c) === id);
+                if (!categoria) return;
+                const novaAtiva = !ativaCategoria(categoria);
+                const acao = novaAtiva ? "ativar" : "desativar";
+                if (!window.confirm(`Deseja ${acao} a categoria "${nomeCategoria(categoria)}"?`)) return;
+                try {
+                    const payload = {
+                        id,
+                        nome: nomeCategoria(categoria),
+                        descricao: descricaoCategoria(categoria) || null,
+                        ativa: novaAtiva
+                    };
+                    const resposta = await MerkditoAuth.apiFetch(`Categorias/${id}`, {
+                        method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload)
+                    });
+                    if (!resposta.ok) throw new Error(await lerErro(resposta, `Não foi possível ${acao} a categoria (HTTP ${resposta.status}).`));
+                    await carregarCategorias(false);
+                    mostrarMensagem(`Categoria ${novaAtiva ? "ativada" : "desativada"} com sucesso.`, "success");
+                } catch (erro) {
+                    mostrarMensagem(erro.message || `Não foi possível ${acao} a categoria.`, "error");
+                }
+            }
+
+            async function adicionarCategoriasPadrao() {
+                const existentes = new Set(categorias.map(c => nomeCategoria(c).trim().toLocaleLowerCase("pt-BR")));
+                const faltantes = categoriasPadrao.filter(nome => !existentes.has(nome.toLocaleLowerCase("pt-BR")));
+                if (!faltantes.length) {
+                    mostrarMensagem("As categorias padrão já estão cadastradas. Nenhuma alteração foi feita.", "info");
+                    return;
+                }
+                if (!window.confirm(`Serão adicionadas ${faltantes.length} categorias padrão que ainda não existem na sua lista. Deseja continuar?`)) return;
+
+                const botao = document.getElementById("btnCategoriasPadrao");
+                const textoOriginal = botao.innerHTML;
+                botao.disabled = true;
+                botao.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adicionando...';
+                let adicionadas = 0;
+                let falhas = [];
+                try {
+                    for (const nome of faltantes) {
+                        try {
+                            const resposta = await MerkditoAuth.apiFetch("Categorias", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ nome, descricao: null, ativa: true })
+                            });
+                            if (!resposta.ok) throw new Error(await lerErro(resposta, `HTTP ${resposta.status}`));
+                            adicionadas++;
+                        } catch (erro) {
+                            falhas.push(`${nome}: ${erro.message || "erro desconhecido"}`);
+                            // Não aborta o restante; um erro não deve impedir as outras categorias.
+                        }
+                    }
+                    await carregarCategorias(false);
+                    if (falhas.length) {
+                        const detalhe = falhas.slice(0, 4).join("\n");
+                        mostrarMensagem(`Processo concluído parcialmente: ${adicionadas} categoria(s) adicionada(s), ${falhas.length} falha(s).${falhas.length > 4 ? "\nHá outras falhas não exibidas." : ""}\n${detalhe}`, "error");
+                    } else {
+                        mostrarMensagem(`${adicionadas} categoria(s) padrão adicionada(s) com sucesso.`, "success");
+                    }
+                } finally {
+                    botao.disabled = false;
+                    botao.innerHTML = textoOriginal;
+                }
+            }
+
+            tbody.addEventListener("click", function (evento) {
+                const botao = evento.target.closest("button[data-action]");
+                if (!botao) return;
+                const id = Number(botao.dataset.id);
+                const categoria = categorias.find(c => idCategoria(c) === id);
+                if (!categoria) return;
+                if (botao.dataset.action === "editar") abrirModal(categoria);
+                else if (botao.dataset.action === "alternar") alternarStatus(id);
+            });
+
+            document.getElementById("btnNovaCategoria").addEventListener("click", () => abrirModal());
+            document.getElementById("btnAtualizar").addEventListener("click", () => carregarCategorias(true));
+            document.getElementById("btnCategoriasPadrao").addEventListener("click", adicionarCategoriasPadrao);
+            document.getElementById("buscarCategoria").addEventListener("input", renderizar);
+            document.getElementById("filtroStatus").addEventListener("change", renderizar);
+            document.getElementById("btnFecharModal").addEventListener("click", fecharModal);
+            document.getElementById("btnCancelarModal").addEventListener("click", fecharModal);
+            modal.addEventListener("click", evento => { if (evento.target === modal) fecharModal(); });
+            document.addEventListener("keydown", evento => { if (evento.key === "Escape" && modal.classList.contains("open")) fecharModal(); });
+            form.addEventListener("submit", salvarCategoria);
+            carregarCategorias(false);
+        })();
+    </script>
+</body>
+</html>

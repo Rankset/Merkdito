@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Compras do Aplicativo | Merkdito</title>
+<link rel="stylesheet" href="assets/css/style.css"><link rel="stylesheet" href="assets/css/responsive.css">
+<script src="assets/js/config.js"></script><script src="assets/js/auth.js"></script>
+<style>
+.app-wrap{max-width:1080px;margin:24px auto;padding:0 20px;color:#24322e}
+.app-wrap .app-card{background:#fff;border:1px solid #dae6dc;border-radius:16px;padding:22px;margin:18px 0}
+.app-wrap table{width:100%;border-collapse:collapse;min-width:760px}
+.app-wrap th,.app-wrap td{text-align:left;border-bottom:1px solid #e4eee5;padding:11px}
+.app-wrap .scroll{overflow:auto}.app-wrap .row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.app-wrap input,.app-wrap button{padding:10px;border:1px solid #aec5b0;border-radius:8px}
+.app-wrap button{background:#4f963f;color:#fff;border:0;cursor:pointer}
+.app-wrap .notice{background:#fff6df;padding:14px;border-radius:9px}
+.app-wrap .error{color:#a00}.app-wrap a{color:#2b7840}
+</style></head>
+<body><main class="app-wrap">
+<p><a href="vendas.html">Voltar ao módulo Vendas</a></p>
+<h1>Compras registradas pelo aplicativo Merkdito</h1>
+<p>Estas operações vêm da mesma API e das tabelas de vendas e estoque do site; a origem identifica o aplicativo consumidor.</p>
+<div class="notice"><strong>Importante:</strong> o status <code>REGISTRADA</code> não significa pagamento confirmado. Não liberar retirada comercial antes da integração com o pagamento.</div>
+<section class="app-card">
+<div class="row"><label>PDV <select id="filtroLoja" aria-label="Filtrar loja"><option value="">Todos os meus PDVs</option></select></label>
+<label>Data inicial <input type="date" id="de"></label><label>Data final <input type="date" id="ate"></label>
+<button id="atualizar" type="button">Atualizar</button></div>
+<p id="estado" role="status">Carregando…</p><div class="scroll">
+<table><thead><tr><th>ID</th><th>Data</th><th>PDV</th><th>Origem</th><th>Status</th><th>Itens</th><th>Total</th><th>Ação</th></tr></thead><tbody id="linhas"></tbody></table>
+</div><div class="row" style="margin-top:12px"><button id="anterior" type="button">Anterior</button><span id="pagina"></span><button id="proxima" type="button">Próxima</button></div>
+</section><section class="app-card"><h2>Detalhes</h2><pre id="detalhes" style="white-space:pre-wrap;overflow-wrap:anywhere">Selecione uma compra.</pre></section>
+</main><script src="assets/js/compras_app.js"></script></body></html>

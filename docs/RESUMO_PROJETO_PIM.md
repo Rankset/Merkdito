@@ -1,0 +1,11 @@
+# Integração do aplicativo móvel com a plataforma web Merkdito — texto-base do PIM
+
+O aplicativo móvel Merkdito é desenvolvido em Flutter e foi estruturado para complementar o sistema de gestão comercial existente, implementado em ASP.NET Core e Entity Framework Core, com persistência em SQL Server. Seu objetivo é permitir que o consumidor realize a compra de produtos de um mercado autônomo e efetue a retirada presencial, dispensando o fluxo de entrega domiciliar. O aplicativo atua como cliente da API REST já utilizada pela plataforma administrativa, sem acesso direto às tabelas do banco de dados.
+
+Na etapa de cadastro, o aplicativo requisita à API as empresas e os pontos de venda (PDVs) ativos que estão cadastrados no site. O consumidor seleciona os estabelecimentos com os quais deseja se vincular e cria uma conta própria. Após a autenticação, pode escolher entre os PDVs autorizados. Cada seleção determina o catálogo, os preços e o estoque disponíveis, preservando o isolamento entre diferentes empresas e unidades comerciais.
+
+O catálogo é obtido por meio da associação entre produtos e estabelecimentos do sistema web. Na sacola, o cliente organiza os itens e suas quantidades. O envio da solicitação de compra passa por validações no servidor, que recalcula valores, verifica a disponibilidade, controla tentativas repetidas e, em ambiente de demonstração, registra o movimento em tabelas compartilhadas com o site, como vendas, itens de venda e movimentações de estoque. Assim, a operação poderá ser consultada também pela empresa no painel web, com identificação da origem do aplicativo.
+
+A proposta foi organizada em camadas, incluindo apresentação mobile, serviços HTTP, autenticação, regras de negócio e persistência. Como os arquivos fornecidos não contêm um provedor de pagamentos integrado, o registro de vendas sem confirmação financeira é restrito ao ambiente de demonstração e não representa pagamento efetivado. A validação final da solução exige compilação, testes integrados com SQL Server e execução em dispositivo Android físico; o material entregue constitui o código-fonte da integração e seu plano de homologação.
+
+**Nota acadêmica:** esse texto descreve o desenho e a implementação em código, não resultados experimentais já comprovados.

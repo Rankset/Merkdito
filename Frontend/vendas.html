@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vendas - MerKdito</title>
+    <!-- Compras por aplicativo usam as mesmas Vendas, ItensVenda e estoque do site. -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <script src="assets/js/navigation.js" defer></script>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <style>
+        .sales-toolbar{display:flex;gap:12px;align-items:end;flex-wrap:wrap;margin:18px 0}
+        .sales-filter{display:flex;flex-direction:column;gap:6px;min-width:150px;flex:1}
+        .sales-filter label{font-size:.85rem;font-weight:600}
+        .sales-actions{display:flex;gap:9px;flex-wrap:wrap}
+        .sales-message{display:none;padding:12px 14px;border-radius:10px;margin:14px 0;white-space:pre-line}
+        .sales-message.show{display:block}.sales-message.error{color:#8e2424;background:#fff0f0;border:1px solid #f0caca}.sales-message.info{color:#245878;background:#eef7fc;border:1px solid #cbe5f4}.sales-message.success{color:#176b3a;background:#effaf2;border:1px solid #c8ead2}
+        .sales-table-wrap{overflow:auto}.sales-table{width:100%;border-collapse:collapse;min-width:760px}.sales-table th,.sales-table td{padding:12px;border-bottom:1px solid rgba(0,0,0,.08);text-align:left;vertical-align:middle}.sales-table th{font-size:.78rem;color:var(--text-muted);white-space:nowrap}.sales-table td{font-size:.9rem}.sales-table .number{text-align:right;white-space:nowrap}.sales-empty{text-align:center!important;padding:30px!important;color:var(--text-muted)}
+        .sales-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:18px 0}.sales-stat{padding:18px}.sales-stat-label{font-size:.86rem;color:var(--text-muted)}.sales-stat-value{font-size:1.5rem;font-weight:750;margin-top:5px;overflow-wrap:anywhere}
+        .integration-note{padding:18px;margin-top:22px;line-height:1.5}.integration-note code{overflow-wrap:anywhere}.sales-pagination{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}
+        dialog.sales-dialog{width:min(760px,calc(100vw - 24px));max-width:760px;border:0;border-radius:16px;padding:0;box-shadow:0 22px 70px rgba(0,0,0,.25);color:var(--text-dark)}dialog.sales-dialog::backdrop{background:rgba(20,30,35,.45)}.sales-dialog-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid #eee}.sales-dialog-body{padding:20px;max-height:65vh;overflow:auto}.sales-dialog-foot{padding:16px 22px;display:flex;justify-content:flex-end;border-top:1px solid #eee}
+        @media(max-width:760px){.sales-summary{grid-template-columns:1fr}.sales-toolbar>*{min-width:100%}.sales-actions .btn{width:100%}}
+        @media print{.sidebar,.sales-toolbar,.sales-actions,.integration-note,.sales-pagination,.no-print{display:none!important}.main-content{padding:0!important}.app-container{display:block!important}.glass-panel{box-shadow:none!important;background:#fff!important}}
+    </style>
+</head>
+<body data-require-client="true">
+<div class="bg-blob blob-1"></div><div class="bg-blob blob-2"></div>
+<div class="app-container">
+    <aside class="sidebar">
+        <a href="dashboard.html" class="logo" style="text-decoration:none"><span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px">MerKdito</span></a>
+        <ul class="nav-menu" aria-label="Navegação principal">
+            <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+            <li class="nav-group" data-nav-group="products"><button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos"><i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i></button>
+                <ul class="nav-submenu" id="submenuProdutos" hidden>
+                    <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list"></i><span>Consultar produtos</span></a></li>
+                    <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle"></i><span>Cadastrar produto</span></a></li>
+                    <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import"></i><span>Importar produtos</span></a></li>
+                    <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked"></i><span>Atualizar estoque</span></a></li>
+                    <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check"></i><span>Atualizar cadastro</span></a></li>
+                    <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags"></i><span>Categorias</span></a></li>
+                    <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines"></i><span>Relatórios de estoque</span></a></li>
+                    <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check"></i><span>Qualidade do catálogo</span></a></li>
+                    <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate"></i><span>Movimentações de estoque</span></a></li>
+                </ul>
+            </li>
+            <li class="nav-group" data-nav-group="stores"><button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas"><i class="fa-solid fa-store"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret"></i></button><ul class="nav-submenu" id="submenuLojas" hidden><li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop"></i><span>Consultar / cadastrar lojas</span></a></li><li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked"></i><span>Produtos por loja</span></a></li><li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation"></i><span>Alertas de estoque</span></a></li><li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check"></i><span>Inventário físico</span></a></li></ul></li>
+            <li class="nav-group" data-nav-group="sales"><button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas"><i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i></button>
+                <ul class="nav-submenu" id="submenuVendas" hidden><li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt"></i><span>Consultar vendas</span></a></li><li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column"></i><span>Relatórios de vendas</span></a></li></ul>
+            </li>
+            <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie"></i><span>Meu perfil</span></a></li>
+            <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key"></i><span>Alterar senha</span></a></li>
+                        <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+        <div class="logout-container"><a href="index.html" class="nav-item" onclick="MerkditoAuth.logout();return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a></div>
+    </aside>
+    <main class="main-content">
+        <header class="top-header"><div><h1 class="page-title">Vendas</h1>
+        <p style="margin-top:8px"><a href="compras_app.html" style="font-weight:700;color:#397a2e">Ver compras feitas pelo aplicativo Merkdito</a></p><p class="page-subtitle">Consulte as vendas sincronizadas pelo aplicativo da loja.</p></div><div class="sales-actions"><button id="btnAtualizar" class="btn btn-outline" type="button"><i class="fa-solid fa-rotate"></i> Atualizar</button><button id="btnExportar" class="btn btn-outline" type="button"><i class="fa-solid fa-file-csv"></i> Exportar página CSV</button></div></header>
+        <div id="mensagem" class="sales-message" role="status" aria-live="polite"></div>
+        <section class="glass-panel" style="padding:18px">
+            <div class="sales-toolbar">
+                <div class="sales-filter"><label for="filtroLoja">Loja</label><select class="form-control" id="filtroLoja"><option value="">Todas as lojas</option></select></div>
+                <div class="sales-filter"><label for="dataDe">Data inicial</label><input class="form-control" type="date" id="dataDe"></div>
+                <div class="sales-filter"><label for="dataAte">Data final</label><input class="form-control" type="date" id="dataAte"></div>
+                <div class="sales-filter"><label for="busca">Identificador externo da venda</label><input class="form-control" id="busca" maxlength="100" placeholder="Ex.: PDV-000123"></div>
+                <div class="sales-filter" style="flex:0 0 130px"><label for="tamanhoPagina">Linhas por página</label><select class="form-control" id="tamanhoPagina"><option>25</option><option selected>50</option><option>100</option><option>200</option></select></div>
+                <div class="sales-actions"><button class="btn btn-primary" type="button" id="btnFiltrar"><i class="fa-solid fa-filter"></i> Filtrar</button><button class="btn btn-outline" type="button" id="btnLimpar">Limpar</button></div>
+            </div>
+        </section>
+        <div class="sales-summary">
+            <div class="glass-panel sales-stat"><div class="sales-stat-label">Vendas nesta página</div><div id="totalPagina" class="sales-stat-value">—</div></div>
+            <div class="glass-panel sales-stat"><div class="sales-stat-label">Unidades nesta página</div><div id="unidadesPagina" class="sales-stat-value">—</div></div>
+            <div class="glass-panel sales-stat"><div class="sales-stat-label">Total vendido nesta página</div><div id="valorPagina" class="sales-stat-value">—</div></div>
+        </div>
+        <section class="glass-panel" style="padding:18px">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px"><h2 style="font-size:1.15rem;margin:0">Vendas sincronizadas</h2><span id="paginacaoInfo" class="small text-muted">Carregando…</span></div>
+            <div class="sales-table-wrap"><table class="sales-table"><thead><tr><th>Data/hora</th><th>Estabelecimento</th><th>ID da venda no app</th><th>Itens</th><th>Unidades</th><th class="number">Total</th><th>Status</th><th>Ação</th></tr></thead><tbody id="corpoVendas"><tr><td class="sales-empty" colspan="8">Carregando vendas…</td></tr></tbody></table></div>
+            <div class="sales-pagination"><span id="resultadoContagem" class="small text-muted"></span><div class="sales-actions"><button id="btnAnterior" class="btn btn-outline" disabled type="button"><i class="fa-solid fa-chevron-left"></i> Anterior</button><button id="btnProxima" class="btn btn-outline" disabled type="button">Próxima <i class="fa-solid fa-chevron-right"></i></button></div></div>
+        </section>
+        <section class="glass-panel integration-note"><h2 style="font-size:1.05rem"><i class="fa-solid fa-link" style="color:var(--color-teal)"></i> Integração com o aplicativo de vendas</h2><p>O app deve enviar a venda somente depois que ela for confirmada no caixa. A API grava a venda, reduz o estoque e registra a saída na mesma transação. Se o app reenviar a mesma venda, use sempre o mesmo <strong>IdVendaExterna</strong>; a API reconhece a repetição e não reduz o estoque duas vezes.</p><p><strong>Endpoint:</strong> <code>POST /api/Vendas/sincronizar</code> com JWT de cliente no cabeçalho <code>Authorization: Bearer ...</code>. O contrato JSON está documentado em <code>Docs/INTEGRACAO_APP_VENDAS.md</code>.</p></section>
+    </main>
+</div>
+<dialog id="dialogDetalhe" class="sales-dialog"><div class="sales-dialog-head"><div><h2 style="margin:0;font-size:1.2rem">Detalhes da venda</h2><div class="small text-muted" id="detalheSubtitulo"></div></div><button id="btnFecharDialogTopo" class="btn btn-outline" type="button" aria-label="Fechar detalhes"><i class="fa-solid fa-xmark"></i></button></div><div class="sales-dialog-body"><div id="detalheResumo" style="margin-bottom:16px"></div><div class="sales-table-wrap"><table class="sales-table"><thead><tr><th>Produto</th><th>Código</th><th>Quantidade</th><th class="number">Preço unitário</th><th class="number">Subtotal</th></tr></thead><tbody id="detalheItens"></tbody></table></div></div><div class="sales-dialog-foot"><button id="btnFecharDialog" class="btn btn-primary" type="button">Fechar</button></div></dialog>
+<script>
+(function(){
+'use strict';
+const $=id=>document.getElementById(id);let pagina=1,totalRegistros=0,vendasAtuais=[];
+const money=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(Number(v||0));
+const dateOnly=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const formatDate=v=>{const d=new Date(v);return Number.isNaN(d.getTime())?'—':new Intl.DateTimeFormat('pt-BR',{dateStyle:'short',timeStyle:'short'}).format(d)};
+function msg(text,type='info'){const el=$('mensagem');el.textContent=text;el.className=`sales-message show ${type}`;}
+function clearMsg(){const el=$('mensagem');el.textContent='';el.className='sales-message';}
+async function parseResponse(r){const t=await r.text();let b=null;try{b=t?JSON.parse(t):null;}catch{}if(!r.ok)throw new Error(b?.mensagem||b?.message||b?.title||`A API respondeu HTTP ${r.status}.`);return b;}
+function cell(tr,text,cls){const td=document.createElement('td');td.textContent=text??'';if(cls)td.className=cls;tr.appendChild(td);return td;}
+function render(){const body=$('corpoVendas');body.replaceChildren();if(!vendasAtuais.length){const tr=document.createElement('tr'),td=cell(tr,'Nenhuma venda encontrada para os filtros selecionados.','sales-empty');td.colSpan=8;body.appendChild(tr);}else vendasAtuais.forEach(v=>{const tr=document.createElement('tr');cell(tr,formatDate(v.dataVendaUtc));cell(tr,v.estabelecimento||'—');cell(tr,v.idVendaExterna||'—');cell(tr,String(v.quantidadeItens??0));cell(tr,String(v.totalUnidades??0));cell(tr,money(v.total),'number');cell(tr,v.status||'—');const action=cell(tr,'');const btn=document.createElement('button');btn.type='button';btn.className='btn btn-outline';btn.innerHTML='<i class="fa-solid fa-eye" aria-hidden="true"></i> Detalhes';btn.addEventListener('click',()=>detalhar(v.id));action.appendChild(btn);body.appendChild(tr);});
+$('totalPagina').textContent=String(vendasAtuais.length);$('unidadesPagina').textContent=String(vendasAtuais.reduce((s,v)=>s+Number(v.totalUnidades||0),0));$('valorPagina').textContent=money(vendasAtuais.reduce((s,v)=>s+Number(v.total||0),0));const maxPages=Math.max(1,Math.ceil(totalRegistros/Number($('tamanhoPagina').value)));$('paginacaoInfo').textContent=`Página ${pagina} de ${maxPages}`;$('resultadoContagem').textContent=`${totalRegistros} venda(s) encontrada(s)`;$('btnAnterior').disabled=pagina<=1;$('btnProxima').disabled=pagina>=maxPages;}
+async function carregar(){clearMsg();$('corpoVendas').innerHTML='<tr><td class="sales-empty" colspan="8">Carregando vendas…</td></tr>';$('btnAtualizar').disabled=true;$('btnFiltrar').disabled=true;try{const q=new URLSearchParams({pagina:String(pagina),tamanhoPagina:$('tamanhoPagina').value});if($('filtroLoja').value)q.set('estabelecimentoId',$('filtroLoja').value);if($('dataDe').value)q.set('de',$('dataDe').value);if($('dataAte').value)q.set('ate',$('dataAte').value);if($('busca').value.trim())q.set('busca',$('busca').value.trim());const r=await MerkditoAuth.apiFetch(`Vendas?${q}`);const data=await parseResponse(r);vendasAtuais=Array.isArray(data.vendas)?data.vendas:[];totalRegistros=Number(data.totalRegistros||0);render();}catch(e){if(MerkditoAuth.isSessionRedirectError?.(e))return;vendasAtuais=[];totalRegistros=0;render();msg(e.message||'Não foi possível carregar as vendas.','error');}finally{$('btnAtualizar').disabled=false;$('btnFiltrar').disabled=false;}}
+async function detalhar(id){clearMsg();try{const r=await MerkditoAuth.apiFetch(`Vendas/${encodeURIComponent(id)}`);const v=await parseResponse(r);$('detalheSubtitulo').textContent=`Venda ${v.idVendaExterna||'—'} · ${formatDate(v.dataVendaUtc)}`;$('detalheResumo').textContent=`Estabelecimento: ${v.estabelecimento||'—'} | Status: ${v.status||'—'} | Total: ${money(v.total)} | Origem: ${v.origem||'APP_VENDAS'}`;const body=$('detalheItens');body.replaceChildren();(v.itens||[]).forEach(i=>{const tr=document.createElement('tr');cell(tr,i.nomeProduto||'Produto');cell(tr,i.codigoBarrasProduto||'—');cell(tr,String(i.quantidade));cell(tr,money(i.precoUnitario),'number');cell(tr,money(i.totalItem),'number');body.appendChild(tr);});if(!(v.itens||[]).length){const tr=document.createElement('tr'),td=cell(tr,'Nenhum item retornado.','sales-empty');td.colSpan=5;body.appendChild(tr);}const dlg=$('dialogDetalhe');if(typeof dlg.showModal==='function')dlg.showModal();else msg('Este navegador não oferece a janela de detalhes.','error');}catch(e){if(!MerkditoAuth.isSessionRedirectError?.(e))msg(e.message||'Não foi possível carregar os detalhes da venda.','error');}}
+function csvEscape(value){let s=String(value??'');if(/^[\s]*[=+@\-]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';}
+function exportar(){if(!vendasAtuais.length){msg('Não há vendas nesta página para exportar.','info');return;}const rows=[['Data UTC','Estabelecimento','ID venda externa','Itens','Unidades','Total','Status','Origem'],...vendasAtuais.map(v=>[v.dataVendaUtc,v.estabelecimento,v.idVendaExterna,v.quantidadeItens,v.totalUnidades,v.total,v.status,v.origem])];const csv='\uFEFF'+rows.map(r=>r.map(csvEscape).join(';')).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download=`vendas-pagina-${pagina}.csv`;a.click();URL.revokeObjectURL(url);}
+$('btnFiltrar').addEventListener('click',()=>{pagina=1;carregar()});$('btnAtualizar').addEventListener('click',carregar);$('btnLimpar').addEventListener('click',()=>{$('filtroLoja').value='';$('dataDe').value='';$('dataAte').value='';$('busca').value='';pagina=1;carregar()});$('tamanhoPagina').addEventListener('change',()=>{pagina=1;carregar()});$('btnAnterior').addEventListener('click',()=>{if(pagina>1){pagina--;carregar()}});$('btnProxima').addEventListener('click',()=>{if(pagina<Math.ceil(totalRegistros/Number($('tamanhoPagina').value))){pagina++;carregar()}});$('btnExportar').addEventListener('click',exportar);$('btnFecharDialog').addEventListener('click',()=>$('dialogDetalhe').close());$('btnFecharDialogTopo').addEventListener('click',()=>$('dialogDetalhe').close());$('busca').addEventListener('keydown',e=>{if(e.key==='Enter'){pagina=1;carregar()}});
+async function carregarLojas(){const r=await MerkditoAuth.apiFetch('Lojas');const d=await parseResponse(r);const lojas=Array.isArray(d)?d:(d.lojas||[]);$('filtroLoja').innerHTML='<option value="">Todas as lojas</option>'+lojas.filter(l=>!(l.ehEstoqueCentral??l.EhEstoqueCentral)).map(l=>`<option value="${l.id??l.Id}">${String(l.nomeFantasia??l.NomeFantasia??'Loja').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}</option>`).join('');}
+const today=new Date(),from=new Date();from.setDate(today.getDate()-29);$('dataDe').value=dateOnly(from);$('dataAte').value=dateOnly(today);$('filtroLoja').addEventListener('change',()=>{pagina=1;carregar()});if(MerkditoAuth.requireClient())carregarLojas().then(carregar).catch(e=>msg(e.message||'Não foi possível carregar as lojas.','error'));
+})();
+</script>
+</body>
+</html>

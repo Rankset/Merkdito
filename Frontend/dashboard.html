@@ -1,0 +1,504 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - MerKdito</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <style>
+        .dashboard-grid { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+        .dashboard-quick-actions { display:flex; gap:10px; flex-wrap:wrap; margin:0 0 20px; }
+        .dashboard-meta { font-size:.85rem; color:var(--text-muted); margin-top:6px; }
+        .alert-card .alert-footer { display:flex; justify-content:flex-end; margin-top:16px; }
+        .alert-item { gap:12px; align-items:center; flex-wrap:wrap; }
+        .alert-name { font-weight:600; overflow-wrap:anywhere; }
+        .alert-details { display:flex; flex-direction:column; gap:3px; }
+        .alert-category { display:block; font-size:.86rem; color:var(--text); font-weight:600; margin-top:3px; }
+        @media (max-width: 680px) {
+            .charts-grid { grid-template-columns:1fr; }
+            .alert-list { grid-template-columns:1fr; }
+            .top-header { align-items:flex-start; }
+        }
+    </style>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="assets/js/navigation.js" defer></script>
+</head>
+<body data-require-client="true">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo">
+                <span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px;">MerKdito</span>
+            </a>
+
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+
+            <div class="logout-container">
+                <a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div>
+                    <h1 class="page-title">Dashboard MerKdito</h1>
+                    <p class="page-subtitle" style="margin-bottom:0">Visão geral do estoque de produtos</p>
+                    <p class="dashboard-meta">Olá, <strong id="nomeCliente">cliente</strong>. Última atualização: <span id="ultimaAtualizacao">Ainda não atualizado</span></p>
+                </div>
+
+                <div class="header-actions">
+                    <button id="btnAtualizar" class="btn btn-outline" type="button">
+                        <i class="fa-solid fa-rotate"></i> Atualizar
+                    </button>
+                </div>
+            </header>
+
+            <div class="animate-fade-in delay-1">
+                <div class="dashboard-quick-actions">
+                    <a href="produtos.html" class="btn btn-outline"><i class="fa-solid fa-box-open"></i> Abrir Produtos</a>
+                    <a href="vendas.html" class="btn btn-primary"><i class="fa-solid fa-cash-register"></i> Consultar vendas</a>
+                    <a href="relatorios_vendas.html" class="btn btn-outline"><i class="fa-solid fa-chart-column"></i> Relatórios de vendas</a>
+                </div>
+                <div id="mensagemDashboard" role="status" aria-live="polite"
+                     style="display:none;padding:12px;margin-bottom:16px;border-radius:8px;"></div>
+
+                <div class="dashboard-grid">
+                    <div class="glass-panel stat-card">
+                        <div class="stat-title">Total de Itens</div>
+                        <div class="stat-value" id="totalItens">—</div>
+                        <div class="stat-icon icon-teal"><i class="fa-solid fa-cubes"></i></div>
+                    </div>
+
+                    <div class="glass-panel stat-card">
+                        <div class="stat-title">Valor do Estoque</div>
+                        <div class="stat-value" id="valorEstoque">—</div>
+                        <div class="stat-icon icon-orange"><i class="fa-solid fa-dollar-sign"></i></div>
+                    </div>
+
+                    <div class="glass-panel stat-card">
+                        <div class="stat-title">Produtos Ativos</div>
+                        <div class="stat-value" id="totalProdutos">—</div>
+                        <div class="stat-icon icon-yellow"><i class="fa-solid fa-chart-line"></i></div>
+                    </div>
+
+                    <div class="glass-panel stat-card" style="border-left:4px solid var(--color-red);">
+                        <div class="stat-title">Estoque Baixo</div>
+                        <div class="stat-value" id="totalEstoqueBaixo" style="color:var(--color-red);">—</div>
+                        <div class="stat-icon icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                    </div>
+
+                    <div class="glass-panel stat-card">
+                        <div class="stat-title">Produtos Inativos</div>
+                        <div class="stat-value" id="totalProdutosInativos">—</div>
+                        <div class="stat-icon icon-orange"><i class="fa-solid fa-box-archive"></i></div>
+                    </div>
+
+                    <div class="glass-panel stat-card">
+                        <div class="stat-title">Categorias Ativas</div>
+                        <div class="stat-value" id="totalCategoriasAtivas">—</div>
+                        <div class="stat-icon icon-teal"><i class="fa-solid fa-tags"></i></div>
+                    </div>
+                </div>
+
+                <div class="charts-grid">
+                    <div class="glass-panel chart-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Distribuição por Setor</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="pieChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel chart-card">
+                        <div class="card-header">
+                            <h3 class="card-title">Produtos com Maior Quantidade</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel alert-card">
+                    <div class="alert-title">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        Atenção: Produtos com Estoque Baixo
+                    </div>
+                    <p style="font-size:.9rem;margin-bottom:12px;color:var(--color-red);">
+                        Produtos com quantidade igual ou inferior ao estoque mínimo cadastrado.
+                    </p>
+                    <div class="alert-list" id="listaEstoqueBaixo">
+                        <p>Carregando informações do estoque...</p>
+                    </div>
+                    <div class="alert-footer">
+                        <a href="produtos.html?estoque=baixo&situacao=ativos" class="btn btn-outline">
+                            <i class="fa-solid fa-filter"></i> Ver produtos com estoque baixo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = MerkditoAuth.apiBaseUrl;
+
+        let produtos = [];
+        let categorias = [];
+        let estoques = [];
+        let alertasEstoque = [];
+        let graficoPizza = null;
+        let graficoBarras = null;
+
+        const ler = (obj, camel, pascal) =>
+            obj?.[camel] !== undefined ? obj[camel] : obj?.[pascal];
+
+        const numero = valor => {
+            const n = Number(valor ?? 0);
+            return Number.isFinite(n) ? n : 0;
+        };
+
+        function consolidarEstoque(produtosBase, linhasEstoque) {
+            const mapa = new Map();
+            produtosBase.forEach(p => mapa.set(Number(ler(p, "id", "Id")), {
+                ...p,
+                quantidadeEstoque: 0,
+                valorEstoqueConsolidado: 0
+            }));
+
+            linhasEstoque.forEach(item => {
+                const id = Number(ler(item, "produtoId", "ProdutoId"));
+                const produto = mapa.get(id);
+                if (!produto) return;
+                const quantidade = numero(ler(item, "quantidadeEstoque", "QuantidadeEstoque"));
+                const preco = numero(ler(item, "precoVenda", "PrecoVenda") ?? ler(produto, "preco", "Preco"));
+                produto.quantidadeEstoque += quantidade;
+                produto.valorEstoqueConsolidado += quantidade * preco;
+            });
+            return [...mapa.values()];
+        }
+
+        document.getElementById("nomeCliente").textContent = MerkditoAuth.nome || "cliente";
+
+        const moedaBR = valor =>
+            Number(valor || 0).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL"
+            });
+
+        const numeroBR = valor =>
+            Number(valor || 0).toLocaleString("pt-BR");
+
+        function mostrarMensagem(texto, sucesso = false) {
+            MerkditoUI.showInline("mensagemDashboard", texto, sucesso ? "success" : "error");
+        }
+
+        function ocultarMensagem() {
+            MerkditoUI.clearInline("mensagemDashboard");
+        }
+
+        async function buscarDados() {
+            const [respostaProdutos, respostaCategorias, respostaLojas] = await Promise.all([
+                MerkditoAuth.apiFetch(`${API_URL}/Produtos`),
+                MerkditoAuth.apiFetch(`${API_URL}/Categorias`),
+                MerkditoAuth.apiFetch(`${API_URL}/Lojas`)
+            ]);
+
+            if (!respostaProdutos.ok) throw new Error("Não foi possível carregar os produtos.");
+            if (!respostaCategorias.ok) throw new Error("Não foi possível carregar as categorias.");
+            if (!respostaLojas.ok) throw new Error("Não foi possível carregar os estabelecimentos.");
+
+            const [dadosProdutos, dadosCategorias, lojas] = await Promise.all([
+                respostaProdutos.json(), respostaCategorias.json(), respostaLojas.json()
+            ]);
+            if (!Array.isArray(dadosProdutos) || !Array.isArray(dadosCategorias) || !Array.isArray(lojas)) {
+                throw new Error("A API retornou um formato de dados inesperado.");
+            }
+
+            const estabelecimentosAtivos = lojas.filter(l => ler(l, "ativo", "Ativo") !== false);
+            const respostasEstoque = await Promise.all(estabelecimentosAtivos.map(loja => {
+                const id = ler(loja, "id", "Id");
+                return MerkditoAuth.apiFetch(`${API_URL}/ProdutosEstabelecimentos?estabelecimentoId=${encodeURIComponent(id)}`);
+            }));
+
+            const dadosEstoque = await Promise.all(respostasEstoque.map(async resposta => {
+                if (!resposta.ok) throw new Error("Não foi possível consultar o estoque de todos os estabelecimentos.");
+                return resposta.json();
+            }));
+
+            estoques = dadosEstoque.flatMap(d => Array.isArray(d) ? d : (d?.itens || []));
+            const respostaAlertas = await MerkditoAuth.apiFetch(`${API_URL}/ProdutosEstabelecimentos/alertas`);
+            if (!respostaAlertas.ok) throw new Error("Não foi possível carregar os alertas de estoque das lojas.");
+            const dadosAlertas = await respostaAlertas.json();
+            alertasEstoque = dadosAlertas?.itens || [];
+
+            produtos = consolidarEstoque(dadosProdutos, estoques);
+            categorias = dadosCategorias;
+
+            atualizarIndicadores();
+            atualizarGraficos();
+            atualizarAlertas();
+            document.getElementById("ultimaAtualizacao").textContent = new Date().toLocaleString("pt-BR");
+            ocultarMensagem();
+        }
+
+        function atualizarIndicadores() {
+            const ativos = produtos.filter(p => p.ativo === true);
+
+            const totalItens = ativos.reduce(
+                (soma, p) => soma + Number(p.quantidadeEstoque || 0), 0
+            );
+
+            const valorTotal = ativos.reduce(
+                (soma, p) => soma + numero(p.valorEstoqueConsolidado),
+                0
+            );
+
+            const estoqueBaixo = alertasEstoque;
+
+            document.getElementById("totalItens").textContent =
+                numeroBR(totalItens);
+
+            document.getElementById("valorEstoque").textContent =
+                moedaBR(valorTotal);
+
+            const inativos = produtos.filter(p => p.ativo === false);
+            const categoriasAtivas = categorias.filter(c => c.ativa === true);
+
+            document.getElementById("totalProdutos").textContent =
+                numeroBR(ativos.length);
+
+            document.getElementById("totalEstoqueBaixo").textContent =
+                numeroBR(estoqueBaixo.length);
+
+            document.getElementById("totalProdutosInativos").textContent =
+                numeroBR(inativos.length);
+
+            document.getElementById("totalCategoriasAtivas").textContent =
+                numeroBR(categoriasAtivas.length);
+        }
+
+        function obterNomeCategoria(produto) {
+            if (produto.categoria && typeof produto.categoria === "string") {
+                return produto.categoria;
+            }
+
+            const categoria = categorias.find(
+                c => Number(c.id) === Number(produto.categoriaId)
+            );
+
+            return categoria ? categoria.nome : "Sem categoria";
+        }
+
+        function atualizarGraficos() {
+            const ativos = produtos.filter(p => p.ativo === true);
+
+            const quantidadePorCategoria = {};
+
+            ativos.forEach(produto => {
+                const nome = obterNomeCategoria(produto);
+                quantidadePorCategoria[nome] =
+                    (quantidadePorCategoria[nome] || 0) +
+                    Number(produto.quantidadeEstoque || 0);
+            });
+
+            const nomesCategorias = Object.keys(quantidadePorCategoria);
+            const quantidadesCategorias = Object.values(quantidadePorCategoria);
+
+            if (graficoPizza) graficoPizza.destroy();
+
+            graficoPizza = new Chart(document.getElementById("pieChart"), {
+                type: "pie",
+                data: {
+                    labels: nomesCategorias.length ? nomesCategorias : ["Sem produtos"],
+                    datasets: [{
+                        data: nomesCategorias.length ? quantidadesCategorias : [1]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: "bottom"
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: contexto =>
+                                    `${contexto.label}: ${numeroBR(contexto.raw)} unidades`
+                            }
+                        }
+                    }
+                }
+            });
+
+            const maiores = [...ativos]
+                .sort((a, b) =>
+                    Number(b.quantidadeEstoque || 0) -
+                    Number(a.quantidadeEstoque || 0)
+                )
+                .slice(0, 5);
+
+            if (graficoBarras) graficoBarras.destroy();
+
+            graficoBarras = new Chart(document.getElementById("barChart"), {
+                type: "bar",
+                data: {
+                    labels: maiores.length
+                        ? maiores.map(p => p.nome)
+                        : ["Sem produtos"],
+                    datasets: [{
+                        label: "Unidades em estoque",
+                        data: maiores.length
+                            ? maiores.map(p => Number(p.quantidadeEstoque || 0))
+                            : [0]
+                    }]
+                },
+                options: {
+                    indexAxis: "y",
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { precision: 0 }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        }
+
+        function atualizarAlertas() {
+            const container = document.getElementById("listaEstoqueBaixo");
+            const baixos = [...alertasEstoque].sort((a, b) =>
+                numero(ler(a, "quantidadeEstoque", "QuantidadeEstoque")) -
+                numero(ler(b, "quantidadeEstoque", "QuantidadeEstoque"))
+            );
+
+            container.replaceChildren();
+            if (baixos.length === 0) {
+                const texto = document.createElement("p");
+                texto.textContent = "Nenhum estabelecimento apresenta produto com estoque baixo.";
+                container.appendChild(texto);
+                return;
+            }
+
+            baixos.slice(0, 12).forEach(alerta => {
+                const item = document.createElement("div");
+                item.className = "alert-item";
+                const detalhes = document.createElement("div");
+                detalhes.className = "alert-details";
+
+                const nome = document.createElement("span");
+                nome.className = "alert-name";
+                nome.textContent = ler(alerta, "produto", "Produto") || "Produto sem nome";
+
+                const loja = document.createElement("span");
+                loja.className = "alert-category";
+                const nomeEstabelecimento =
+                    ler(alerta, "estabelecimento", "Estabelecimento") ||
+                    ler(alerta, "nomeFantasia", "NomeFantasia") ||
+                    ler(alerta, "estabelecimentoNome", "EstabelecimentoNome") ||
+                    ler(alerta, "loja", "Loja") ||
+                    "Estabelecimento não identificado";
+                const ehDepositoCentral =
+                    ler(alerta, "ehEstoqueCentral", "EhEstoqueCentral") === true;
+                loja.textContent = `${ehDepositoCentral ? "Depósito central" : "Loja/Depósito"}: ${nomeEstabelecimento}`;
+
+                detalhes.append(nome, loja);
+                const quantidade = document.createElement("span");
+                quantidade.className = "alert-qty";
+                const atual = numero(ler(alerta, "quantidadeEstoque", "QuantidadeEstoque"));
+                const minimo = numero(ler(alerta, "estoqueMinimo", "EstoqueMinimo"));
+                quantidade.textContent = `${numeroBR(atual)} un. (mínimo: ${numeroBR(minimo)})`;
+                item.append(detalhes, quantidade);
+                container.appendChild(item);
+            });
+        }
+
+        async function atualizarDashboard() {
+            const botao = document.getElementById("btnAtualizar");
+            const restaurarBotao = MerkditoUI.setBusy(botao, "Atualizando indicadores...");
+            MerkditoUI.showInline("mensagemDashboard", "Consultando produtos, estoques das lojas e categorias...", "info");
+            try {
+                await buscarDados();
+            } catch (erro) {
+                console.error("Erro ao atualizar dashboard:", erro);
+                mostrarMensagem(
+                    `${erro.message || "Não foi possível atualizar o dashboard."} Confira a URL configurada em assets/js/config.js e se a API está acessível.`
+                );
+            } finally {
+                restaurarBotao();
+                botao.disabled = false;
+            }
+        }
+
+        document.getElementById("btnAtualizar").addEventListener("click", atualizarDashboard);
+
+
+        atualizarDashboard();
+    </script>
+</body>
+</html>

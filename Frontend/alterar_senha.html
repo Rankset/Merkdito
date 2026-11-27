@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alterar Senha - MerKdito</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ui.js"></script>
+    <style>
+        .password-card { max-width: 760px; padding: 28px; }
+        .password-help { color: var(--text-muted); font-size: .92rem; line-height: 1.55; }
+        .password-rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 18px; margin: 12px 0 24px; padding: 0; list-style: none; }
+        .password-rules li { color: var(--text-muted); font-size: .9rem; }
+        .password-rules li::before { content: "○"; margin-right: 8px; }
+        .password-rules li.valid { color: #28652a; }
+        .password-rules li.valid::before { content: "✓"; font-weight: 700; }
+        .password-input-wrap { display: flex; gap: 8px; align-items: center; }
+        .password-input-wrap .form-control { flex: 1; min-width: 0; }
+        .password-toggle { border: 1px solid var(--border-glass); background: transparent; border-radius: var(--radius-sm); padding: 10px 12px; cursor: pointer; color: var(--text-dark); }
+        .password-message { display: none; margin-bottom: 18px; border-radius: 8px; padding: 12px 14px; }
+        @media (max-width: 600px) { .password-card { padding: 20px; } .password-rules { grid-template-columns: 1fr; } }
+    </style>
+    <link rel="stylesheet" href="assets/css/responsive.css">
+    <script src="assets/js/navigation.js" defer></script>
+</head>
+<body data-require-client="true">
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <a href="dashboard.html" class="logo" style="text-decoration:none;">
+                <span class="logo-text" style="color:#5DA54A;font-size:2rem;font-weight:800;letter-spacing:-1px;">MerKdito</span>
+            </a>
+            <ul class="nav-menu" aria-label="Navegação principal">
+                <li><a href="dashboard.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-pie" aria-hidden="true"></i><span>Dashboard</span></a></li>
+                <li class="nav-group" data-nav-group="products">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuProdutos">
+                        <i class="fa-solid fa-box-open" aria-hidden="true"></i><span class="nav-group-title">Produtos</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuProdutos" hidden>
+                        <li><a href="produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list" aria-hidden="true"></i><span>Consultar produtos</span></a></li>
+                        <li><a href="adicionar_produto.html" class="nav-item" data-nav-link><i class="fa-solid fa-plus-circle" aria-hidden="true"></i><span>Cadastrar produto</span></a></li>
+                        <li><a href="importar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-import" aria-hidden="true"></i><span>Importar produtos</span></a></li>
+                        <li><a href="atualizar_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Atualizar estoque</span></a></li>
+                        <li><a href="atualizar_produtos.html" class="nav-item" data-nav-link><i class="fa-solid fa-list-check" aria-hidden="true"></i><span>Atualizar cadastro</span></a></li>
+                        <li><a href="categorias.html" class="nav-item" data-nav-link><i class="fa-solid fa-tags" aria-hidden="true"></i><span>Categorias</span></a></li>
+                        <li><a href="relatorios.html" class="nav-item" data-nav-link><i class="fa-solid fa-file-lines" aria-hidden="true"></i><span>Relatórios de estoque</span></a></li>
+                        <li><a href="qualidade_catalogo.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Qualidade do catálogo</span></a></li>
+                        <li><a href="movimentacoes.html" class="nav-item" data-nav-link><i class="fa-solid fa-arrows-rotate" aria-hidden="true"></i><span>Movimentações de estoque</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="stores">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuLojas">
+                        <i class="fa-solid fa-store" aria-hidden="true"></i><span class="nav-group-title">Lojas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuLojas" hidden>
+                        <li><a href="lojas.html" class="nav-item" data-nav-link><i class="fa-solid fa-shop" aria-hidden="true"></i><span>Consultar / cadastrar lojas</span></a></li>
+                        <li><a href="estoque_loja.html" class="nav-item" data-nav-link><i class="fa-solid fa-boxes-stacked" aria-hidden="true"></i><span>Produtos por loja</span></a></li>
+                        <li><a href="alertas_estoque.html" class="nav-item" data-nav-link><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i><span>Alertas de estoque</span></a></li>
+                        <li><a href="inventario.html" class="nav-item" data-nav-link><i class="fa-solid fa-clipboard-check" aria-hidden="true"></i><span>Inventário físico</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="sales">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuVendas">
+                        <i class="fa-solid fa-cash-register" aria-hidden="true"></i><span class="nav-group-title">Vendas</span><i class="fa-solid fa-chevron-down nav-caret" aria-hidden="true"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuVendas" hidden>
+                        <li><a href="vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-receipt" aria-hidden="true"></i><span>Consultar vendas</span></a></li>
+                        <li><a href="relatorios_vendas.html" class="nav-item" data-nav-link><i class="fa-solid fa-chart-column" aria-hidden="true"></i><span>Relatórios de vendas</span></a></li>
+                    </ul>
+                </li>
+                <li class="nav-group" data-nav-group="purchases">
+                    <button type="button" class="nav-item nav-group-toggle" aria-expanded="false" aria-controls="submenuCompras">
+                        <i class="fa-solid fa-truck"></i><span class="nav-group-title">Compras</span><i class="fa-solid fa-chevron-down nav-caret"></i>
+                    </button>
+                    <ul class="nav-submenu" id="submenuCompras" hidden>
+                        <li><a href="fornecedores.html" class="nav-item" data-nav-link><i class="fa-solid fa-address-book"></i><span>Fornecedores</span></a></li>
+                        <li><a href="compras.html" class="nav-item" data-nav-link><i class="fa-solid fa-cart-flatbed"></i><span>Registrar compras</span></a></li>
+                    </ul>
+                </li>
+                <li><a href="perfil.html" class="nav-item" data-nav-link><i class="fa-solid fa-user-tie" aria-hidden="true"></i><span>Meu perfil</span></a></li>
+                <li><a href="alterar_senha.html" class="nav-item" data-nav-link><i class="fa-solid fa-key" aria-hidden="true"></i><span>Alterar senha</span></a></li>
+                            <li><a href="usuarios_funcionarios.html" class="nav-item" data-nav-link><i class="fa-solid fa-users-gear" aria-hidden="true"></i><span>Usuários e permissões</span></a></li>
+</ul>
+            <div class="logout-container">
+                <a href="index.html" class="nav-item" onclick="MerkditoAuth.logout(); return false;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sair</a>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="top-header">
+                <div>
+                    <h1 class="page-title">Alterar senha</h1>
+                    <p class="page-subtitle" style="margin-bottom:0;">Mantenha o acesso à sua conta protegido</p>
+                </div>
+            </header>
+
+            <section class="glass-panel password-card animate-fade-in delay-1">
+                <p class="password-help">Informe sua senha atual e escolha uma senha nova. Por segurança, a nova senha deve ter pelo menos 12 caracteres, incluindo letras maiúsculas e minúsculas, número e símbolo.</p>
+
+                <div id="mensagemSenha" class="password-message" role="status" aria-live="polite"></div>
+                <form id="formAlterarSenha" novalidate>
+                    <div class="form-group">
+                        <label class="form-label" for="senhaAtual">Senha atual</label>
+                        <div class="password-input-wrap">
+                            <input id="senhaAtual" class="form-control" type="password" autocomplete="current-password" required maxlength="128">
+                            <button class="password-toggle" type="button" data-toggle="senhaAtual" aria-label="Mostrar senha atual"><i class="fa-solid fa-eye"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="novaSenha">Nova senha</label>
+                        <div class="password-input-wrap">
+                            <input id="novaSenha" class="form-control" type="password" autocomplete="new-password" required minlength="12" maxlength="128">
+                            <button class="password-toggle" type="button" data-toggle="novaSenha" aria-label="Mostrar nova senha"><i class="fa-solid fa-eye"></i></button>
+                        </div>
+                    </div>
+
+                    <ul class="password-rules" aria-label="Requisitos da nova senha">
+                        <li id="regraTamanho">Pelo menos 12 caracteres</li>
+                        <li id="regraMaiuscula">Uma letra maiúscula</li>
+                        <li id="regraMinuscula">Uma letra minúscula</li>
+                        <li id="regraNumero">Um número</li>
+                        <li id="regraSimbolo">Um símbolo</li>
+                        <li id="regraDiferente">Diferente da senha atual</li>
+                    </ul>
+
+                    <div class="form-group">
+                        <label class="form-label" for="confirmarSenha">Confirmar nova senha</label>
+                        <div class="password-input-wrap">
+                            <input id="confirmarSenha" class="form-control" type="password" autocomplete="new-password" required minlength="12" maxlength="128">
+                            <button class="password-toggle" type="button" data-toggle="confirmarSenha" aria-label="Mostrar confirmação da senha"><i class="fa-solid fa-eye"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="form-actions" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:24px;">
+                        <button id="btnAlterarSenha" class="btn btn-primary" type="submit"><i class="fa-solid fa-lock"></i> Alterar senha</button>
+                        <a href="dashboard.html" class="btn btn-outline">Cancelar</a>
+                    </div>
+                </form>
+
+                <div id="sucessoSenha" style="display:none;">
+                    <h2 style="font-size:1.25rem;margin-bottom:8px;"><i class="fa-solid fa-circle-check" style="color:#5DA54A;"></i> Senha alterada</h2>
+                    <p class="password-help">Por segurança, sua sessão neste navegador foi encerrada. Entre novamente usando a nova senha.</p>
+                    <a href="index.html" class="btn btn-primary">Ir para o login</a>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        (function () {
+            const form = document.getElementById("formAlterarSenha");
+            const atual = document.getElementById("senhaAtual");
+            const nova = document.getElementById("novaSenha");
+            const confirmar = document.getElementById("confirmarSenha");
+            const mensagem = document.getElementById("mensagemSenha");
+            const botao = document.getElementById("btnAlterarSenha");
+
+            document.querySelectorAll("[data-toggle]").forEach(function (botaoVisibilidade) {
+                botaoVisibilidade.addEventListener("click", function () {
+                    const campo = document.getElementById(botaoVisibilidade.dataset.toggle);
+                    const mostrar = campo.type === "password";
+                    campo.type = mostrar ? "text" : "password";
+                    botaoVisibilidade.innerHTML = mostrar
+                        ? '<i class="fa-solid fa-eye-slash"></i>'
+                        : '<i class="fa-solid fa-eye"></i>';
+                    botaoVisibilidade.setAttribute("aria-label", mostrar ? "Ocultar senha" : "Mostrar senha");
+                });
+            });
+
+            function politicaValida(valor) {
+                return {
+                    tamanho: valor.length >= 12,
+                    maiuscula: /[A-Z]/.test(valor),
+                    minuscula: /[a-z]/.test(valor),
+                    numero: /\d/.test(valor),
+                    simbolo: /[^A-Za-z0-9]/.test(valor),
+                    diferente: valor.length > 0 && valor !== atual.value
+                };
+            }
+
+            function atualizarRegras() {
+                const regras = politicaValida(nova.value);
+                const mapa = {
+                    tamanho: "regraTamanho", maiuscula: "regraMaiuscula", minuscula: "regraMinuscula",
+                    numero: "regraNumero", simbolo: "regraSimbolo", diferente: "regraDiferente"
+                };
+                Object.keys(mapa).forEach(chave => {
+                    document.getElementById(mapa[chave]).classList.toggle("valid", regras[chave]);
+                });
+            }
+
+            function mostrarMensagem(texto, sucesso) {
+                MerkditoUI.showInline(mensagem, texto, sucesso ? "success" : "error");
+            }
+
+            nova.addEventListener("input", atualizarRegras);
+            atual.addEventListener("input", atualizarRegras);
+
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault();
+                mensagem.style.display = "none";
+                if (!form.reportValidity()) return;
+
+                const regras = politicaValida(nova.value);
+                if (!Object.values(regras).every(Boolean)) {
+                    mostrarMensagem("A nova senha não atende a todos os requisitos ou é igual à senha atual.", false);
+                    return;
+                }
+                if (nova.value !== confirmar.value) {
+                    mostrarMensagem("A confirmação não corresponde à nova senha.", false);
+                    confirmar.focus();
+                    return;
+                }
+
+                const restaurarBotao = MerkditoUI.setBusy(botao, "Alterando senha...");
+                try {
+                    const resposta = await MerkditoAuth.apiFetch("Senhas/alterar", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ senhaAtual: atual.value, novaSenha: nova.value })
+                    });
+                    const texto = await resposta.text();
+                    let payload = null;
+                    try { payload = texto ? JSON.parse(texto) : null; } catch { payload = null; }
+
+                    if (!resposta.ok) {
+                        mostrarMensagem((payload && (payload.mensagem || payload.message || payload.title)) || "Não foi possível alterar a senha. Confira a senha atual e tente novamente.", false);
+                        return;
+                    }
+
+                    MerkditoAuth.clearSession();
+                    form.style.display = "none";
+                    mensagem.style.display = "none";
+                    document.getElementById("sucessoSenha").style.display = "block";
+                } catch (erro) {
+                    mostrarMensagem(erro.message || "Não foi possível comunicar com a API.", false);
+                } finally {
+                    restaurarBotao();
+                    botao.disabled = false;
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

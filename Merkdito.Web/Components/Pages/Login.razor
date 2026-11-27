@@ -1,0 +1,97 @@
+@page "/login"
+@layout Merkdito.Web.Components.Layout.LoginLayout
+@using Merkdito.Web.Services
+@using Microsoft.AspNetCore.Components.Forms
+@inject AuthService Auth
+@inject NavigationManager Navigation
+
+<PageTitle>Entrar | Merkdito</PageTitle>
+
+<div class="admin-login-shell">
+    <section class="admin-login-panel" aria-labelledby="login-title">
+        <div class="admin-login-brand" aria-label="MerKdito">
+            <span class="admin-login-wordmark">MerKdito</span>
+        </div>
+        <h1 id="login-title" class="admin-login-title">Painel administrativo</h1>
+        <p class="admin-login-subtitle">Acesse sua área de administração</p>
+
+        @if (!string.IsNullOrWhiteSpace(mensagem))
+        {
+            <div class="alert alert-danger admin-login-alert" role="alert" aria-live="polite">@mensagem</div>
+        }
+
+        <EditForm Model="@formulario" OnSubmit="@EntrarAsync">
+            <div class="mb-3 text-start">
+                <label for="email" class="form-label">E-mail</label>
+                <InputText id="email" class="form-control form-control-lg admin-login-input"
+                           type="email" @bind-Value="formulario.Email"
+                           autocomplete="username" required />
+            </div>
+            <div class="mb-4 text-start">
+                <label for="senha" class="form-label">Senha</label>
+                <InputText id="senha" class="form-control form-control-lg admin-login-input"
+                           type="password" @bind-Value="formulario.Senha"
+                           autocomplete="current-password" required />
+            </div>
+            <button type="submit" class="btn admin-login-submit btn-lg w-100" disabled="@carregando">
+                @if (carregando)
+                {
+                    <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+                    <span>Entrando...</span>
+                }
+                else
+                {
+                    <span>Entrar no painel</span>
+                }
+            </button>
+        </EditForm>
+
+        <div class="admin-login-footer">
+            <span class="admin-login-footer-mark" aria-hidden="true"></span>
+            <small>Área exclusiva para administradores.</small>
+        </div>
+    </section>
+</div>
+
+@code {
+    private LoginFormulario formulario = new();
+    private string? mensagem;
+    private bool carregando;
+
+    private async Task EntrarAsync(EditContext contexto)
+    {
+        if (carregando)
+            return;
+
+        mensagem = null;
+        carregando = true;
+        try
+        {
+            var resultado = await Auth.LoginAsync(formulario.Email, formulario.Senha);
+            if (!resultado.Sucesso)
+            {
+                mensagem = resultado.Mensagem;
+                return;
+            }
+
+            if (!string.Equals(Auth.Perfil, "ADMIN", StringComparison.OrdinalIgnoreCase))
+            {
+                Auth.LimparSessao();
+                mensagem = "Este acesso é exclusivo para administradores.";
+                return;
+            }
+
+            Navigation.NavigateTo("/");
+        }
+        finally
+        {
+            carregando = false;
+        }
+    }
+
+    private sealed class LoginFormulario
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Senha { get; set; } = string.Empty;
+    }
+}
